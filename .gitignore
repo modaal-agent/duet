@@ -1,0 +1,25 @@
+# Swift build artifacts
+.build/
+DerivedData/
+
+# Generated Xcode projects (XcodeGen output)
+*.xcodeproj
+
+# Xcode user data
+xcuserdata/
+
+# SPM
+.swiftpm/xcode/
+Package.resolved
+
+# Kotlin / Gradle build artifacts
+.gradle/
+.kotlin/
+build/
+local.properties
+
+# macOS
+.DS_Store
+
+# Claude Code local state
+.claude/
