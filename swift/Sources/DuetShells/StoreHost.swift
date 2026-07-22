@@ -19,6 +19,12 @@ import Duet
 public final class StoreHost {
   private var teardowns: [@MainActor () -> Void] = []
 
+  /// The worker ledger: how many adopted workers' `run()` have not yet
+  /// returned. Cancellation is cooperative, so this reaches zero shortly
+  /// AFTER `teardownAll()` — churn specs assert it eventually-zero (a worker
+  /// that never settles is the leak class the ledger exists to catch).
+  public private(set) var liveWorkerCount = 0
+
   public init() {}
 
   /// Hosts a store the shell owns: registers `store.teardown()` (kernel contract §3
@@ -58,6 +64,22 @@ public final class StoreHost {
   /// Escape hatch for anything else that must stop at teardown.
   public func adopt(teardown: @escaping @MainActor () -> Void) {
     teardowns.append(teardown)
+  }
+
+  /// Adopts a worker: starts `run()` in a dedicated task at registration and
+  /// cancels it at `teardownAll()`, LIFO with everything else adopted.
+  /// Registration order is start order — the start list is visible in one
+  /// place and teardown provably unwinds it in reverse. The task retains the
+  /// worker for the mount's life; a remount adopts a fresh instance.
+  @discardableResult
+  public func adopt<W: Working>(_ worker: W) -> W {
+    liveWorkerCount += 1
+    let task = Task { [weak self] in
+      await worker.run()
+      self?.liveWorkerCount -= 1
+    }
+    teardowns.append { task.cancel() }
+    return worker
   }
 
   public func teardownAll() {

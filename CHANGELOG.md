@@ -6,6 +6,19 @@ The Swift-flavor extraction — the framework's first code drop.
 
 ### Added
 
+- **The worker seam** — lifecycle-bound stateful processing (the RIBs Worker
+  role, re-substrated on structured concurrency): the freestanding `Working`
+  protocol (`run() async` is the worker's whole life; cancellation IS stop)
+  with the `untilCancelled()` park for subscription-shaped machinery
+  (`DuetShells`); `StoreHost.adopt(_ worker:)` — registration starts `run()`
+  in registration order, `teardownAll()` cancels LIFO with everything else
+  adopted, and the `liveWorkerCount` ledger makes the leak class observable;
+  `WorkerTester` (`DuetTesting`) — the logical-test bracket whose `finish()`
+  fails on a worker still running after cancellation, wall-clock-free by
+  construction. Workers feed features only through the existing seams
+  (environment streams / relayed actions); no fixture lane — workers carry
+  logical tests only.
+
 - **`swift/` — the Swift flavor as an SPM package**, all targets in Swift 6 language
   mode (strict concurrency complete) from birth:
   - **`Duet`** — the kernel: the `Store` runtime (synchronous reduce, queued

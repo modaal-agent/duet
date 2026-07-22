@@ -58,6 +58,8 @@ let package = Package(
       dependencies: [
         .target(name: "Duet"),
         .target(name: "DuetReplay"),
+        // WorkerTester brackets DuetShells' worker seam (`Working`).
+        .target(name: "DuetShells"),
       ]
     ),
     .testTarget(
