@@ -4,6 +4,16 @@
 
 The Swift-flavor extraction — the framework's first code drop.
 
+### Changed
+
+- **The manifest moved to the repo root** (`Package.swift`; sources stay under
+  `swift/`, targets carry explicit `path:`s). SwiftPM resolves `.package(url:)`
+  dependencies against the repository root only, so this is the URL-consumable
+  public shape — `.package(url: "…/duet.git", from: …)` now works once the repo
+  is published. One URL-resolvable package per repo: the CombineRIBs coexistence
+  helpers live in their own repo (`duet-migration`) so this package's dependency
+  graph stays RIBs-free for every consumer.
+
 ### Added
 
 - **The worker seam** — lifecycle-bound stateful processing (the RIBs Worker

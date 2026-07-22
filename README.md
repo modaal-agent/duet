@@ -56,7 +56,9 @@ Modaal's commercial side is the *authoring* service around the framework — sca
 ## Repository layout
 
 ```
-swift/       the Swift flavor — SPM package (Duet, DuetShells, DuetReplay, DuetTesting)
+Package.swift  the SPM manifest — at the repo root so `.package(url:)` resolves it
+               (SwiftPM reads remote manifests from the repository root only)
+swift/       the Swift flavor's sources (Duet, DuetShells, DuetReplay, DuetTesting)
              + its test suites and their own fixture corpus (swift/Tests/parity/fixtures)
 contracts/   the normative contracts, versioned with the code:
              store-kernel-contract.md · serialization.md · presentation-contract.md
