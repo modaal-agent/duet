@@ -46,6 +46,15 @@ public enum RouteSpineCodec {
 /// boot a virgin tree — and the stage host DISCARDS it when the entry decision
 /// lands anywhere other than that subtree (a funnel entry means the session's
 /// continuity is broken; the subtree mounted after it starts fresh).
+///
+/// `@MainActor` — the final shape, declared rather than conventional: the box is
+/// scene-lifecycle state (created at scene connect, placed by the restoration
+/// callback, drained during tree construction), all main-actor by contract.
+/// Adopter expectation: an UNANNOTATED legacy host (RIBs-era builder code) that
+/// touches the box from a synchronous nonisolated context brackets the access
+/// with `MainActor.assumeIsolated { … }` — the documented coexistence price at
+/// the legacy boundary, retired as hosts adopt isolation. Fully-annotated
+/// composition roots need nothing.
 @MainActor
 public final class RestoredSpineBox<Spine> {
   private var spine: Spine?
