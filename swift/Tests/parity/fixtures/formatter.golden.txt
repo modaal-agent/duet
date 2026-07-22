@@ -1,0 +1,14 @@
+✗ chain 'chain-share-apply' step 2 (timeline) 'the feed-share seam' — effects diverged
+  at expectedEffects[0].payload.value.friendIds[1]
+  expected: "friend-ben"   actual: "friend-cara"
+  action: {"case":"sharePicker","value":{"case":"applied"}}
+  scenario: src-ios/Tests/ChainScenarioTests.swift:64
+  next: verify materialize chain-share-apply#2 --platform swift
+
+✗ fixture 'sharepicker.apply' step 8 'delegates › apply › applied carries dana' — Then failed
+  at expectedState.selected[1].displayName
+  expected: "Dana"   actual: "Ben"
+  action: {"case":"applyTapped"}
+  scenario: src-ios/Tests/SharePickerScenarioTests.swift:70
+  Then returned false against the current state — the step's state also diverged from the fixture
+  next: verify materialize sharepicker.apply#8 --platform swift

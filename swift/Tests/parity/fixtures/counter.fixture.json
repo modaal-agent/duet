@@ -1,0 +1,135 @@
+{
+  "description": "The exemplar feature: state changes, guarded system action, effect emission with cancel-in-flight id, explicit cancel.",
+  "dialect": 2,
+  "feature": "counter",
+  "initialState": {
+    "count": 0,
+    "isAutoIncrementing": false
+  },
+  "scenario": {
+    "source": "DuetTestingTests/ScenarioRunnerTests.swift"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "increment"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 1,
+        "isAutoIncrementing": false
+      },
+      "label": "increment",
+      "line": 21
+    },
+    {
+      "action": {
+        "case": "increment"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 2,
+        "isAutoIncrementing": false
+      },
+      "label": "increment again",
+      "line": 22
+    },
+    {
+      "action": {
+        "case": "decrement"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 1,
+        "isAutoIncrementing": false
+      },
+      "label": "decrement",
+      "line": 23
+    },
+    {
+      "action": {
+        "case": "tick"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 1,
+        "isAutoIncrementing": false
+      },
+      "label": "a stray tick while auto-increment is off must not count",
+      "line": 24
+    },
+    {
+      "action": {
+        "case": "toggleAutoIncrement"
+      },
+      "expectedEffects": [
+        {
+          "id": "counter.ticker",
+          "kind": "run",
+          "payload": {
+            "case": "startTicker"
+          }
+        }
+      ],
+      "expectedState": {
+        "count": 1,
+        "isAutoIncrementing": true
+      },
+      "label": "toggling auto-increment on starts the ticker",
+      "line": 27
+    },
+    {
+      "action": {
+        "case": "tick"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 2,
+        "isAutoIncrementing": true
+      },
+      "label": "a tick counts while auto-incrementing",
+      "line": 31
+    },
+    {
+      "action": {
+        "case": "tick"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 3,
+        "isAutoIncrementing": true
+      },
+      "label": "a second tick counts",
+      "line": 32
+    },
+    {
+      "action": {
+        "case": "toggleAutoIncrement"
+      },
+      "expectedEffects": [
+        {
+          "id": "counter.ticker",
+          "kind": "cancel"
+        }
+      ],
+      "expectedState": {
+        "count": 3,
+        "isAutoIncrementing": false
+      },
+      "label": "toggling auto-increment off cancels the ticker",
+      "line": 33
+    },
+    {
+      "action": {
+        "case": "tick"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 3,
+        "isAutoIncrementing": false
+      },
+      "label": "a tick after cancellation must not count",
+      "line": 37
+    }
+  ]
+}

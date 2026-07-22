@@ -2,7 +2,7 @@
 
 One score, two performers. Duet is a framework for building iOS and Android apps as verifiable twins: shared pure logic, platform-native UI, and a recorded fixture corpus that both platforms must replay **byte-identically**. Record a feature's behavior on one platform, verify it on the other — parity is a CI gate, not a code-review aspiration.
 
-> **Status: pre-release (0.0.1).** This is the identity release — name, license, contribution policy, roadmap. No artifacts are published yet; the first framework extraction is the next milestone. Until then, treat every API surface described below as a preview.
+> **Status: pre-release.** The Swift-flavor extraction has landed in-repo (`swift/` — kernel, shells, replay protocol, test support; strict-concurrency-complete, tests green) together with the normative contracts (`contracts/`). No artifacts are published yet, and the toolchain CLI is still to come — treat the API surface as a preview until the first tagged release.
 
 ## Why
 
@@ -48,14 +48,28 @@ Modaal's commercial side is the *authoring* service around the framework — sca
 | Surface | Identifier |
 |---|---|
 | Repository | `github.com/modaal-agent/duet` |
-| Swift packages (SPM) | `Duet`, `DuetShells`, `DuetTesting` |
+| Swift packages (SPM) | `Duet`, `DuetShells`, `DuetTesting` (+ `DuetReplay`, the replay-protocol adapter) |
 | Kotlin artifacts (Maven) | `dev.modaal.duet:kernel`, `dev.modaal.duet:kernel-test`, `dev.modaal.duet:shells-compose` |
 | CLI | `duet` |
 | MCP tools | `duet_*` |
 
+## Repository layout
+
+```
+swift/       the Swift flavor — SPM package (Duet, DuetShells, DuetReplay, DuetTesting)
+             + its test suites and their own fixture corpus (swift/Tests/parity/fixtures)
+contracts/   the normative contracts, versioned with the code:
+             store-kernel-contract.md · serialization.md · presentation-contract.md
+```
+
+The Kotlin (KMP) flavor and the `duet` CLI land per the roadmap below.
+
 ## Roadmap
 
-1. **Swift-flavor extraction** — kernel, test support (scenario DSL, recorder, `record --check`), generic shells, contracts; strict-concurrency-complete from the first release.
+1. **Swift-flavor extraction** — kernel, test support (scenario DSL, recorders, the
+   record/`--check` machinery), generic shells, the replay-protocol adapter, contracts;
+   strict-concurrency-complete (Swift 6 language mode) from the first extraction.
+   **Landed** — see `swift/`.
 2. **KMP-flavor packaging** — the `commonMain` kernel, serialization, boundary adapters, Compose shell primitives, published artifacts.
 3. **Toolchain** — the `duet` CLI verb surface, CI templates, lint family, zero-config mock pipeline.
 4. **Docs** — public contracts and guides, distinct from Modaal's product documentation.

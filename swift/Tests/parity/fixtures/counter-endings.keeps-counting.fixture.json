@@ -1,0 +1,39 @@
+{
+  "description": "Shared prefix with two static endings — the Branch expansion receipt.",
+  "dialect": 2,
+  "feature": "counter",
+  "initialState": {
+    "count": 0,
+    "isAutoIncrementing": false
+  },
+  "scenario": {
+    "branch": "keeps-counting",
+    "source": "DuetTestingTests/ScenarioRunnerTests.swift"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "increment"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 1,
+        "isAutoIncrementing": false
+      },
+      "label": "increment",
+      "line": 50
+    },
+    {
+      "action": {
+        "case": "increment"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "count": 2,
+        "isAutoIncrementing": false
+      },
+      "label": "keeps counting › increment again",
+      "line": 54
+    }
+  ]
+}

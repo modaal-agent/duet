@@ -2,7 +2,7 @@
 
 This guide is for **contributors to the Duet framework itself**. If you're consuming the framework in an app, start from the [README](README.md).
 
-> **Status: pre-release.** Until the first framework extraction lands, the contribution surface is documentation and policy. The rules below are the standing contract every PR will be reviewed against from the first code drop — they are published now so they are never a surprise.
+> **Status: pre-release.** The Swift-flavor extraction has landed (`swift/`); the KMP flavor and the `duet` CLI follow per the README roadmap. The rules below are the standing contract every PR is reviewed against.
 
 ## The contribution gate: the corpus
 
@@ -41,4 +41,19 @@ Duet is MIT-licensed. Contributions are accepted under the same terms (inbound =
 
 ## Building
 
-The build and verification entry points (`duet verify`, per-flavor test lanes, lint family) ship with the first extraction; this section will document them then. Until that lands, there is nothing to build here.
+The Swift flavor is a standard SPM package:
+
+```sh
+cd swift
+swift build            # all four targets, Swift 6 language mode (strict concurrency)
+swift test             # the framework suites; replays swift/Tests/parity/fixtures
+REGEN_FIXTURES=1 swift test   # re-record the suite's own fixtures (then review the diff)
+```
+
+The framework's test fixtures live in `swift/Tests/parity/fixtures/` and are governed by
+the same corpus rules as a consuming app's: build products of the scenario record modes,
+never hand-edited, byte-stable under the pretty writer (`PrettyWriterParityTests` enforces
+this). Test-runner machine artifacts land in `swift/Tests/parity/.runs/` (gitignored).
+
+The `duet` CLI, per-flavor dual lanes, and the lint family ship with the toolchain
+milestone; this section grows as they land.

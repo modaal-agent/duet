@@ -23,3 +23,6 @@ local.properties
 
 # Claude Code local state
 .claude/
+
+# Test-runner machine artifacts (verify explain reads them; never committed)
+**/parity/.runs/
