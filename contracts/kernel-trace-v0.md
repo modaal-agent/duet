@@ -1,9 +1,13 @@
 # Kernel-trace fixtures — v0 (pre-freeze)
 
-**Status: v0 — Swift-side traces recorded (F2). The Kotlin kernel reproduces
-these at F3, after which kernel contract v1 is declared FROZEN outside major
-versions (spec 18 G3). Until then this document may still move with the
-fixtures.**
+**Status: EXECUTED both flavors — the gate is MET and kernel contract v1 is
+declared FROZEN (store-kernel-contract.md). Swift recorded the traces at F2;
+the Kotlin kernel replayed all six BYTE-IDENTICALLY at F3 under coroutine
+virtual time (repeat-stable; negative control trips). The Swift recorder is
+the writer of record; the Kotlin side verifies only. One alignment fell out of
+the gate, exactly as designed: the KMP kernel's handler invocation moved into
+`execute` (synchronous with effect start, matching the Swift flavor) — the
+restart interleaving in `cancel-in-flight` is unreachable otherwise.**
 
 The corpus methodology, extended to the kernel itself: the contract-observable
 runtime rules of the store kernel (store-kernel-contract.md) are recorded as

@@ -2,7 +2,69 @@
 
 ## [Unreleased]
 
-The Swift-flavor extraction — the framework's first code drop.
+The Swift-flavor extraction — the framework's first code drop — and the KMP
+flavor's packaging (F3).
+
+### Added — the KMP flavor (`kotlin/`, F3)
+
+- **`dev.modaal.duet:kernel`** — the KMP flavor's core (commonMain): the
+  `Store` runtime, `Effect` as data, the `KernelClock` seam, canonical
+  serialization (the multiplatform writer, the FC2-derived
+  `CanonicalSumSerializer` + registry convention, the pinned configuration,
+  platform Instant/UUID serializers), and the boundary adapters — the
+  registry-driven replay surface (`ReplayFeature`/`ReplayRegistry`/
+  `BoundaryReplay`/`ReplayServer`) and `SpineBoundary` (spine persistence as
+  core String functions). Targets: JVM (the host lane Android consumers
+  resolve) + the Apple slices aggregated into the `DuetKernel` XCFramework
+  (SKIE route; static). One kernel alignment fell out of the G3 gate, exactly
+  as designed: **handler invocation moved into `execute`** (synchronous with
+  effect start, matching the Swift flavor) — the `cancel-in-flight` restart
+  interleaving is unreachable otherwise.
+- **`dev.modaal.duet:kernel-test`** — the host-lane test support (JVM): the
+  scenario DSL (feature dialect + branch expansion) and record/verify runners
+  ported from the reference corpus (the lane's SOLE WRITER; regen via
+  `REGEN_FIXTURES=1` / `-Dduet.regenFixtures=1`), fixture replay with
+  first-divergence reporting, run reports, `ChainRunner`, the exhaustive
+  `TestStore`, `WorkerTester`, the deterministic-async toolkit's Kotlin half,
+  and the kernel-trace apparatus. Platform finding, encoded in `settleUntil`:
+  coroutine-test's `advanceUntilIdle` is FOREGROUND-filtered — background-scope
+  work (workers, shell observations) drains via `runCurrent`/`yield`, and
+  virtual time stays an explicit act (`advanceTimeBy`).
+- **`dev.modaal.duet:shells-compose`** — the shell half's twins (C6, the
+  mirror rule), headless by design (no Compose dependency). Config-change
+  stance per doc 20 Q2: hosts live in the RETAINED/logical scope —
+  InstanceKeeper as substrate, not API (test-scope dependency only; the
+  RetainedScopeTest receipt confirms rotation never crosses the worker
+  bracket).
+- **Kernel-trace fixtures, both flavors — kernel contract v1 FROZEN**: the
+  KMP kernel replays all six committed Swift-recorded traces BYTE-IDENTICALLY
+  under coroutine virtual time (repeat-stable; negative control trips). The
+  Swift recorder stays the writer of record. Lockstep is structural on Kotlin
+  (Flow `emit` reduces synchronously in the collector); the log needs no lock
+  (single-threaded virtual scheduler).
+- **The replay protocol formalized as v1** (`contracts/replay-protocol-v1.md`)
+  — the versioned flavor seam: JSON-lines stdio, ONE `reduce` op (trees in,
+  canonical strings out), chains via CLI-side per-node state slots, `record`/
+  `--check` through the CLI-side §6 writer. Both servers stamp v1; a
+  conforming runner is the flavor's whole obligation.
+- **The SKIE packaging receipt** (`kotlin/consumer-receipt/` +
+  `kotlin/scripts/xcframework-receipt.sh`): the app-shaped framework (kernel +
+  a commonMain receipt feature) built via SKIE, with a Swift consumer
+  replaying the committed kotlin-corpus fixtures across the boundary.
+
+#### Twin thinness record (the C6 exit criterion)
+
+| Twin | LOC (K) | Thinness vs the Swift realization |
+| --- | --- | --- |
+| `StoreHost` + `Working`/`adopt` | ~110 | same duties; scope-parameterized (coroutine structured concurrency replaces ambient `Task`); `adoptTeardown` named (SAM ambiguity) |
+| `ChildStores`/`ChildSlot` | ~90 | duty-identical port; main-confined by contract instead of `@MainActor` |
+| `ProjectionJoin`/`StateTransitions` | ~110 | R13 duties identical; collection rides the host scope — a reduce is observed within the same main-loop turn, not before `send` returns (StateFlow conflation coalesces intermediates; value-driven appliers make both safe) |
+| `Relay` | ~15 | verbatim twin |
+| `PresentationRegistry` | ~50 | generic over `Surface` where Swift pins `AnyView` (no erasure type needed; keeps the artifact Compose-free); sealed-leaf → root-registration resolution via `isInstance` |
+| Handles (`Activatable`, `StoreChild`, `ViewShellChild`) | ~45 | carry ONLY the activate/teardown ordering contract — Compose composition lifetimes absorb the view half (S4-Q4) |
+| `KernelClock` | ~15 | the seam alone: coroutine virtual time IS the test realization (no `TestClock` type) |
+| `WorkerTester` | ~60 | same guarantees; no lock (virtual scheduler), no main-loop-pumping caveats |
+| `untilCancelled` | 1 | `awaitCancellation` — the platform provides the park |
 
 ### Changed
 

@@ -1,0 +1,47 @@
+{
+  "description": "lamp toggling with two endings",
+  "dialect": 2,
+  "feature": "lamp",
+  "initialState": {
+    "brightness": 0,
+    "on": false
+  },
+  "scenario": {
+    "branch": "timed-off",
+    "source": "kotlin/kernel-test/src/test/kotlin/dev/modaal/duet/test/ScenarioRunnerTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "toggle"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "brightness": 0,
+        "on": true
+      },
+      "label": "turn on",
+      "line": 71
+    },
+    {
+      "action": {
+        "case": "scheduleOff"
+      },
+      "expectedEffects": [
+        {
+          "id": "lamp.off",
+          "kind": "run",
+          "payload": {
+            "case": "offTimer"
+          }
+        }
+      ],
+      "expectedState": {
+        "brightness": 0,
+        "on": true
+      },
+      "label": "timed off › schedule off",
+      "line": 78
+    }
+  ]
+}

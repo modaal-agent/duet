@@ -1,0 +1,40 @@
+{
+  "description": "lamp toggling with two endings",
+  "dialect": 2,
+  "feature": "lamp",
+  "initialState": {
+    "brightness": 0,
+    "on": false
+  },
+  "scenario": {
+    "branch": "dimmed-evening",
+    "source": "kotlin/kernel-test/src/test/kotlin/dev/modaal/duet/test/ScenarioRunnerTest.kt"
+  },
+  "steps": [
+    {
+      "action": {
+        "case": "toggle"
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "brightness": 0,
+        "on": true
+      },
+      "label": "turn on",
+      "line": 71
+    },
+    {
+      "action": {
+        "case": "dim",
+        "value": 30
+      },
+      "expectedEffects": [],
+      "expectedState": {
+        "brightness": 30,
+        "on": true
+      },
+      "label": "dimmed evening › dim to 30",
+      "line": 74
+    }
+  ]
+}

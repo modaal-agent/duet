@@ -4,10 +4,12 @@
 import Foundation
 
 /// The replay-protocol server — a JSON-lines stdio loop over an app's adapter
-/// registry. Protocol v0 (the versioned flavor seam):
+/// registry. Protocol v1, the versioned flavor seam — normative contract:
+/// contracts/replay-protocol-v1.md (formalized at F3 from the proven v0 shape;
+/// the wire format is unchanged, the version stamp advances):
 ///
 ///   handshake (stdout, on start):
-///     {"protocol":"duet-replay","version":0,"platform":"swift","features":[…]}
+///     {"protocol":"duet-replay","version":1,"platform":"swift","features":[…]}
 ///   request  (stdin, one JSON object per line):
 ///     {"op":"reduce","feature":"counter","state":<tree>,"action":<tree>}
 ///     {"op":"exit"}
@@ -23,7 +25,7 @@ import Foundation
 ///     ReplayServer.serve(registry: appReplayRegistry)
 public enum ReplayServer {
   public static let protocolName = "duet-replay"
-  public static let protocolVersion = 0
+  public static let protocolVersion = 1
   public static let platform = "swift"
 
   /// The handshake object emitted on start.

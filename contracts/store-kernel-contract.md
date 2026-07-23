@@ -1,10 +1,16 @@
-# Store kernel contract (v0)
+# Store kernel contract (v1 — FROZEN)
 
 The API contract that **both** core flavors implement:
 
 - Swift flavor: `Duet` (+ `DuetTesting`) — this repository, `swift/`
-- Kotlin (KMP flavor): `dev.modaal.duet:kernel` (+ `:kernel-test`) — packaging
-  forthcoming; the contract binds it now
+- KMP flavor: `dev.modaal.duet:kernel` (+ `:kernel-test`) — this repository,
+  `kotlin/`
+
+**v1 is declared FROZEN (F3 exit, G3): the contract-observable runtime rules
+are machine-verified — both flavors replay the kernel-trace fixtures
+(kernel-trace-v0.md) byte-identically under virtual time. Changes to frozen
+semantics happen only at a major version; a machine-verified, frozen twin has
+~zero carrying cost.**
 
 This document is normative and versioned with the code. When an implementation and this
 document disagree, one of them is a bug — fix whichever is wrong *and record the
