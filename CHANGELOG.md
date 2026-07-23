@@ -16,6 +16,19 @@ The Swift-flavor extraction — the framework's first code drop.
 
 ### Added
 
+- **The node-lifecycle piece** (F2·S4, spec 15 §3.3) — what retires the six
+  RIBs symbols: `Activatable` (the handles' main-actor lifecycle surface,
+  replacing the erased `Interactable`) and `ViewShell` (an `isActive` latch,
+  `bind()`/`unbind()` hooks, and an owned `StoreHost` that unwinds at
+  `deactivate()` — replaces `PresentableInteractor`/`Interactor`/`Presentable`;
+  presenter references become plain properties). Decision of record: a CLASS,
+  not a protocol-with-default-implementation — the latch and host are stored
+  state. The generic handle vocabulary moves framework-side with it:
+  `StoreChild` (owned store: `teardown()` = shell down, then store) and
+  `ViewShellChild` (hoisted store: activate/deactivate only), UIKit-gated
+  (`#if canImport(UIKit)` — receipts live in the consuming app's churn specs;
+  the macOS host lane carries the `ViewShell` latch/ordering receipts).
+
 - **The worker seam** — lifecycle-bound stateful processing (the RIBs Worker
   role, re-substrated on structured concurrency): the freestanding `Working`
   protocol (`run() async` is the worker's whole life; cancellation IS stop)
