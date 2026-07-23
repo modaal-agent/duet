@@ -16,6 +16,27 @@ The Swift-flavor extraction — the framework's first code drop.
 
 ### Added
 
+- **The deterministic-async toolkit v1** (F2·S5, spec 15 §6.3) — the corpus's
+  flake-class fixes productized in `DuetTesting`: `settleUntil` /
+  `settle(byResending:until:)` (turn control + the re-send-until-projected
+  pattern, class B), `ChildDeallocLedger` (the churn-ledger weak-tracking
+  assertion, first-class), `SuiteWallClockBudget` (the degraded-host signature
+  as an opt-in diagnostic — never a bound-widening prompt), and
+  `SuitePollingDefaults` (the suite-wide bounds as values, assertion-library
+  agnostic). Virtual time (`TestClock`) predates the slice.
+
+- **Kernel-trace fixtures, v0** (F2·S5, spec 18 G3 — Swift side): the
+  contract-observable runtime rules recorded as replayable canonical traces
+  under virtual time — `KernelTraceRecorder`/`KernelTraceEvent` (`DuetTesting`)
+  plus six rule fixtures (`swift/Tests/parity/fixtures/kernel-trace/`:
+  send-reduce-sync, effect-start-order, effect-roundtrip, cancel-in-flight,
+  teardown-cancels, reentrancy-queue) with a byte gate (REGEN_FIXTURES=1 to
+  re-record). Design contract: [contracts/kernel-trace-v0.md](contracts/kernel-trace-v0.md)
+  — lockstep delivery (delivery order IS reduce order) and
+  one-ending-per-window (cross-effect ending order is contract-undefined);
+  the Kotlin kernel reproduces the traces at F3, then kernel contract v1
+  freezes.
+
 - **The node-lifecycle piece** (F2·S4, spec 15 §3.3) — what retires the six
   RIBs symbols: `Activatable` (the handles' main-actor lifecycle surface,
   replacing the erased `Interactable`) and `ViewShell` (an `isActive` latch,

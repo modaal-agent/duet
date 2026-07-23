@@ -1,0 +1,5 @@
+{"action":"\"inc\"","event":"send"}
+{"action":"\"inc\"","event":"reduce","state":"1"}
+{"action":"\"inc\"","event":"send"}
+{"action":"\"inc\"","event":"reduce","state":"2"}
+{"event":"teardown"}

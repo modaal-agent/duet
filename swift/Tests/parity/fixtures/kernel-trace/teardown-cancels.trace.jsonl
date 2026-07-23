@@ -1,0 +1,6 @@
+{"action":"\"start-park\"","event":"send"}
+{"action":"\"start-park\"","event":"reduce","state":"0"}
+{"event":"effectStart","id":null,"payload":"\"park\""}
+{"event":"teardown"}
+{"event":"effectCancelled","payload":"\"park\""}
+{"event":"advance","nanoseconds":200000000}

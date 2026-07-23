@@ -1,0 +1,15 @@
+{"action":"\"burst\"","event":"send"}
+{"action":"\"burst\"","event":"reduce","state":"0"}
+{"event":"effectStart","id":null,"payload":"\"burst\""}
+{"action":"\"b1\"","event":"effectAction"}
+{"action":"\"b1\"","event":"reduce","state":"100"}
+{"action":"\"b2\"","event":"effectAction"}
+{"action":"\"b2\"","event":"reduce","state":"110"}
+{"event":"effectFinished","payload":"\"burst\""}
+{"action":"\"start-chain\"","event":"send"}
+{"action":"\"start-chain\"","event":"reduce","state":"110"}
+{"event":"effectStart","id":null,"payload":"\"chained\""}
+{"action":"\"chain-done\"","event":"effectAction"}
+{"action":"\"chain-done\"","event":"reduce","state":"120"}
+{"event":"effectFinished","payload":"\"chained\""}
+{"event":"teardown"}

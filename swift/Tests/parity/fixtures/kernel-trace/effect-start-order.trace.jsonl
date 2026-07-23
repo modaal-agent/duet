@@ -1,0 +1,8 @@
+{"action":"\"start-two\"","event":"send"}
+{"action":"\"start-two\"","event":"reduce","state":"0"}
+{"event":"effectStart","id":null,"payload":"\"alpha\""}
+{"event":"effectStart","id":null,"payload":"\"beta\""}
+{"event":"effectFinished","payload":"\"alpha\""}
+{"event":"advance","nanoseconds":50000000}
+{"event":"effectFinished","payload":"\"beta\""}
+{"event":"teardown"}

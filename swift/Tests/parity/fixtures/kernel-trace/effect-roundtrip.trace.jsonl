@@ -1,0 +1,7 @@
+{"action":"\"start-ping\"","event":"send"}
+{"action":"\"start-ping\"","event":"reduce","state":"0"}
+{"event":"effectStart","id":null,"payload":"\"ping\""}
+{"action":"\"pong\"","event":"effectAction"}
+{"action":"\"pong\"","event":"reduce","state":"10"}
+{"event":"effectFinished","payload":"\"ping\""}
+{"event":"teardown"}
