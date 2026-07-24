@@ -283,6 +283,8 @@ enum Lanes {
     // Snapshot fixture bytes so the summary lists what THIS run rewrote (git diff
     // would also show unrelated uncommitted fixture changes).
     let before = fixtureDigests(repo)
+    // Stale artifacts from an earlier record pass must not re-materialize.
+    RecordArtifacts.clear(repo)
     let result: ProcessResult
     if options.platform == "kotlin" {
       let task = feature?.gradleTestTask ?? "test"
@@ -312,6 +314,10 @@ enum Lanes {
       }
       return 1
     }
+    // The Kotlin runner records to compact artifacts (it ships no on-disk writer);
+    // materialize them through the one §6 writer. The Swift runner writes files
+    // directly through the same writer — its pass leaves no artifacts.
+    _ = try RecordArtifacts.materialize(repo)
     let after = fixtureDigests(repo)
     let changed = after
       .filter { name, digest in before[name] != digest }

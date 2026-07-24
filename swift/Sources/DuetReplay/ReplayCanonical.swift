@@ -3,12 +3,14 @@
 
 import Foundation
 
-/// The compact canonical writer + decoder (contracts/serialization.md §1–§2) —
-/// the byte-gate core, OUTSIDE any XCTest-linking target so a plain executable
-/// (the replay-protocol server, the CLI) can host it. `DuetTesting`'s
-/// `CanonicalJSON` delegates its compact half here; the §6 pretty writer (the
-/// on-disk fixture form) lives test-support-side and does NOT appear in the
-/// replay adapter at all. The Kotlin mirror must produce byte-identical strings.
+/// The canonical writers + decoder (contracts/serialization.md §1–§2 compact,
+/// §6 pretty) — OUTSIDE any XCTest-linking target so a plain executable (the
+/// replay-protocol server, the CLI) can host them. `DuetTesting`'s
+/// `CanonicalJSON` delegates both halves here. Since F4·S2 this is THE §6
+/// writer: the CLI materializes every cross-flavor recording through it and the
+/// Kotlin flavor ships no pretty writer at all (G1 — the on-disk form has one
+/// implementation, so the flavors cannot drift). The Kotlin compact mirror must
+/// still produce byte-identical strings — that half is the byte-gate currency.
 public enum ReplayCanonical {
   public enum CanonicalError: Error, CustomStringConvertible {
     case nonIntegerNumber(String)
@@ -58,6 +60,50 @@ public enum ReplayCanonical {
     var out = ""
     try write(object, into: &out)
     return out
+  }
+
+  /// The §6 pretty form (the on-disk fixture format): 2-space indent, canonical
+  /// key order and string escaping, `": "` separators, empty composites inline,
+  /// one trailing newline.
+  public static func prettyCanonicalString(fromJSONObject object: Any) throws -> String {
+    var out = ""
+    try writePretty(object, indent: 0, into: &out)
+    out.append("\n")
+    return out
+  }
+
+  private static func writePretty(_ value: Any, indent: Int, into out: inout String) throws {
+    switch value {
+    case let dict as [String: Any]:
+      guard !dict.isEmpty else { return out.append("{}") }
+      out.append("{\n")
+      let pad = String(repeating: "  ", count: indent + 1)
+      var first = true
+      for key in dict.keys.sorted(by: { $0.utf8.lexicographicallyPrecedes($1.utf8) }) {
+        if !first { out.append(",\n") }
+        first = false
+        out.append(pad)
+        writeString(key, into: &out)
+        out.append(": ")
+        try writePretty(dict[key]!, indent: indent + 1, into: &out)
+      }
+      out.append("\n" + String(repeating: "  ", count: indent) + "}")
+    case let array as [Any]:
+      guard !array.isEmpty else { return out.append("[]") }
+      out.append("[\n")
+      let pad = String(repeating: "  ", count: indent + 1)
+      var first = true
+      for element in array {
+        if !first { out.append(",\n") }
+        first = false
+        out.append(pad)
+        try writePretty(element, indent: indent + 1, into: &out)
+      }
+      out.append("\n" + String(repeating: "  ", count: indent) + "]")
+    default:
+      // Scalars share the compact writer — same escaping, UUID, and number rules.
+      try write(value, into: &out)
+    }
   }
 
   private static func write(_ value: Any, into out: inout String) throws {

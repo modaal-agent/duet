@@ -101,21 +101,4 @@ class ScenarioRunnerTest {
       ::reduce)
   }
 
-  @Test
-  fun committedCorpusEchoesThroughThePrettyWriter() {
-    // The record-check face for the framework's own corpus: every committed
-    // fixture re-emitted through the §6 pretty writer must be byte-identical —
-    // one writer, no drift.
-    val directory = FixtureRunner.fixturesDirectory()
-    val fixtures = directory.listFiles { file -> file.name.endsWith(".fixture.json") }
-    checkNotNull(fixtures)
-    check(fixtures.isNotEmpty()) { "no committed fixtures found in $directory" }
-    for (file in fixtures) {
-      val committed = file.readText()
-      val echoed =
-        dev.modaal.duet.kernel.serialization.CanonicalJson.prettyCanonicalString(
-          FixtureRunner.json.parseToJsonElement(committed))
-      assertEquals(committed, echoed, "writer echo drifted for ${file.name}")
-    }
-  }
 }

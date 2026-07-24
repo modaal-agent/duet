@@ -29,14 +29,6 @@ object BoundaryReplay {
     CanonicalJson.canonicalString(CanonicalSerializers.json.parseToJsonElement(rawJson))
 
   /**
-   * The on-disk §6 pretty form, exported — the boundary half of the one-writer
-   * world. A committed fixture re-emitted through this function must be
-   * byte-identical to the file from EITHER side of the boundary.
-   */
-  fun prettyCanonicalize(rawJson: String): String =
-    CanonicalJson.prettyCanonicalString(CanonicalSerializers.json.parseToJsonElement(rawJson))
-
-  /**
    * A fresh stateful replay session over [registry]'s [feature], seeded with
    * `initialStateJson`. Leaf fixtures use one session; chain fixtures drive one
    * per node. Named `makeSession` (not `newSession`): the ObjC `new` prefix is a

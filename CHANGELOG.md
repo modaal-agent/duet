@@ -3,7 +3,29 @@
 ## [Unreleased]
 
 The Swift-flavor extraction — the framework's first code drop — the KMP
-flavor's packaging (F3), and the toolchain's first slice (F4·S1).
+flavor's packaging (F3), and the toolchain (F4).
+
+### Changed — one §6 writer (F4·S2, G1)
+
+- **The §6 pretty writer has exactly ONE implementation** —
+  `DuetReplay.ReplayCanonical.prettyCanonicalString` (XCTest-free, hosted by the
+  CLI and by `DuetTesting`'s facade). The Kotlin flavor ships **no pretty writer
+  at all**: `CanonicalJson.prettyCanonicalString` and the unconsumed
+  `BoundaryReplay.prettyCanonicalize` are deleted from `:kernel`. The Kotlin
+  record mode now emits COMPACT canonical document artifacts under
+  `parity/.runs/record/kotlin/`; the CLI materializes them into §6 fixture files
+  (`duet record --platform kotlin`, or the new `duet write-fixtures` verb for a
+  framework repo's own corpus). The on-disk form cannot drift per flavor by
+  construction — the `PrettyWriterParity`-class proof pairs retire with the twin
+  (the Swift-side receipt survives as `PrettyWriterStabilityTests`).
+- **`duet writer-check` retired** — the FC3-a probe verb's job is done: the
+  CLI-side writer IS the writer, and `duet record --check` is its standing byte
+  gate. Chain-schema regeneration (the FC2 remainder) is covered by receipt: an
+  unscoped `duet record` regenerates the full corpus — 46 leaf + 15 chain
+  fixtures — byte-identically through the one writer.
+- `kotlin/` root build gains the `-PregenFixtures=1` → `duet.regenFixtures`
+  system-property mapping (the same channel an adopter repo wires — env vars do
+  not survive the Gradle daemon boundary).
 
 ### Added — the `duet` CLI (`tools/duet`, F4·S1)
 

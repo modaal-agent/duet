@@ -97,7 +97,7 @@ public enum ScenarioRunner {
       ]
       let url = fixturesDir
         .appendingPathComponent("\(variant.fixture).fixture.json")
-      // §6 pretty form — byte-identical to the Kotlin record mode's writer.
+      // §6 pretty form — the one writer (ReplayCanonical), shared with the CLI.
       try Data(CanonicalJSON.prettyCanonicalString(fromJSONObject: document).utf8)
         .write(to: url)
       print("ScenarioRunner: recorded \(variant.fixture).fixture.json (\(steps.count) steps)")

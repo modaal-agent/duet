@@ -46,9 +46,4 @@ class CanonicalJsonTest {
     assertFailsWith<IllegalArgumentException> { canonical("""{"x":1.5}""") }
   }
 
-  @Test
-  fun prettyFormMatchesThePinnedShape() {
-    val pretty = CanonicalJson.prettyCanonicalString(Json.parseToJsonElement("""{"b":[1,2],"a":{}}"""))
-    assertEquals("{\n  \"a\": {},\n  \"b\": [\n    1,\n    2\n  ]\n}\n", pretty)
-  }
 }

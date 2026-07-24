@@ -5,11 +5,13 @@ import DuetTesting
 import Foundation
 import XCTest
 
-/// §6 writer lockstep, pinned through the committed fixtures themselves: every
-/// fixture on disk, re-emitted by THIS platform's pretty writer, must be
-/// byte-identical to the file. The Kotlin twin asserts the same — so the two
-/// writers can only drift by turning a suite red somewhere.
-final class PrettyWriterParityTests: XCTestCase {
+/// §6 writer stability, pinned through the committed fixtures themselves: every
+/// fixture on disk, re-emitted by THE pretty writer (ReplayCanonical — the one
+/// implementation since F4·S2; the Kotlin flavor ships none), must be
+/// byte-identical to the file. This is the framework-side receipt that the
+/// on-disk form cannot drift; adopter repos get the same guarantee from
+/// `duet record --check`.
+final class PrettyWriterStabilityTests: XCTestCase {
   func testCommittedFixturesAreWriterStable() throws {
     let directory = try FixtureRunner.fixturesDirectory()
     let files = try FileManager.default.contentsOfDirectory(atPath: directory.path)

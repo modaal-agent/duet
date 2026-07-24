@@ -20,3 +20,15 @@ allprojects {
   // decision-gated with the public flip (doc 18 F0).
   version = "0.1.0-SNAPSHOT"
 }
+
+subprojects {
+  // The framework's own-corpus regen (kernel-test's lamp scenarios): -PregenFixtures=1
+  // must reach every test JVM. A gradle PROPERTY mapped to a system property is the
+  // only channel that survives the daemon boundary (exported env vars are read from
+  // the daemon's environment, not the invoking shell's). Same mapping as an adopter
+  // repo's — the CI template ships it.
+  val regenFixtures = providers.gradleProperty("regenFixtures")
+  tasks.withType<Test>().configureEach {
+    systemProperty("duet.regenFixtures", regenFixtures.getOrElse(""))
+  }
+}

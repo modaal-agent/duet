@@ -26,9 +26,12 @@ import kotlinx.serialization.json.put
  * - **record** (`REGEN_FIXTURES=1` or `-Dduet.regenFixtures=1`): drives the pure
  *   reducer through every *variant* of the scenario (a linear scenario is one variant;
  *   `branch`es fork into one variant per root→leaf path), runs every local `then`, and
- *   compiles one dialect-2 fixture per variant into `parity/fixtures/`. Fixtures are
- *   build products — never hand-edited (R10); the scenario runners are the only
- *   writers, and both platforms' §6 pretty writers emit byte-identical files.
+ *   compiles one dialect-2 fixture per variant — emitted as a COMPACT canonical
+ *   artifact under `parity/.runs/record/kotlin/`; the `duet` CLI materializes it
+ *   into the §6 fixture file through the framework's ONE pretty writer
+ *   (`duet record --platform kotlin`, or `duet write-fixtures` for a framework
+ *   repo's own corpus). Fixtures are build products — never hand-edited (R10);
+ *   this flavor ships no on-disk writer at all (F4·S2, G1).
  * - **verify**: drives the reducer through every variant AND byte-gates each step
  *   against the committed fixture. A step's trailing local `then`s run BEFORE its
  *   byte gate: a failing then states the author's *intent* and wins the header, with
@@ -108,10 +111,14 @@ object ScenarioRunner {
         put("initialState", json.encodeToJsonElement(stateSerializer, variants.initialState()))
         put("steps", JsonArray(steps))
       }
-      val file = File(FixtureRunner.fixturesDirectory(), "${variant.fixture}.fixture.json")
-      // §6 pretty form — byte-identical to the Swift record mode's writer.
-      file.writeText(CanonicalJson.prettyCanonicalString(document))
-      println("ScenarioRunner: recorded ${variant.fixture}.fixture.json (${steps.size} steps)")
+      // Compact artifact — the CLI materializes the §6 file (one writer, F4·S2).
+      val artifactDir = File(FixtureRunner.fixturesDirectory().parentFile, ".runs/record/kotlin")
+      artifactDir.mkdirs()
+      val file = File(artifactDir, "${variant.fixture}.fixture.json")
+      file.writeText(CanonicalJson.canonicalString(document))
+      println(
+        "ScenarioRunner: recorded ${variant.fixture} (${steps.size} steps) → artifact; " +
+          "materialize via `duet record --platform kotlin`")
     }
   }
 

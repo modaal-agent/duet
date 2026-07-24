@@ -10,10 +10,15 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
- * The canonical JSON writer — contracts/serialization.md §1–§2. Core-owned and
- * multiplatform: host and boundary emit identical bytes because the same code
- * runs on both. The Swift-flavor mirror (DuetTesting/CanonicalJSON.swift) must
- * produce byte-identical strings.
+ * The compact canonical JSON writer — contracts/serialization.md §1–§2, the
+ * byte-gate currency. Core-owned and multiplatform: host and boundary emit
+ * identical bytes because the same code runs on both. The Swift-flavor mirror
+ * (DuetReplay/ReplayCanonical.swift) must produce byte-identical strings.
+ *
+ * The §6 pretty writer (the on-disk fixture form) is deliberately ABSENT from
+ * this flavor (F4·S2, G1): fixture files are materialized by the `duet` CLI
+ * through the framework's one pretty implementation — the record mode emits
+ * compact artifacts only, so the on-disk form cannot drift per flavor.
  *
  * Two JVM idioms from the original corpus writer — `String.format("%04x", …)`
  * and `CharSequence.codePoints()` — are replaced with common-stdlib equivalents
@@ -24,55 +29,6 @@ object CanonicalJson {
 
   fun canonicalString(element: JsonElement): String =
     buildString { write(element, this) }
-
-  // Pretty form (serialization.md §6) — the on-disk fixture format. Byte-identical to
-  // Swift's CanonicalJSON.prettyCanonicalString; pinned by the fixture corpus and
-  // `record --check` (one writer, boundary-echoed).
-  fun prettyCanonicalString(element: JsonElement): String = buildString {
-    writePretty(element, 0, this)
-    append('\n')
-  }
-
-  private fun writePretty(element: JsonElement, indent: Int, sb: StringBuilder) {
-    when (element) {
-      is JsonObject -> {
-        if (element.isEmpty()) {
-          sb.append("{}")
-          return
-        }
-        sb.append("{\n")
-        val pad = "  ".repeat(indent + 1)
-        var first = true
-        for (key in element.keys.sortedWith(scalarOrder)) {
-          if (!first) sb.append(",\n")
-          first = false
-          sb.append(pad)
-          writeString(key, sb)
-          sb.append(": ")
-          writePretty(element.getValue(key), indent + 1, sb)
-        }
-        sb.append("\n").append("  ".repeat(indent)).append('}')
-      }
-      is JsonArray -> {
-        if (element.isEmpty()) {
-          sb.append("[]")
-          return
-        }
-        sb.append("[\n")
-        val pad = "  ".repeat(indent + 1)
-        var first = true
-        for (item in element) {
-          if (!first) sb.append(",\n")
-          first = false
-          sb.append(pad)
-          writePretty(item, indent + 1, sb)
-        }
-        sb.append("\n").append("  ".repeat(indent)).append(']')
-      }
-      // Scalars share the canonical writer — same escaping, UUID, and number rules.
-      else -> write(element, sb)
-    }
-  }
 
   private fun write(element: JsonElement, sb: StringBuilder) {
     when (element) {

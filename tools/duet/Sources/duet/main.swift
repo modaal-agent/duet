@@ -86,9 +86,9 @@ let usage = """
     duet record [--feature <name>] [--platform swift|kotlin] [--check] [--json]
         recompile fixtures from scenarios (scoped when --feature given), then a
         review summary of what changed. Fixtures are build products — review the
-        diff like code. --platform kotlin records through the Kotlin runner (§6
-        shared writer: byte-identical output). --check = CI regen gate: exit 1 if
-        anything was stale (R10).
+        diff like code. --platform kotlin records through the Kotlin runner: it
+        emits compact artifacts and the CLI materializes the §6 files (one
+        writer). --check = CI regen gate: exit 1 if anything was stale (R10).
     duet explain [--json]
         re-render the last run's failures from parity/.runs (no logs, no re-run).
     duet materialize <fixture>#<step> --platform swift|kotlin [--json]
@@ -100,9 +100,10 @@ let usage = """
         (contracts/replay-protocol-v1.md). Default: build + drive the repo's own
         Swift `replay-runner` product; --runner drives any conforming flavor's
         prebuilt runner (e.g. the Kotlin lane's installDist output).
-    duet writer-check
-        re-emit every committed fixture through the CLI-side §6 writer and
-        byte-compare against disk (retires once the writer move lands — F4·S2).
+    duet write-fixtures [--json]
+        materialize pending record artifacts (parity/.runs/record/**) into §6
+        fixture files — the framework repos' own-corpus regen path; adopter
+        repos normally just run `duet record`.
 
   Run from anywhere inside the repo (root is found via parity/fixtures).
   """
@@ -135,8 +136,8 @@ do {
     code = try Materialize.run(repo: repo, options: options)
   case "protocol-run":
     code = try ProtocolLane.run(repo: repo, options: options)
-  case "writer-check":
-    code = try ProtocolLane.writerCheck(repo: repo, options: options)
+  case "write-fixtures":
+    code = try RecordArtifacts.run(repo: repo, options: options)
   default:
     print("duet: unknown command '\(command)'\n")
     print(usage)

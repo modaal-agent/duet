@@ -1,20 +1,18 @@
 // Copyright (c) 2026 Modaal.dev
 // Licensed under the MIT License. See LICENSE file for details.
 
+import DuetReplay
 import Foundation
 
 /// The replay-protocol lane (G1, doc-18 §2.1 — proven by FC3-a, formalized as
-/// contracts/replay-protocol-v1.md):
-///
-/// - `duet protocol-run` — drives every fixture (leaves AND chains — one `reduce`
-///   op, CLI-side state slots) through a replay-protocol runner subprocess and
-///   byte-gates each step CLI-side. This is the G1 shape: the flavor exposes only
-///   decode→reduce→encode; the CLI owns fixture reading, step driving, comparison,
-///   and reporting — flavor-neutrally (`--runner` drives any conforming runner).
-/// - `duet writer-check` — re-emits every committed fixture through the CLI-side §6
-///   pretty writer and byte-compares against disk: the proof the on-disk writer can
-///   move CLI-side (killing the per-flavor pretty-writer twins) with zero drift.
-///   Retires once the writer move lands (F4·S2).
+/// contracts/replay-protocol-v1.md): `duet protocol-run` drives every fixture
+/// (leaves AND chains — one `reduce` op, CLI-side state slots) through a
+/// replay-protocol runner subprocess and byte-gates each step CLI-side. This is
+/// the G1 shape: the flavor exposes only decode→reduce→encode; the CLI owns
+/// fixture reading, step driving, comparison, and reporting — flavor-neutrally
+/// (`--runner` drives any conforming runner). The FC3-a `writer-check` probe verb
+/// retired at F4·S2: the CLI-side writer IS the writer now, and `record --check`
+/// is its standing byte gate.
 enum ProtocolLane {
 
   // MARK: - protocol-run
@@ -111,8 +109,8 @@ enum ProtocolLane {
             break
           }
           stepsRun += 1
-          let expectedState = try CanonicalText.canonicalString(fromJSONObject: rawExpectedState)
-          let expectedEffects = try CanonicalText.canonicalString(
+          let expectedState = try ReplayCanonical.canonicalString(fromJSONObject: rawExpectedState)
+          let expectedEffects = try ReplayCanonical.canonicalString(
             fromJSONObject: rawExpectedEffects)
           if actualState != expectedState {
             failures.append("\(fixture)#\(index): state diverged")
@@ -166,14 +164,14 @@ enum ProtocolLane {
           break
         }
         stepsRun += 1
-        let expectedEffects = try CanonicalText.canonicalString(
+        let expectedEffects = try ReplayCanonical.canonicalString(
           fromJSONObject: rawExpectedEffects)
         if actualEffects != expectedEffects {
           failures.append("\(chain)#\(index) (\(node)): effects diverged")
           break
         }
         if let rawExpectedState = rawStep["expectedState"] {
-          let expectedState = try CanonicalText.canonicalString(fromJSONObject: rawExpectedState)
+          let expectedState = try ReplayCanonical.canonicalString(fromJSONObject: rawExpectedState)
           if actualState != expectedState {
             failures.append("\(chain)#\(index) (\(node)): state diverged")
             break
@@ -202,40 +200,6 @@ enum ProtocolLane {
         ? "protocol-run: PASS in \(String(format: "%.1f", elapsed))s"
         : "protocol-run: FAIL (\(failures.count)) in \(String(format: "%.1f", elapsed))s")
     return failures.isEmpty ? 0 : 1
-  }
-
-  // MARK: - writer-check
-
-  static func writerCheck(repo: Repo, options: Options) throws -> Int32 {
-    let start = Date()
-    // Only fixture documents carry the §6 pretty form; goldens like
-    // route-spine.golden.json are COMPACT canonical strings (the compact writer's
-    // domain, byte-gated by the protocol lane itself).
-    let files = ((try? FileManager.default.contentsOfDirectory(atPath: repo.fixturesDir.path)) ?? [])
-      .filter { $0.hasSuffix(".fixture.json") }
-      .sorted()
-    var identical = 0
-    var mismatches: [String] = []
-    var bytes = 0
-    for file in files {
-      let url = repo.fixturesDir.appendingPathComponent(file)
-      let data = try Data(contentsOf: url)
-      bytes += data.count
-      let tree = try JSONSerialization.jsonObject(with: data)
-      let rewritten = try CanonicalText.prettyCanonicalString(fromJSONObject: tree)
-      if Data(rewritten.utf8) == data {
-        identical += 1
-      } else {
-        mismatches.append(file)
-      }
-    }
-    let elapsed = Date().timeIntervalSince(start)
-    print(
-      "writer-check: \(identical)/\(files.count) fixture file(s) byte-identical "
-        + "through the CLI-side §6 writer (\(bytes) bytes, "
-        + String(format: "%.3f", elapsed) + "s)")
-    for file in mismatches { print("  ✗ \(file)") }
-    return mismatches.isEmpty ? 0 : 1
   }
 
   // MARK: - Runner client
