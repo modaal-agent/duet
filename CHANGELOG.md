@@ -2,8 +2,30 @@
 
 ## [Unreleased]
 
-The Swift-flavor extraction — the framework's first code drop — and the KMP
-flavor's packaging (F3).
+The Swift-flavor extraction — the framework's first code drop — the KMP
+flavor's packaging (F3), and the toolchain's first slice (F4·S1).
+
+### Added — the `duet` CLI (`tools/duet`, F4·S1)
+
+- **The open toolchain CLI**, extracted from the reference playground's
+  `tools/verify` and renamed to its real verb surface: `duet verify` (meta-checks
+  + both platform lanes in parallel + the coverage gate), `duet record`
+  (scenario-driven fixture regeneration; `--check` = the R10 CI drift gate),
+  `duet explain`, `duet materialize`, `duet protocol-run` (the flavor-neutral
+  replay-protocol lane — leaves AND chains through the one `reduce` op;
+  `--runner` drives any conforming flavor runner), and `duet writer-check`
+  (retires when the writer move lands at F4·S2). Its own SPM package under
+  `tools/` — library consumers never resolve it; zero third-party dependencies.
+- **Repo-layout neutrality**: the CLI discovers the adopter repo root via
+  `parity/fixtures` and derives the platform roots from the repo's own parity
+  manifest (the `swift:` path prefix before `/Sources/`; the first component of
+  the `kotlin:` path) — no hardcoded tree shape, no machine-specific SDK
+  fallback (the Android SDK is repo/machine config: `local.properties` sdk.dir
+  or the caller's ANDROID_HOME; the CLI adds neither).
+- **One compact writer**: the CLI's byte-gate currency is `DuetReplay`'s
+  `ReplayCanonical` — the same writer the replay servers run — so the CLI cannot
+  drift from the flavor it gates (G1). The §6 pretty writer lives CLI-side,
+  proven byte-identical against the reference corpus by `writer-check`.
 
 ### Added — the KMP flavor (`kotlin/`, F3)
 

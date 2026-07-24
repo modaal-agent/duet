@@ -51,7 +51,8 @@ final class ReplayServerTests: XCTestCase {
   func testHandshakeNamesProtocolVersionPlatformAndFeatures() {
     let handshake = ReplayServer.handshake(registry: registry)
     XCTAssertEqual(handshake["protocol"] as? String, "duet-replay")
-    XCTAssertEqual(handshake["version"] as? Int, 0)
+    // Protocol v1 — the formalized contract (contracts/replay-protocol-v1.md).
+    XCTAssertEqual(handshake["version"] as? Int, 1)
     XCTAssertEqual(handshake["platform"] as? String, "swift")
     XCTAssertEqual(handshake["features"] as? [String], ["mini"])
   }

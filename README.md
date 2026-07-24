@@ -60,11 +60,22 @@ Package.swift  the SPM manifest — at the repo root so `.package(url:)` resolve
                (SwiftPM reads remote manifests from the repository root only)
 swift/       the Swift flavor's sources (Duet, DuetShells, DuetReplay, DuetTesting)
              + its test suites and their own fixture corpus (swift/Tests/parity/fixtures)
+kotlin/      the KMP flavor: Maven artifacts dev.modaal.duet:kernel / :kernel-test /
+             :shells-compose (+ the DuetKernel XCFramework aggregation, SKIE route)
+tools/       the toolchain: tools/duet, the `duet` CLI (its own SPM package — consumers
+             of the library never resolve it)
 contracts/   the normative contracts, versioned with the code:
-             store-kernel-contract.md · serialization.md · presentation-contract.md
+             store-kernel-contract.md · serialization.md · replay-protocol-v1.md ·
+             kernel-trace-v0.md · presentation-contract.md
 ```
 
-The Kotlin (KMP) flavor and the `duet` CLI land per the roadmap below.
+The `duet` CLI runs against an adopter repo (root discovered via `parity/fixtures`,
+layout derived from the repo's own parity manifest):
+
+```sh
+swift run --package-path <duet>/tools/duet duet verify   # meta-checks + both platform lanes
+swift run --package-path <duet>/tools/duet duet help     # the full verb surface
+```
 
 ## Roadmap
 
@@ -72,8 +83,8 @@ The Kotlin (KMP) flavor and the `duet` CLI land per the roadmap below.
    record/`--check` machinery), generic shells, the replay-protocol adapter, contracts;
    strict-concurrency-complete (Swift 6 language mode) from the first extraction.
    **Landed** — see `swift/`.
-2. **KMP-flavor packaging** — the `commonMain` kernel, serialization, boundary adapters, Compose shell primitives, published artifacts.
-3. **Toolchain** — the `duet` CLI verb surface, CI templates, lint family, zero-config mock pipeline.
+2. **KMP-flavor packaging** — the `commonMain` kernel, serialization, boundary adapters, Compose shell primitives, published artifacts. **Landed** — see `kotlin/`.
+3. **Toolchain** — the `duet` CLI verb surface (**landed** — see `tools/duet`), CI templates, lint family, zero-config mock pipeline.
 4. **Docs** — public contracts and guides, distinct from Modaal's product documentation.
 
 Platform and toolchain requirements will be pinned with the first extraction release.
