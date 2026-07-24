@@ -33,15 +33,27 @@ Both flavors share one invariant spine — the kernel contract, the canonical fi
 
 ## What ships here (the open boundary)
 
-This repository is the complete, self-sufficient framework: everything a project needs to build, gate, and evolve a Duet app **without any commercial dependency** —
+The **Duet repository family** is the complete, self-sufficient framework: everything a project needs to build, gate, and evolve a Duet app **without any commercial dependency** —
 
-- the kernel and shell runtime (both flavors),
-- the test support: scenario DSL, deterministic-async toolkit (virtual time, turn control),
-- the `duet` CLI: `verify`, `record`, `record --check`, replay/diff/report machinery, the mock pipeline,
+- the kernel and shell runtime (both flavors) — **this repo**,
+- the test support: scenario DSL, deterministic-async toolkit (virtual time, turn control) — **this repo**,
+- the `duet` CLI: `verify`, `record`, `record --check`, replay/diff/report machinery, the codegen verb, the mock pipeline — [`duet-tools`](https://github.com/modaal-agent/duet-tools),
+- the `@CanonicalSum` macro opt-in — [`duet-macros`](https://github.com/modaal-agent/duet-macros),
 - the lint family and CI templates,
-- the contracts (kernel contract, fixture schema, replay protocol) — versioned with the code.
+- the contracts (kernel contract, fixture schema, replay protocol) — versioned with the code, **this repo**.
 
 Modaal's commercial side is the *authoring* service around the framework — scaffolding, code generation, migration audits, and agent tooling. The line is deliberate: anything the repo needs to gate itself is open, including fixture re-recording. The open CLI ships no upsell stubs — a verb either works here, or it doesn't exist here.
+
+### The repository family
+
+One package per repository — SwiftPM resolves `.package(url:)` against the repository root only, and dependency pins (swift-syntax, the frozen CombineRIBs fork) must never leak into graphs that didn't ask for them:
+
+| Repo | Ships | Why separate |
+|---|---|---|
+| [`duet`](https://github.com/modaal-agent/duet) | the framework: `Duet`/`DuetShells`/`DuetReplay`/`DuetTesting` (Swift flavor), `dev.modaal.duet:*` (KMP flavor), the contracts | the zero-dependency core — every consumer resolves this and nothing else |
+| [`duet-tools`](https://github.com/modaal-agent/duet-tools) | the `duet` CLI + `CanonicalSumEmission` | carries the tool-side swift-syntax pin; library consumers never resolve it |
+| [`duet-macros`](https://github.com/modaal-agent/duet-macros) | `@CanonicalSum` (opt-in) | a macro pins swift-syntax into every consumer graph — only opting-in projects take it |
+| [`duet-migration`](https://github.com/modaal-agent/duet-migration) | CombineRIBs coexistence shim | pins the frozen RIBs fork; added for a migration, deleted at its end |
 
 ## Identifiers
 
@@ -62,19 +74,18 @@ swift/       the Swift flavor's sources (Duet, DuetShells, DuetReplay, DuetTesti
              + its test suites and their own fixture corpus (swift/Tests/parity/fixtures)
 kotlin/      the KMP flavor: Maven artifacts dev.modaal.duet:kernel / :kernel-test /
              :shells-compose (+ the DuetKernel XCFramework aggregation, SKIE route)
-tools/       the toolchain: tools/duet, the `duet` CLI (its own SPM package — consumers
-             of the library never resolve it)
 contracts/   the normative contracts, versioned with the code:
              store-kernel-contract.md · serialization.md · replay-protocol-v1.md ·
              kernel-trace-v0.md · presentation-contract.md
 ```
 
-The `duet` CLI runs against an adopter repo (root discovered via `parity/fixtures`,
-layout derived from the repo's own parity manifest):
+The toolchain and the macro opt-in live in their own repos (the family table
+above): the `duet` CLI runs against an adopter repo (root discovered via
+`parity/fixtures`, layout derived from the repo's own parity manifest):
 
 ```sh
-swift run --package-path <duet>/tools/duet duet verify   # meta-checks + both platform lanes
-swift run --package-path <duet>/tools/duet duet help     # the full verb surface
+swift run --package-path <duet-tools checkout> duet verify   # meta-checks + both lanes
+swift run --package-path <duet-tools checkout> duet help     # the full verb surface
 ```
 
 ## Roadmap
@@ -84,7 +95,7 @@ swift run --package-path <duet>/tools/duet duet help     # the full verb surface
    strict-concurrency-complete (Swift 6 language mode) from the first extraction.
    **Landed** — see `swift/`.
 2. **KMP-flavor packaging** — the `commonMain` kernel, serialization, boundary adapters, Compose shell primitives, published artifacts. **Landed** — see `kotlin/`.
-3. **Toolchain** — the `duet` CLI verb surface (**landed** — see `tools/duet`), CI templates, lint family, zero-config mock pipeline.
+3. **Toolchain** — the `duet` CLI verb surface (**landed** — [`duet-tools`](https://github.com/modaal-agent/duet-tools)), the Swift ceremony killer (**landed** — `duet canonical-sum` + the [`@CanonicalSum`](https://github.com/modaal-agent/duet-macros) opt-in, one shared emission rule-set), CI templates, lint family, zero-config mock pipeline.
 4. **Docs** — public contracts and guides, distinct from Modaal's product documentation.
 
 Platform and toolchain requirements will be pinned with the first extraction release.

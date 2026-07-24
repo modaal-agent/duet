@@ -5,6 +5,28 @@
 The Swift-flavor extraction — the framework's first code drop — the KMP
 flavor's packaging (F3), and the toolchain (F4).
 
+### Changed — the toolchain moves to its own repo; the ceremony killer lands (F4·S3, G2)
+
+- **`tools/` extracted to [`modaal-agent/duet-tools`](https://github.com/modaal-agent/duet-tools)**
+  — SwiftPM resolves one URL package per repository root, and the toolchain now
+  carries a tool-side swift-syntax pin (the codegen verb), which must never
+  enter a library consumer's graph. This repo is again a single, zero-dependency
+  URL-consumable package; the README's repository-family table is the map.
+- **The Swift ceremony killer shipped** (in the family, not this repo):
+  `duet canonical-sum [--check]` in duet-tools — zero-config scan for enums
+  declaring the `CanonicalSumCodable` marker protocol (this repo's kernel; its
+  sentinel defeats SE-0295 silent synthesis, so a missing generated file fails
+  at the enum declaration), one committed `…Serialization.generated.swift` per
+  source, **regen folded into `duet record`** and **drift into
+  `duet record --check`** (§2.2's "no separate pipeline step") — and the
+  `@CanonicalSum` macro as the SUPPORTED OPT-IN in
+  [`modaal-agent/duet-macros`](https://github.com/modaal-agent/duet-macros)
+  (its own repo: a macro pins swift-syntax into every consumer graph). Both
+  vehicles assemble from **one emission rule-set** (`CanonicalSumEmission`,
+  exported by duet-tools) — FC3's copy-paste twins are dead; the **arms'
+  lockstep gate** pins the same worst-case enum byte-for-byte in both repos'
+  tests, so an emission change must consciously update both in one commit.
+
 ### Changed — one §6 writer (F4·S2, G1)
 
 - **The §6 pretty writer has exactly ONE implementation** —

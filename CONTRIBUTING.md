@@ -2,7 +2,7 @@
 
 This guide is for **contributors to the Duet framework itself**. If you're consuming the framework in an app, start from the [README](README.md).
 
-> **Status: pre-release.** The Swift-flavor extraction has landed (`swift/`); the KMP flavor and the `duet` CLI follow per the README roadmap. The rules below are the standing contract every PR is reviewed against.
+> **Status: pre-release.** The Swift flavor (`swift/`), the KMP flavor (`kotlin/`), and the toolchain have landed — the `duet` CLI lives in [`duet-tools`](https://github.com/modaal-agent/duet-tools) and the `@CanonicalSum` opt-in in [`duet-macros`](https://github.com/modaal-agent/duet-macros) (one URL-consumable package per repo; the README's repository-family table is the map — these rules govern PRs to every repo in the family). The rules below are the standing contract every PR is reviewed against.
 
 ## The contribution gate: the corpus
 
@@ -52,8 +52,11 @@ REGEN_FIXTURES=1 swift test   # re-record the suite's own fixtures (then review 
 
 The framework's test fixtures live in `swift/Tests/parity/fixtures/` and are governed by
 the same corpus rules as a consuming app's: build products of the scenario record modes,
-never hand-edited, byte-stable under the pretty writer (`PrettyWriterParityTests` enforces
-this). Test-runner machine artifacts land in `swift/Tests/parity/.runs/` (gitignored).
+never hand-edited, byte-stable under the ONE pretty writer
+(`PrettyWriterStabilityTests` enforces this; the Kotlin flavor ships no pretty writer —
+its record modes emit compact artifacts that the CLI materializes, `duet write-fixtures`).
+Test-runner machine artifacts land in `swift/Tests/parity/.runs/` (gitignored).
 
-The `duet` CLI, per-flavor dual lanes, and the lint family ship with the toolchain
-milestone; this section grows as they land.
+The `duet` CLI itself is developed in [`duet-tools`](https://github.com/modaal-agent/duet-tools)
+(check out as a sibling directory — pre-publication, the family's manifests reference each
+other by sibling path); the lint family and CI templates follow per the roadmap.
