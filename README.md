@@ -1,8 +1,19 @@
 # Duet
 
+[![ci](https://github.com/modaal-agent/duet/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/modaal-agent/duet/actions/workflows/ci.yml)
+
 One score, two performers. Duet is a framework for building iOS and Android apps as verifiable twins: shared pure logic, platform-native UI, and a recorded fixture corpus that both platforms must replay **byte-identically**. Record a feature's behavior on one platform, verify it on the other — parity is a CI gate, not a code-review aspiration.
 
-> **Status: pre-release.** The Swift-flavor extraction has landed in-repo (`swift/` — kernel, shells, replay protocol, test support; strict-concurrency-complete, tests green) together with the normative contracts (`contracts/`). No artifacts are published yet, and the toolchain CLI is still to come — treat the API surface as a preview until the first tagged release.
+> **Status: pre-release.** Both flavors and the toolchain have landed (`swift/`, `kotlin/`, the [`duet-tools`](https://github.com/modaal-agent/duet-tools) CLI) together with the normative contracts (`contracts/`). No artifacts are published yet — treat the API surface as a preview until the first tagged release.
+
+The CI matrix (each job writes its toolchain and verdict to the run's job summary):
+
+| lane | toolchain | proves |
+| --- | --- | --- |
+| `swift` · macos-26 | Xcode 26.6 (Swift 6.3.3) | the GA floor — the adopter toolchain |
+| `swift` · xcode-27 | Xcode 27 beta (Swift 6.4) | the newest proven line |
+| `kotlin` | Temurin 21 · Gradle | the KMP flavor suites (pure KMP — no Android SDK) |
+| `flavor-lockstep` | python3 | one contract surface across the two flavors, ledger fresh |
 
 ## Why
 

@@ -38,7 +38,19 @@ jobs:
         with:
           xcode-version: ${{ matrix.xcode }}
       - name: Swift flavor (framework suites; replays swift/Tests/parity/fixtures)
+        id: tests
         run: swift test
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### swift · ${{ matrix.image }} — ${{ steps.tests.outcome == 'success' && '✅ passed' || '❌ failed' }}"
+            echo ""
+            echo "- toolchain: $(xcodebuild -version | tr '\n' ' ')"
+            echo "- swift: $(swift --version 2>&1 | head -1)"
+            echo "- lane: ${{ matrix.xcode != '' && 'the GA floor (pinned)' || 'the newest proven line (image default)' }}"
+            echo "- suites: framework tests replaying \`swift/Tests/parity/fixtures\` (the repo's own corpus)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   kotlin:
     # macOS: the KMP module declares apple targets (macosArm64/ios*) — a Linux
@@ -52,7 +64,17 @@ jobs:
           java-version: "21"
       - uses: gradle/actions/setup-gradle@v4
       - name: Kotlin flavor (KMP suites)
+        id: tests
         run: cd kotlin && ./gradlew test --console=plain
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### kotlin — ${{ steps.tests.outcome == 'success' && '✅ passed' || '❌ failed' }}"
+            echo ""
+            echo "- jdk: $(java -version 2>&1 | head -1)"
+            echo "- suites: \`:kernel\` / \`:kernel-test\` / \`:shells-compose\` KMP tests (pure KMP — no Android SDK, no emulator)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   flavor-lockstep:
     # Development rule 1: the two core flavors share one contract surface.
@@ -61,4 +83,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: flavor-lockstep lint
-        run: python3 scripts/flavor-lockstep-lint.py
+        id: lint
+        # Explicit `shell: bash` turns pipefail ON (the default run shell does
+        # not) — without it the tee would mask a lint failure.
+        shell: bash
+        run: python3 scripts/flavor-lockstep-lint.py | tee lint-output.txt
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### flavor-lockstep — ${{ steps.lint.outcome == 'success' && '✅ ok' || '❌ failed' }}"
+            echo ""
+            echo '```'
+            cat lint-output.txt 2>/dev/null || echo "(lint produced no output)"
+            echo '```'
+            echo "- gate: closed coverage + pair surfaces + ledger freshness (\`parity/flavor-parity.yaml\` → \`parity/flavor-parity-ledger.md\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
