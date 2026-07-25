@@ -10,7 +10,7 @@ What a repo in the Duet family — or a repo *adopting* Duet — runs in CI.
 
 ```sh
 duet verify          # meta-checks + both platform lanes + coverage gate
-duet record --check  # drift gate — fixtures are build products (R10)
+duet record --check  # drift gate — fixtures are build products
 ```
 
 Everything else in the file is toolchain setup. Budget: the lanes themselves

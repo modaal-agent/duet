@@ -5,7 +5,7 @@
 #                          then both platform lanes replay the shared fixtures
 #                          (host Swift + JVM Kotlin — no simulator, no emulator),
 #                          with the per-fixture coverage gate.
-#   duet record --check  — the drift gate (R10): fixtures and generated coders
+#   duet record --check  — the drift gate: fixtures and generated coders
 #                          are build products; CI fails if a committed artifact
 #                          is stale rather than silently regenerating it.
 #
@@ -87,5 +87,5 @@ jobs:
       - name: duet verify (meta-checks + both lanes + coverage gate)
         run: tools/duet verify
 
-      - name: duet record --check (R10 drift gate)
+      - name: duet record --check (drift gate)
         run: tools/duet record --check

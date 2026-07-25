@@ -137,6 +137,14 @@ object FixtureRunner {
     reducer: (S, A) -> Reduced<S, P>,
   ) {
     val file = File(fixturesDirectory(), "$fixture.fixture.json")
+    if (!file.isFile && ScenarioRunner.regenerationRequested) {
+      // First record of a kotlin-authored scenario: the committed fixture does
+      // not exist yet (this lane records to a compact artifact the CLI
+      // materializes AFTER the test run). Nothing to replay against — the
+      // verify run that follows materialization is the gate.
+      println("FixtureRunner: '$fixture' not recorded yet — skipping replay (record run)")
+      return
+    }
     require(file.isFile) { "Fixture not found: ${file.path}" }
     val root = json.parseToJsonElement(file.readText()).jsonObject
     val feature = root["feature"]?.jsonPrimitive?.contentOrNull

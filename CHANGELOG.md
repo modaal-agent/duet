@@ -5,6 +5,24 @@
 The Swift-flavor extraction — the framework's first code drop — the KMP
 flavor's packaging (F3), and the toolchain (F4).
 
+### Fixed — kotlin-authored scenarios can record from scratch (A1's gate run surfaced it)
+
+- **`kernel-test` first-record semantics** (kotlin lane): `verifyOrRecord`'s
+  verify half now reads the just-recorded compact artifact in a regen run
+  (mirroring the Swift runner, whose record mode writes the fixture file and
+  then verifies it), and `FixtureRunner.run` skips — with a note — a replay
+  whose committed fixture doesn't exist yet during a regen run (this lane's
+  artifacts are materialized by the CLI AFTER the test process exits, so on a
+  repo's FIRST record the committed file cannot exist). Until now unreachable:
+  the framework's own corpus is committed, and the twin-flavor playground
+  authors scenarios Swift-side only — a single-source (KMP-flavor) adopter's
+  first `duet record` hit both paths. (In the family: duet-tools learned
+  kotlin-only manifests — no `swift:` twins → the Swift lane and its coverage
+  half don't apply, `record` defaults to the kotlin runner, and KMP modules'
+  lane task is `jvmTest`, since a KMP module has no aggregate `test` task —
+  plus the manifest-level `replayRunner:` key for repos whose replay glue
+  lives outside every feature package.)
+
 ### Fixed — the GA-toolchain floor, and a case-collision the floor work surfaced (post-S5b)
 
 - **DuetTesting compiles on the GA toolchain line** (verified: Xcode 26.6 /

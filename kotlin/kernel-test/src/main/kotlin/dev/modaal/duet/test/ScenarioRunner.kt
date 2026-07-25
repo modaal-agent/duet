@@ -161,7 +161,17 @@ object ScenarioRunner {
       fail(failure.rendered ?: failure.kind)
     }
 
-    val file = File(FixtureRunner.fixturesDirectory(), "$fixture.fixture.json")
+    // In a record run, verify against the just-recorded artifact (this lane
+    // records compact artifacts the CLI materializes AFTER the test run — the
+    // committed file may not exist yet, or is stale by definition). Mirrors the
+    // Swift runner, whose record mode writes the file and then verifies it.
+    val committed = File(FixtureRunner.fixturesDirectory(), "$fixture.fixture.json")
+    val artifact =
+      File(
+        File(FixtureRunner.fixturesDirectory().parentFile, ".runs/record/kotlin"),
+        "$fixture.fixture.json")
+    val file =
+      if (regenerationRequested && artifact.isFile) artifact else committed
     val root =
       runCatching {
         require(file.isFile) { "Fixture not found: ${file.path}" }
