@@ -14,8 +14,8 @@ are the per-pair symbol waivers declared, with reasons, in
 | kernel | 3 | 12 | 4 | 218 | 14 | 682 | 4 |
 | replay | 3 | 2 | 4 | 447 | 4 | 284 | 7 |
 | shells | 7 | 2 | 9 | 615 | 7 | 510 | 6 |
-| testing | 9 | 6 | 13 | 2436 | 11 | 1699 | 19 |
-| **total** | 22 | 22 | 30 | 3716 | 36 | 3175 | 36 |
+| testing | 9 | 6 | 13 | 2445 | 11 | 1699 | 19 |
+| **total** | 22 | 22 | 30 | 3725 | 36 | 3175 | 36 |
 
 ## Open deltas
 
