@@ -1,0 +1,276 @@
+# Twin map for the framework's own contract surfaces (G4).
+#
+# Checked by scripts/flavor-lockstep-lint.py: every production source file in
+# either flavor must appear here exactly once — as half of a PAIR (public
+# surfaces compared, case-folded, modulo the pair's declared deltas) or as a
+# SINGLE-flavor file with a reason. The declared deltas are the recorded
+# per-flavor thinness; the generated parity/flavor-parity-ledger.md counts
+# them per release. Waiving is a ledger entry, not an escape hatch: every
+# delta needs a reason a reviewer can check.
+#
+# Surfaces: kernel (store/effect/clock + serialization), replay (the protocol
+# adapter + spine boundary), shells (hosts/slots/presentation/workers),
+# testing (the DSL, runners, TestStore, harnesses).
+
+pairs:
+  # ── kernel ────────────────────────────────────────────────────────────
+  - surface: kernel
+    swift: swift/Sources/Duet/Store.swift
+    kotlin: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/Store.kt
+  - surface: kernel
+    swift: swift/Sources/Duet/Effect.swift
+    kotlin: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/Effect.kt
+    deltas:
+      - swift: encode
+        reason: canonical effect encoding is effectToJson (EffectJson.kt) on the KMP flavor
+      - kotlin: Run
+        reason: Effect's cases are nested sealed-interface types on Kotlin; Swift enum cases are not types
+      - kotlin: Cancel
+        reason: Effect's cases are nested sealed-interface types on Kotlin; Swift enum cases are not types
+      - kotlin: Reduced
+        reason: Effect's cases are nested sealed-interface types on Kotlin; Swift enum cases are not types
+  - surface: kernel
+    swift: swift/Sources/Duet/Clock.swift
+    kotlin: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/KernelClock.kt
+
+  # ── replay ────────────────────────────────────────────────────────────
+  - surface: replay
+    swift: swift/Sources/DuetReplay/ReplayFeature.swift
+    kotlin: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/ReplayFeature.kt
+    deltas:
+      - kotlin: StepResult
+        reason: the step result is a named type on Kotlin; the Swift runner returns a tuple
+  - surface: replay
+    swift: swift/Sources/DuetReplay/ReplayServer.swift
+    kotlin: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/ReplayServer.kt
+  # The spine string-boundary codec — the Swift half lives in DuetShells (the
+  # iOS restoration bracket rides in the same file), the Kotlin half in replay.
+  - surface: replay
+    swift: swift/Sources/DuetShells/RouteSpineCodec.swift
+    kotlin: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/SpineBoundary.kt
+    deltas:
+      - swift: RouteSpineCodec
+        reason: same role, different name — the spine string-boundary codec (kotlin SpineBoundary)
+      - kotlin: SpineBoundary
+        reason: same role, different name — the spine string-boundary codec (swift RouteSpineCodec)
+      - swift: RestoredSpineBox
+        reason: the iOS scene-restoration bracket (C2) rides in the same file; Android restoration is SavedState, platform-side
+      - swift: place
+        reason: RestoredSpineBox API (see RestoredSpineBox delta)
+      - swift: take
+        reason: RestoredSpineBox API (see RestoredSpineBox delta)
+      - swift: discard
+        reason: RestoredSpineBox API (see RestoredSpineBox delta)
+
+  # ── shells ────────────────────────────────────────────────────────────
+  - surface: shells
+    swift: swift/Sources/DuetShells/ChildHandles.swift
+    kotlin: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/ChildHandles.kt
+    deltas:
+      - kotlin: Activatable
+        reason: declared here on Kotlin; the Swift twin lives in ViewShell.swift (a single-flavor file)
+  - surface: shells
+    swift: swift/Sources/DuetShells/ChildStores.swift
+    kotlin: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/ChildStores.kt
+    deltas:
+      - swift: handle
+        reason: handle(for:) — the Swift argument label flattens into the Kotlin name handleFor
+      - kotlin: handleFor
+        reason: handle(for:) — the Swift argument label flattens into the Kotlin name handleFor
+  - surface: shells
+    swift: swift/Sources/DuetShells/PresentationRegistry.swift
+    kotlin: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/PresentationRegistry.kt
+    deltas:
+      - swift: view
+        reason: the render unit is a view (UIKit/SwiftUI) vs a Compose surface (surfaceFor)
+      - kotlin: surfaceFor
+        reason: the render unit is a view (UIKit/SwiftUI) vs a Compose surface (surfaceFor)
+  - surface: shells
+    swift: swift/Sources/DuetShells/ProjectionJoin.swift
+    kotlin: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/ProjectionJoin.kt
+  - surface: shells
+    swift: swift/Sources/DuetShells/Relay.swift
+    kotlin: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/Relay.kt
+  - surface: shells
+    swift: swift/Sources/DuetShells/StoreHost.swift
+    kotlin: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/StoreHost.kt
+    deltas:
+      - kotlin: adoptTeardown
+        reason: Swift's adopt(teardown:) overload — the label flattens into the Kotlin name
+  - surface: shells
+    swift: swift/Sources/DuetShells/Working.swift
+    kotlin: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/Working.kt
+
+  # ── testing ───────────────────────────────────────────────────────────
+  - surface: testing
+    swift: swift/Sources/DuetTesting/Scenario.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/Scenario.kt
+    deltas:
+      - swift: buildBlock
+        reason: result-builder plumbing — the Swift DSL's compiler hooks
+      - swift: buildExpression
+        reason: result-builder plumbing — the Swift DSL's compiler hooks
+      - kotlin: whenAction
+        reason: when is a Kotlin keyword; the When step's builder function is whenAction
+  - surface: testing
+    swift: swift/Sources/DuetTesting/ScenarioRunner.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/ScenarioRunner.kt
+    deltas:
+      - swift: ScenarioError
+        reason: failure surfaces as a thrown typed error on Swift; Kotlin fails the running test directly
+  - surface: testing
+    swift: swift/Sources/DuetTesting/TestStore.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/TestStore.kt
+  - surface: testing
+    swift: swift/Sources/DuetTesting/FixtureDiff.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/FixtureDiff.kt
+  - surface: testing
+    swift: swift/Sources/DuetTesting/FixtureRunner.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/FixtureRunner.kt
+    deltas:
+      - swift: Document
+        reason: the Codable fixture-document model is a named type on Swift; kotlinx.serialization decodes inline
+      - swift: FixtureError
+        reason: failure surfaces as a thrown typed error on Swift; Kotlin fails the running test directly
+      - swift: canonicalDecoder
+        reason: decoder configuration is Swift-side; the Kotlin Json instance is CanonicalJson's
+      - swift: load
+        reason: document loading belongs to the Codable model (see Document delta)
+  - surface: testing
+    swift: swift/Sources/DuetTesting/KernelTrace.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/KernelTrace.kt
+    deltas:
+      - kotlin: Reduce
+        reason: sealed trace-event cases are types on Kotlin; Swift enum cases are not types
+      - kotlin: EffectStart
+        reason: sealed trace-event cases are types on Kotlin; Swift enum cases are not types
+      - kotlin: EffectAction
+        reason: sealed trace-event cases are types on Kotlin; Swift enum cases are not types
+      - kotlin: EffectFinished
+        reason: sealed trace-event cases are types on Kotlin; Swift enum cases are not types
+      - kotlin: EffectCancelled
+        reason: sealed trace-event cases are types on Kotlin; Swift enum cases are not types
+  - surface: testing
+    swift: swift/Sources/DuetTesting/DeterministicAsync.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/DeterministicAsync.kt
+    deltas:
+      - swift: SuitePollingDefaults
+        reason: Nimble suite polling defaults — an iOS-only hygiene knob
+      - swift: assertBudget
+        reason: the wall-clock budget assertion's name — assertBudget vs check
+      - kotlin: check
+        reason: the wall-clock budget assertion's name — assertBudget vs check
+      - kotlin: assertAllReleased
+        reason: the ledger's release assertion is an explicit method on Kotlin; the Swift ledger asserts inside settle/track
+  - surface: testing
+    swift: swift/Sources/DuetTesting/WorkerTester.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/WorkerTester.kt
+  - surface: testing
+    swift: swift/Sources/DuetTesting/ParityRunReport.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/RunReport.kt
+    deltas:
+      - swift: ParityRunReport
+        reason: same role, different name — the per-run report document (kotlin RunReport)
+      - kotlin: RunReport
+        reason: same role, different name — the per-run report document (swift ParityRunReport)
+
+singles:
+  # ── kernel ────────────────────────────────────────────────────────────
+  - surface: kernel
+    flavor: swift
+    file: swift/Sources/Duet/CanonicalSumCodable.swift
+    reason: the sum-encoding vehicle is per-flavor by design (FC2/FC3) — Swift = marker protocol + CLI codegen; KMP = the derived CanonicalSumSerializer
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalJson.kt
+    reason: compact canonical writer for record artifacts + replay; the pretty §6 writer is CLI-side (the one-writer decision)
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSerializers.kt
+    reason: kotlinx-serialization registry for the canonical dialect; the Swift dialect rides Codable + the CLI's emission rule-set
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSumSerializer.kt
+    reason: the KMP derived sum serializer (FC2); the Swift mirror is generated coders via the CanonicalSumCodable marker + duet canonical-sum
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalUuidSerializer.kt
+    reason: canonical UUID lowercasing for the KMP flavor; Swift UUIDs encode through the generated coders
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/EffectJson.kt
+    reason: canonical effect encoding for the KMP flavor; the Swift twin is Effect.encode (recorded as that pair's delta)
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.kt
+    reason: expect declaration for per-target contextual serializers — internal plumbing of the KMP flavor
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/appleMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.apple.kt
+    reason: Apple-target actualization of the expect above
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.jvm.kt
+    reason: JVM-target actualization of the expect above
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/InstantMillisSerializer.kt
+    reason: JVM Instant canonical form; dates cross the dialect as millis — no Swift type twin
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/UuidSerializer.kt
+    reason: JVM UUID serializer actualization
+  - surface: kernel
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/runtime/StoreScopes.kt
+    reason: retained/logical component-scope runtime (the Q2 stance); iOS has no config-change death — no Swift twin by design
+
+  # ── replay ────────────────────────────────────────────────────────────
+  - surface: replay
+    flavor: swift
+    file: swift/Sources/DuetReplay/ReplayCanonical.swift
+    reason: the ONE §6 pretty writer (the S2 one-writer decision) — CLI-side machinery; the KMP flavor emits compact artifacts the CLI materializes
+  - surface: replay
+    flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/BoundaryReplay.kt
+    reason: the KMP boundary-replay session (record artifacts + the replay runner); the Swift flavor's equivalent machinery is ReplayServer + DuetTesting's FixtureRunner/FixtureRecorder
+
+  # ── shells ────────────────────────────────────────────────────────────
+  - surface: shells
+    flavor: swift
+    file: swift/Sources/DuetShells/CombineBridging.swift
+    reason: the Combine→AsyncStream bridge (kernelStream) — Swift-flavor idiom; the KMP flavor is Flow-native
+  - surface: shells
+    flavor: swift
+    file: swift/Sources/DuetShells/ViewShell.swift
+    reason: the UIKit hosting substrate (view shells + Activatable); Compose renders via composables — no class twin (Kotlin's Activatable lives in ChildHandles.kt, that pair's delta)
+
+  # ── testing ───────────────────────────────────────────────────────────
+  - surface: testing
+    flavor: swift
+    file: swift/Sources/DuetTesting/CanonicalJSON.swift
+    reason: source-compatibility facade delegating to DuetReplay.ReplayCanonical (the S2 one-writer move)
+  - surface: testing
+    flavor: swift
+    file: swift/Sources/DuetTesting/FixtureRecorder.swift
+    reason: the Swift-lane recorder (scenario → fixture bytes); the Kotlin lane records via BoundaryReplay compact artifacts materialized by the CLI
+  - surface: testing
+    flavor: swift
+    file: swift/Sources/DuetTesting/ChainScenario.swift
+    reason: chain authoring DSL — Swift-lane by the recorded scope limit (a ChainScenario mirror gates any Kotlin-only authoring offering)
+  - surface: testing
+    flavor: swift
+    file: swift/Sources/DuetTesting/TestClock.swift
+    reason: virtual clock; the KMP flavor's virtual time is kotlinx-coroutines-test's scheduler (platform-provided)
+  - surface: testing
+    flavor: kotlin
+    file: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/ChainRunner.kt
+    reason: chain fixture replay for the Kotlin lane; authoring is Swift-lane (see the ChainScenario.swift single)
+  - surface: testing
+    flavor: kotlin
+    file: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/EffectAssertions.kt
+    reason: effectsOf assertion sugar for Kotlin tests; the Swift shape is TestStore.expectEffects directly
+
+excludes:
+  - prefix: kotlin/consumer-receipt/
+    reason: the F3 consumer receipt package — an adopter exhibit, not framework surface

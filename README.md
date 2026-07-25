@@ -77,6 +77,10 @@ kotlin/      the KMP flavor: Maven artifacts dev.modaal.duet:kernel / :kernel-te
 contracts/   the normative contracts, versioned with the code:
              store-kernel-contract.md · serialization.md · replay-protocol-v1.md ·
              kernel-trace-v0.md · presentation-contract.md
+docs/        pattern pages that ship with the framework (workers.md)
+parity/      the flavor twin map (flavor-parity.yaml) + the generated per-release
+             flavor-parity ledger — LOC and open deltas per flavor
+scripts/     flavor-lockstep-lint.py, the twin-map gate (CONTRIBUTING, rule 1)
 ```
 
 The toolchain and the macro opt-in live in their own repos (the family table
@@ -95,7 +99,7 @@ swift run --package-path <duet-tools checkout> duet help     # the full verb sur
    strict-concurrency-complete (Swift 6 language mode) from the first extraction.
    **Landed** — see `swift/`.
 2. **KMP-flavor packaging** — the `commonMain` kernel, serialization, boundary adapters, Compose shell primitives, published artifacts. **Landed** — see `kotlin/`.
-3. **Toolchain** — the `duet` CLI verb surface (**landed** — [`duet-tools`](https://github.com/modaal-agent/duet-tools)), the Swift ceremony killer (**landed** — `duet canonical-sum` + the [`@CanonicalSum`](https://github.com/modaal-agent/duet-macros) opt-in, one shared emission rule-set), CI templates, lint family, zero-config mock pipeline.
+3. **Toolchain** — the `duet` CLI verb surface (**landed** — [`duet-tools`](https://github.com/modaal-agent/duet-tools)), the Swift ceremony killer (**landed** — `duet canonical-sum` + the [`@CanonicalSum`](https://github.com/modaal-agent/duet-macros) opt-in, one shared emission rule-set), the lint family (**landed** — the flavor-lockstep lint + flavor-parity ledger, `parity/`), CI templates.
 4. **Docs** — public contracts and guides, distinct from Modaal's product documentation.
 
 Platform and toolchain requirements will be pinned with the first extraction release.

@@ -16,7 +16,7 @@ Duet's correctness story is a recorded conformance corpus — fixtures that both
 
 ## Development rules
 
-1. **The lockstep rule.** The two core flavors share one contract surface. A delta landing on one flavor without its twin fails CI (lockstep lint). If you can only author one side, say so in the PR — maintainers will pair the twin — but the PR does not merge half-landed.
+1. **The lockstep rule.** The two core flavors share one contract surface. A delta landing on one flavor without its twin fails CI (`python3 scripts/flavor-lockstep-lint.py` — the twin map and per-pair waivers live in `parity/flavor-parity.yaml`, the generated per-release measurement in `parity/flavor-parity-ledger.md`). If you can only author one side, say so in the PR — maintainers will pair the twin — but the PR does not merge half-landed: an unmatched symbol either gets its twin, or a declared delta with a reason (which is a ledger entry, not an escape hatch).
 
 2. **Deterministic tests, by construction.** No wall-clock time in framework tests — virtual time and turn-control helpers only. A test that flakes under virtual time is a bug in the code or the test, never a reason to widen a timeout.
 
@@ -57,6 +57,13 @@ never hand-edited, byte-stable under the ONE pretty writer
 its record modes emit compact artifacts that the CLI materializes, `duet write-fixtures`).
 Test-runner machine artifacts land in `swift/Tests/parity/.runs/` (gitignored).
 
+The flavor-lockstep lint (development rule 1) needs only python3:
+
+```sh
+python3 scripts/flavor-lockstep-lint.py                 # coverage + pair surfaces + ledger freshness
+python3 scripts/flavor-lockstep-lint.py --write-ledger  # regenerate parity/flavor-parity-ledger.md
+```
+
 The `duet` CLI itself is developed in [`duet-tools`](https://github.com/modaal-agent/duet-tools)
 (check out as a sibling directory — pre-publication, the family's manifests reference each
-other by sibling path); the lint family and CI templates follow per the roadmap.
+other by sibling path); CI templates follow per the roadmap.

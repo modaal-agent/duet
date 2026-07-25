@@ -5,6 +5,25 @@
 The Swift-flavor extraction — the framework's first code drop — the KMP
 flavor's packaging (F3), and the toolchain (F4).
 
+### Added — the flavor-lockstep lint, the parity ledger, and the workers page (F4·S5, G4)
+
+- **`scripts/flavor-lockstep-lint.py`** — the framework's own contract surfaces
+  are now twin-mapped (`parity/flavor-parity.yaml`: 22 pairs, 22 declared
+  single-flavor files across kernel/replay/shells/testing) and gated: a public
+  symbol landing on one flavor without its twin fails the lint unless a per-pair
+  delta is declared with a reason. Coverage is closed — a NEW production file on
+  either flavor fails until the map says what it is. Errors are self-teaching
+  (each names the fix: mirror the symbol, or declare the delta).
+- **`parity/flavor-parity-ledger.md`** — generated per-release measurement (LOC
+  and open deltas per flavor, per surface; regenerate with `--write-ledger`,
+  freshness gated by the default lint run). The dual-flavor revisit trigger now
+  fires on a number, not a vibe. First measurement: 22 pairs, 36 open deltas —
+  all of them named idioms (casing, argument-label flattening, sealed-case
+  types, result-builder plumbing), zero semantic divergences.
+- **`docs/workers.md`** — the worker pattern page: `Working`, the
+  `StoreHost.adopt` bracket, `WorkerTester` and its leak guarantee, the named
+  ingress shapes, and the logical-tests-only stance.
+
 ### Changed — the toolchain moves to its own repo; the ceremony killer lands (F4·S3, G2)
 
 - **`tools/` extracted to [`modaal-agent/duet-tools`](https://github.com/modaal-agent/duet-tools)**
