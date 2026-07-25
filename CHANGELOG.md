@@ -5,6 +5,26 @@
 The Swift-flavor extraction — the framework's first code drop — the KMP
 flavor's packaging (F3), and the toolchain (F4).
 
+### Added — CI templates and the verification MCP surface (F4·S5b)
+
+- **`ci/`** — the adopter parity template (`adopter-parity.yml`: spec-fixture
+  lint → `duet verify` → `duet record --check`, with the private-phase steps
+  marked for wholesale deletion at publication) plus `ci/README.md`; this repo
+  and duet-tools each gained their own `.github/workflows/ci.yml` running
+  exactly the CONTRIBUTING "Building" commands. The workflows first execute on
+  GitHub at the public flip; the **Modaal-free receipt run** (F4's open gate,
+  2026-07-25) proved every one of them green from clean clones of the three
+  open repos — adopter corpus verify 122/122 dual-lane, `record --check`
+  zero-churn, both flavor suites, both lints — with zero Modaal product bits
+  in the loop.
+- **`duet mcp`** (in the family: duet-tools) — the standalone agent surface
+  (the toolchain plan's §5): a stdio MCP server over the same verification
+  verbs (`duet_verify`/`duet_record`/`duet_explain`/`duet_materialize`/
+  `duet_scope`), hand-rolled JSON-RPC, zero new dependencies. Tool results are
+  the verbs' `--json` reports (returned as `structuredContent` too); the
+  authoring verbs are deliberately not served. One `mcpServers` entry gives
+  any agent harness the toolchain.
+
 ### Added — the flavor-lockstep lint, the parity ledger, and the workers page (F4·S5, G4)
 
 - **`scripts/flavor-lockstep-lint.py`** — the framework's own contract surfaces

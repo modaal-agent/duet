@@ -1,0 +1,76 @@
+# Duet adopter parity gate — CI template.
+#
+# Copy to your repo's .github/workflows/parity.yml. Two gates, both required:
+#   duet verify          — meta-checks (declaration lockstep + fixture symmetry),
+#                          then both platform lanes replay the shared fixtures
+#                          (host Swift + JVM Kotlin — no simulator, no emulator),
+#                          with the per-fixture coverage gate.
+#   duet record --check  — the drift gate (R10): fixtures and generated coders
+#                          are build products; CI fails if a committed artifact
+#                          is stale rather than silently regenerating it.
+#
+# Lines marked ADAPT are yours; lines marked PRIVATE-PHASE exist only until the
+# family publishes (released `duet` binary via its own tap + a URL/registry
+# package dependency) and then delete wholesale.
+name: parity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  parity:
+    # One macOS runner keeps "one command, both lanes" CI-identical to the local
+    # loop: the Swift lane needs a host Swift toolchain; the Kotlin lane is
+    # plain JVM. Android feature modules additionally need an SDK to CONFIGURE
+    # (never an emulator) — hosted macOS runners no longer bundle one, so ADAPT:
+    # either export ANDROID_HOME from a cached SDK install step, or split the
+    # Kotlin lane onto an ubuntu job (`duet verify --kotlin-only`).
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # PRIVATE-PHASE: check the family out and run the CLI from source. At
+      # publication this whole block becomes one line (install the released
+      # binary), DUET_TOOLS_HOME retires with the adopter's tools/duet wrapper,
+      # and private checkouts need a token with contents:read on both repos.
+      - uses: actions/checkout@v4
+        with:
+          repository: modaal-agent/duet
+          path: .duet-family/modaal-agent-duet
+          token: ${{ secrets.DUET_FAMILY_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          repository: modaal-agent/duet-tools
+          path: .duet-family/modaal-agent-duet-tools
+          token: ${{ secrets.DUET_FAMILY_TOKEN }}
+      - name: Point the toolchain at the checkout
+        run: echo "DUET_TOOLS_HOME=$GITHUB_WORKSPACE/.duet-family/modaal-agent-duet-tools" >> "$GITHUB_ENV"
+      # PRIVATE-PHASE + ADAPT: pre-publication, adopter manifests reference the
+      # Duet package by LOCAL PATH (the single swap point). Rewrite that path to
+      # the checkout above — one sed per manifest that declares it. Retires at
+      # the published-artifact swap.
+      #- name: Rewrite the local-path Duet dependency
+      #  run: |
+      #    sed -i '' "s|<your local duet path>|$GITHUB_WORKSPACE/.duet-family/modaal-agent-duet|" \
+      #      <path/to/your>/Package.swift
+
+      # ADAPT: keep only the lints your repo carries. `duet verify` already runs
+      # the declaration-lockstep lint as its meta-check; the spec↔fixture
+      # cross-reference lint (prose drift the byte gate can't see) is separate.
+      - name: spec-fixture lint
+        run: python3 parity/scripts/spec-fixture-lint.py
+
+      - name: duet verify (meta-checks + both lanes + coverage gate)
+        run: tools/duet verify
+
+      - name: duet record --check (R10 drift gate)
+        run: tools/duet record --check

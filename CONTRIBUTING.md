@@ -41,13 +41,19 @@ Duet is MIT-licensed. Contributions are accepted under the same terms (inbound =
 
 ## Building
 
-The Swift flavor is a standard SPM package:
+The Swift flavor is a standard SPM package — the manifest sits at the repo root
+(so `.package(url:)` resolves it), sources under `swift/`:
 
 ```sh
-cd swift
 swift build            # all four targets, Swift 6 language mode (strict concurrency)
 swift test             # the framework suites; replays swift/Tests/parity/fixtures
 REGEN_FIXTURES=1 swift test   # re-record the suite's own fixtures (then review the diff)
+```
+
+The KMP flavor:
+
+```sh
+cd kotlin && ./gradlew test   # the KMP suites (pure KMP — no Android SDK needed)
 ```
 
 The framework's test fixtures live in `swift/Tests/parity/fixtures/` and are governed by
@@ -66,4 +72,8 @@ python3 scripts/flavor-lockstep-lint.py --write-ledger  # regenerate parity/flav
 
 The `duet` CLI itself is developed in [`duet-tools`](https://github.com/modaal-agent/duet-tools)
 (check out as a sibling directory — pre-publication, the family's manifests reference each
-other by sibling path); CI templates follow per the roadmap.
+other by sibling path).
+
+CI runs exactly the commands above: this repo's gate is `.github/workflows/ci.yml`
+(both flavor suites + the flavor-lockstep lint); the adopter-facing parity template
+ships in [`ci/`](ci/README.md).

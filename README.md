@@ -37,7 +37,7 @@ The **Duet repository family** is the complete, self-sufficient framework: every
 
 - the kernel and shell runtime (both flavors) — **this repo**,
 - the test support: scenario DSL, deterministic-async toolkit (virtual time, turn control) — **this repo**,
-- the `duet` CLI: `verify`, `record`, `record --check`, replay/diff/report machinery, the codegen verb, the mock pipeline — [`duet-tools`](https://github.com/modaal-agent/duet-tools),
+- the `duet` CLI: `verify`, `record`, `record --check`, replay/diff/report machinery, the codegen verb, the stdio MCP server (`duet mcp`) — [`duet-tools`](https://github.com/modaal-agent/duet-tools),
 - the `@CanonicalSum` macro opt-in — [`duet-macros`](https://github.com/modaal-agent/duet-macros),
 - the lint family and CI templates,
 - the contracts (kernel contract, fixture schema, replay protocol) — versioned with the code, **this repo**.
@@ -81,6 +81,8 @@ docs/        pattern pages that ship with the framework (workers.md)
 parity/      the flavor twin map (flavor-parity.yaml) + the generated per-release
              flavor-parity ledger — LOC and open deltas per flavor
 scripts/     flavor-lockstep-lint.py, the twin-map gate (CONTRIBUTING, rule 1)
+ci/          CI templates: the adopter parity workflow + notes; the family's own
+             workflows live in .github/workflows/
 ```
 
 The toolchain and the macro opt-in live in their own repos (the family table
@@ -99,7 +101,7 @@ swift run --package-path <duet-tools checkout> duet help     # the full verb sur
    strict-concurrency-complete (Swift 6 language mode) from the first extraction.
    **Landed** — see `swift/`.
 2. **KMP-flavor packaging** — the `commonMain` kernel, serialization, boundary adapters, Compose shell primitives, published artifacts. **Landed** — see `kotlin/`.
-3. **Toolchain** — the `duet` CLI verb surface (**landed** — [`duet-tools`](https://github.com/modaal-agent/duet-tools)), the Swift ceremony killer (**landed** — `duet canonical-sum` + the [`@CanonicalSum`](https://github.com/modaal-agent/duet-macros) opt-in, one shared emission rule-set), the lint family (**landed** — the flavor-lockstep lint + flavor-parity ledger, `parity/`), CI templates.
+3. **Toolchain** — the `duet` CLI verb surface (**landed** — [`duet-tools`](https://github.com/modaal-agent/duet-tools)), the Swift ceremony killer (**landed** — `duet canonical-sum` + the [`@CanonicalSum`](https://github.com/modaal-agent/duet-macros) opt-in, one shared emission rule-set), the lint family (**landed** — the flavor-lockstep lint + flavor-parity ledger, `parity/`), CI templates (**landed** — `ci/` + each repo's own workflow), and the verification MCP surface (**landed** — `duet mcp`, a stdio MCP server over the same verbs).
 4. **Docs** — public contracts and guides, distinct from Modaal's product documentation.
 
 Platform and toolchain requirements will be pinned with the first extraction release.

@@ -1,0 +1,44 @@
+# The framework's own gate (F4 CI templates): both flavor suites + the
+# flavor-lockstep lint. Committed while the repo is still private — these jobs
+# first run for real at the public flip; until then the same commands are the
+# local gate (CONTRIBUTING "Building") and the Modaal-free receipt runs them
+# from clean clones.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  swift:
+    # macOS: the package is Swift 6 language mode (swift-tools 6.0); the
+    # macos-15 image's default Xcode carries a new-enough toolchain.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swift flavor (framework suites; replays swift/Tests/parity/fixtures)
+        run: swift test
+
+  kotlin:
+    # macOS: the KMP module declares apple targets (macosArm64/ios*) — a Linux
+    # host would silently disable them. Pure KMP, no Android SDK needed.
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Kotlin flavor (KMP suites)
+        run: cd kotlin && ./gradlew test --console=plain
+
+  flavor-lockstep:
+    # Development rule 1: the two core flavors share one contract surface.
+    # Coverage + pair surfaces + ledger freshness; zero-dep python.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: flavor-lockstep lint
+        run: python3 scripts/flavor-lockstep-lint.py
