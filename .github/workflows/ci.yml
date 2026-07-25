@@ -12,9 +12,15 @@ on:
 
 jobs:
   swift:
-    # macOS: the package is Swift 6 language mode (swift-tools 6.0); the
-    # macos-15 image's default Xcode carries a new-enough toolchain.
-    runs-on: macos-15
+    # The dedicated Xcode-27 preview image — its DEFAULT Xcode is the 27 beta
+    # line (Swift 6.4), the toolchain the framework's strict-concurrency
+    # guarantees are proven on (locally: Xcode 27 beta 2). These are proofs
+    # against a specific frontend, not "any new-enough Xcode": older ones fail
+    # honestly (macos-15's default — and macos-26's 26.5 — cannot prove the
+    # non-Sendable Action region transfer in Store's stream hop). When the
+    # Xcode 27 GA reaches the macos-26 image, move there and pin the exact
+    # version with setup-xcode.
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v4
       - name: Swift flavor (framework suites; replays swift/Tests/parity/fixtures)

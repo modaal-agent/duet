@@ -27,7 +27,14 @@ jobs:
     # (never an emulator) — hosted macOS runners no longer bundle one, so ADAPT:
     # either export ANDROID_HOME from a cached SDK install step, or split the
     # Kotlin lane onto an ubuntu job (`duet verify --kotlin-only`).
-    runs-on: macos-15
+    #
+    # ADAPT (toolchain): the framework's strict-concurrency guarantees are
+    # proofs against a specific Swift frontend — pick the image/pin whose
+    # toolchain matches the one your repo builds with locally. Today that is
+    # the Xcode 27 line (Swift 6.4) = the `xcode-27` preview image (its default
+    # Xcode; JDK 21 + Gradle are on it too); older defaults (macos-26's 26.5,
+    # macos-15's) fail compiling Duet-linked sources.
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v4
 
