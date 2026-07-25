@@ -12,17 +12,31 @@ on:
 
 jobs:
   swift:
-    # The dedicated Xcode-27 preview image — its DEFAULT Xcode is the 27 beta
-    # line (Swift 6.4), the toolchain the framework's strict-concurrency
-    # guarantees are proven on (locally: Xcode 27 beta 2). These are proofs
-    # against a specific frontend, not "any new-enough Xcode": older ones fail
-    # honestly (macos-15's default — and macos-26's 26.5 — cannot prove the
-    # non-Sendable Action region transfer in Store's stream hop). When the
-    # Xcode 27 GA reaches the macos-26 image, move there and pin the exact
-    # version with setup-xcode.
-    runs-on: xcode-27
+    # Two lanes, one per audience. macos-26 pinned to Xcode 26.6 = the GA line
+    # and the VERIFIED adopter floor (Swift 6.3.3; needs the documented
+    # KernelTrace suppression — its sending analysis reports a phantom
+    # use-after-send that 6.4 proves safe unaided). xcode-27 = the newest line
+    # (the image's default Xcode IS the pin: 27 beta, Swift 6.4, the toolchain
+    # the strict-concurrency proofs are made on). Strict-concurrency
+    # guarantees are proofs against a specific frontend, so both pins are
+    # explicit; macos-15's default is below the floor (it rejects even Store's
+    # stream hop). fail-fast off: one lane's verdict must not hide the other's.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: macos-26
+            xcode: "26.6"
+          - image: xcode-27
+            xcode: ""
+    runs-on: ${{ matrix.image }}
     steps:
       - uses: actions/checkout@v4
+      - name: Select Xcode ${{ matrix.xcode }}
+        if: matrix.xcode != ''
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
       - name: Swift flavor (framework suites; replays swift/Tests/parity/fixtures)
         run: swift test
 

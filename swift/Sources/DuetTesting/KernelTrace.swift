@@ -111,7 +111,16 @@ public final class KernelTraceRecorder<
               let canonicalAction = canonical(action)
               let mark = log.count
               log.append(.effectAction(action: canonicalAction))
-              continuation.yield(action)
+              // The element is forwarded exactly once and never touched again
+              // — the lockstep loop below reads only the canonical string.
+              // Swift 6.4 proves that unaided; the GA line's 6.3 sending
+              // analysis (Xcode 26.x) merges the element's region with the
+              // task's captures and reports a phantom use-after-send at the
+              // yield. The unsafe binding suppresses exactly that false
+              // positive so DuetTesting keeps compiling on GA toolchains —
+              // the adopter floor. Remove when the floor moves past 6.3.
+              nonisolated(unsafe) let transferred = action
+              continuation.yield(transferred)
               var budget = 10_000
               while !Task.isCancelled && budget > 0
                 && !log.containsReduce(of: canonicalAction, atOrAfter: mark) {

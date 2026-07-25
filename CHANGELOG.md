@@ -5,6 +5,22 @@
 The Swift-flavor extraction — the framework's first code drop — the KMP
 flavor's packaging (F3), and the toolchain (F4).
 
+### Fixed — the GA-toolchain floor, and a case-collision the floor work surfaced (post-S5b)
+
+- **DuetTesting compiles on the GA toolchain line** (verified: Xcode 26.6 /
+  Swift 6.3.3 — the adopter floor; the runtime products always compiled on
+  26.x). The 6.3 sending analysis reported a phantom use-after-send at
+  KernelTrace's lockstep yield — the element is forwarded exactly once, which
+  Swift 6.4 proves unaided — now suppressed by a documented one-line
+  `nonisolated(unsafe)` binding at that yield. The swift CI job is a two-lane
+  matrix (macos-26 pinned to 26.6 + xcode-27's default beta), fail-fast off.
+- **(family: duet-tools) the CLI's module renamed `duet` → `DuetCLI`** — the
+  product, binary, and `swift run duet` are unchanged. A module literally
+  named `duet` collides case-insensitively with the `Duet` library module, so
+  on default (case-insensitive) APFS — every hosted CI runner, most machines —
+  the toolchain package could not build at all, under any toolchain. Masked
+  until now by a case-sensitive dev volume.
+
 ### Added — CI templates and the verification MCP surface (F4·S5b)
 
 - **`ci/`** — the adopter parity template (`adopter-parity.yml`: spec-fixture
