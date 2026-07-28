@@ -1,9 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.0] — 2026-07-29
 
-The Swift-flavor extraction — the framework's first code drop — the KMP
-flavor's packaging (F3), and the toolchain (F4).
+The first tagged code release: the Swift-flavor extraction — the framework's
+first code drop — the KMP flavor's packaging (F3), and the toolchain (F4).
+This tag is the anchor for URL-based SPM consumption
+(`.package(url: "…/duet.git", exact: "0.1.0")`); pre-1.0, breaking changes
+land in minor versions with no deprecation cycle, so consumers pin exact and
+re-pin deliberately.
 
 ### Fixed — kotlin-authored scenarios can record from scratch (A1's gate run surfaced it)
 
