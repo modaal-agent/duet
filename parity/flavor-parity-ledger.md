@@ -13,9 +13,9 @@ are the per-pair symbol waivers declared, with reasons, in
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | kernel | 3 | 12 | 4 | 218 | 14 | 682 | 4 |
 | replay | 3 | 2 | 4 | 447 | 4 | 284 | 7 |
-| shells | 7 | 2 | 9 | 615 | 7 | 510 | 6 |
+| shells | 7 | 4 | 9 | 615 | 9 | 610 | 6 |
 | testing | 9 | 6 | 13 | 2445 | 11 | 1717 | 19 |
-| **total** | 22 | 22 | 30 | 3725 | 36 | 3193 | 36 |
+| **total** | 22 | 24 | 30 | 3725 | 38 | 3293 | 36 |
 
 ## Open deltas
 
@@ -28,7 +28,7 @@ are the per-pair symbol waivers declared, with reasons, in
 | ReplayFeature.swift ↔ ReplayFeature.kt | kotlin | `StepResult` | the step result is a named type on Kotlin; the Swift runner returns a tuple |
 | RouteSpineCodec.swift ↔ SpineBoundary.kt | swift | `RouteSpineCodec` | same role, different name — the spine string-boundary codec (kotlin SpineBoundary) |
 | RouteSpineCodec.swift ↔ SpineBoundary.kt | kotlin | `SpineBoundary` | same role, different name — the spine string-boundary codec (swift RouteSpineCodec) |
-| RouteSpineCodec.swift ↔ SpineBoundary.kt | swift | `RestoredSpineBox` | the iOS scene-restoration bracket (C2) rides in the same file; Android restoration is SavedState, platform-side |
+| RouteSpineCodec.swift ↔ SpineBoundary.kt | swift | `RestoredSpineBox` | the restoration bracket rides in this file on Swift; the Kotlin twin has its own file — shells/RestoredSpineBox.kt (a shells single), graduated on the 2026-07-30 graduation review |
 | RouteSpineCodec.swift ↔ SpineBoundary.kt | swift | `place` | RestoredSpineBox API (see RestoredSpineBox delta) |
 | RouteSpineCodec.swift ↔ SpineBoundary.kt | swift | `take` | RestoredSpineBox API (see RestoredSpineBox delta) |
 | RouteSpineCodec.swift ↔ SpineBoundary.kt | swift | `discard` | RestoredSpineBox API (see RestoredSpineBox delta) |
@@ -78,6 +78,8 @@ are the per-pair symbol waivers declared, with reasons, in
 | replay | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/BoundaryReplay.kt | 66 | the KMP boundary-replay session (record artifacts + the replay runner); the Swift flavor's equivalent machinery is ReplayServer + DuetTesting's FixtureRunner/FixtureRecorder |
 | shells | swift | swift/Sources/DuetShells/CombineBridging.swift | 48 | the Combine→AsyncStream bridge (kernelStream) — Swift-flavor idiom; the KMP flavor is Flow-native |
 | shells | swift | swift/Sources/DuetShells/ViewShell.swift | 60 | the UIKit hosting substrate (view shells + Activatable); Compose renders via composables — no class twin (Kotlin's Activatable lives in ChildHandles.kt, that pair's delta) |
+| shells | kotlin | kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RestoredSpineBox.kt | 52 | the Swift twin rides in RouteSpineCodec.swift (that pair's swift delta) — same duties, own file on Kotlin; graduated from the adopter's app-side copy on the 2026-07-30 graduation review |
+| shells | kotlin | kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RetainedRoot.kt | 48 | the Android retained-scope carrier (doc 20 Q2, promoted from receipt to API on the 2026-07-30 graduation review); iOS needs no twin — UIApplication-scoped singletons give the scene glue the same reach app-side |
 | testing | swift | swift/Sources/DuetTesting/CanonicalJSON.swift | 34 | source-compatibility facade delegating to DuetReplay.ReplayCanonical (the S2 one-writer move) |
 | testing | swift | swift/Sources/DuetTesting/FixtureRecorder.swift | 16 | the Swift-lane recorder (scenario → fixture bytes); the Kotlin lane records via BoundaryReplay compact artifacts materialized by the CLI |
 | testing | swift | swift/Sources/DuetTesting/ChainScenario.swift | 594 | chain authoring DSL — Swift-lane by the recorded scope limit (a ChainScenario mirror gates any Kotlin-only authoring offering) |

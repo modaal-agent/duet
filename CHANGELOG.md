@@ -1,5 +1,31 @@
 # Changelog
 
+## [Unreleased]
+
+### Added — the graduation pair (`shells-compose`)
+
+The graduation review (2026-07-30), decided: the two per-app ×1 pieces an
+app-scale adopter's Android build-out flagged as graduation candidates move
+into the framework; the scaffold-emitted Android app tree is their second
+consumer.
+The AGP question was decided the other way — **the framework stays
+Android-SDK-free**: both types are pure JVM, and the boundary rule stands
+("the framework ends where `android.*` begins" — Android consumers resolve
+the JVM variants, kernel's recorded stance).
+
+- **`RestoredSpineBox<Spine>`** — the Kotlin twin of the Swift flavor's
+  restoration bracket (it rides in `DuetShells/RouteSpineCodec.swift`):
+  one-shot process-death spine holder — `take` drains, `discard` settles on
+  a funnel mount, `place` is the first-write-wins late-delivery path. Closes
+  the ledger's recorded Swift-only delta for the type.
+- **`RetainedRoot<T>`** — the Q2 retained carrier, promoted from mechanics
+  receipt to API: an `InstanceKeeper.Instance` owning the logical scope and
+  the composition root, pinning the teardown ORDER (component before scope).
+  With it, essenty `instance-keeper` is **promoted from test-scope substrate
+  to an `api` dependency** — a deliberate amendment of the recorded
+  "substrate, not API" stance. iOS has no twin by platform design (the
+  ledger records the single).
+
 ## [0.1.0] — 2026-07-29
 
 The first tagged code release: the Swift-flavor extraction — the framework's

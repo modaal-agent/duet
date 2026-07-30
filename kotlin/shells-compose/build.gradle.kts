@@ -12,9 +12,10 @@
 // Compose app binds them from its composition roots; composition lifetimes
 // already do view-side mount/teardown (S4-Q4). Config-change stance (doc 20
 // Q2): hosts live in the RETAINED/logical scope — Essenty's InstanceKeeper is
-// the substrate under Decompose's retained tree, adopted as substrate rather
-// than as API (test-scope dependency only; the receipt test confirms the
-// mechanics).
+// the substrate under Decompose's retained tree. PROMOTED from substrate to
+// API on the graduation review (2026-07-30): `RetainedRoot` wraps the
+// receipt shape (the teardown ORDER — component before scope — is now a
+// framework guarantee), so instance-keeper is an `api` dependency.
 plugins {
   alias(libs.plugins.kotlin.jvm)
   `maven-publish`
@@ -27,10 +28,12 @@ kotlin {
 dependencies {
   api(project(":kernel"))
   api(libs.kotlinx.coroutines.core)
+  // RetainedRoot implements InstanceKeeper.Instance — the supertype is public
+  // API, so the dependency is `api`, not `implementation`.
+  api(libs.essenty.instance.keeper)
 
   testImplementation(kotlin("test"))
   testImplementation(libs.kotlinx.coroutines.test)
-  testImplementation(libs.essenty.instance.keeper)
 }
 
 tasks.test {

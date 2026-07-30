@@ -54,7 +54,7 @@ pairs:
       - kotlin: SpineBoundary
         reason: same role, different name — the spine string-boundary codec (swift RouteSpineCodec)
       - swift: RestoredSpineBox
-        reason: the iOS scene-restoration bracket (C2) rides in the same file; Android restoration is SavedState, platform-side
+        reason: the restoration bracket rides in this file on Swift; the Kotlin twin has its own file — shells/RestoredSpineBox.kt (a shells single), graduated on the 2026-07-30 graduation review
       - swift: place
         reason: RestoredSpineBox API (see RestoredSpineBox delta)
       - swift: take
@@ -244,6 +244,14 @@ singles:
     flavor: swift
     file: swift/Sources/DuetShells/ViewShell.swift
     reason: the UIKit hosting substrate (view shells + Activatable); Compose renders via composables — no class twin (Kotlin's Activatable lives in ChildHandles.kt, that pair's delta)
+  - surface: shells
+    flavor: kotlin
+    file: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RestoredSpineBox.kt
+    reason: the Swift twin rides in RouteSpineCodec.swift (that pair's swift delta) — same duties, own file on Kotlin; graduated from the adopter's app-side copy on the 2026-07-30 graduation review
+  - surface: shells
+    flavor: kotlin
+    file: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RetainedRoot.kt
+    reason: the Android retained-scope carrier (doc 20 Q2, promoted from receipt to API on the 2026-07-30 graduation review); iOS needs no twin — UIApplication-scoped singletons give the scene glue the same reach app-side
 
   # ── testing ───────────────────────────────────────────────────────────
   - surface: testing
