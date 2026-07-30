@@ -14,7 +14,7 @@ plugins {
 
 allprojects {
   group = "dev.modaal.duet"
-  // -SNAPSHOT so mavenLocal consumers (the playground, pre-publication) always
+  // -SNAPSHOT so mavenLocal consumers (adopters, pre-publication) always
   // re-resolve after `publishToMavenLocal`. The real (non-snapshot) Maven
   // publication — and the dev.modaal.duet namespace verification — stay
   // decision-gated with the public flip (doc 18 F0).

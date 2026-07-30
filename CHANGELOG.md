@@ -1,6 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.1] — 2026-07-30
+
+Kotlin-only, additive. Swift consumers pinned `exact: "0.1.0"` are unaffected
+and need not re-pin; the Kotlin artifacts keep the `0.1.0-SNAPSHOT` mavenLocal
+coordinate until the real Maven publication (the coordinate is the swap point,
+the tag is the record).
 
 ### Added — the graduation pair (`shells-compose`)
 
@@ -44,8 +49,8 @@ re-pin deliberately.
   whose committed fixture doesn't exist yet during a regen run (this lane's
   artifacts are materialized by the CLI AFTER the test process exits, so on a
   repo's FIRST record the committed file cannot exist). Until now unreachable:
-  the framework's own corpus is committed, and the twin-flavor playground
-  authors scenarios Swift-side only — a single-source (KMP-flavor) adopter's
+  the framework's own corpus is committed, and twin-flavor adopters
+  author scenarios Swift-side only — a single-source (KMP-flavor) adopter's
   first `duet record` hit both paths. (In the family: duet-tools learned
   kotlin-only manifests — no `swift:` twins → the Swift lane and its coverage
   half don't apply, `record` defaults to the kotlin runner, and KMP modules'
@@ -154,7 +159,7 @@ re-pin deliberately.
 
 ### Added — the `duet` CLI (`tools/duet`, F4·S1)
 
-- **The open toolchain CLI**, extracted from the reference playground's
+- **The open toolchain CLI**, extracted from the reference adopter’s
   `tools/verify` and renamed to its real verb surface: `duet verify` (meta-checks
   + both platform lanes in parallel + the coverage gate), `duet record`
   (scenario-driven fixture regeneration; `--check` = the R10 CI drift gate),

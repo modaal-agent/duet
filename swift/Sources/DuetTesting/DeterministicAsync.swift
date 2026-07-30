@@ -62,7 +62,7 @@ public func settle(
 /// every mounted child object weakly; after churn, `liveCount` must reach zero
 /// — a leaked-RETAINED child fails, strictly stronger than balanced
 /// attach/detach counts (the LeakDetector handover, productized from the
-/// playground's churn specs).
+/// reference adopter’s churn specs).
 public final class ChildDeallocLedger {
   private struct WeakBox {
     weak var object: AnyObject?
