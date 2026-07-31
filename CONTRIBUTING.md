@@ -28,6 +28,10 @@ Duet's correctness story is a recorded conformance corpus — fixtures that both
 
 6. **Keep CI green.** Breakages on `main` block all PRs until fixed.
 
+7. **A release cut sets the published version, in the commit that gets tagged.** Both flavors are consumed by version, so a tag that does not change what it publishes is not a release. Swift is safe by construction — SwiftPM resolves the git tag itself — but the KMP flavor publishes Maven coordinates, and its version is a *string in `kotlin/build.gradle.kts`* that has no automatic relationship to the tag. Cutting `X.Y.Z` therefore means: set `version = "X.Y.Z-SNAPSHOT"` (or the release version once the Maven publication is live), commit, **then** tag that commit — not tag first and bump after, which leaves the tag publishing its predecessor's coordinate. `main` then stays on `X.Y.Z-SNAPSHOT` until the next cut moves it; the version names the current line, and only a cut advances it.
+
+   The failure this rule exists to prevent already happened: the `0.1.1` cut left `version = "0.1.0-SNAPSHOT"`, so tags `0.1.0` and `0.1.1` published the same mutable coordinate. Nothing in either flavor's build complained — the tags differ in git, and to Maven they are one artifact that the last `publishToMavenLocal` overwrites. An adopter pinned to `0.1.1` built against the `0.1.0` jar and failed at `Unresolved reference` on symbols `0.1.1` had graduated, with no signal pointing at the version. Pre-publication this is invisible precisely because mavenLocal has no provenance; after publication it becomes an immutable, public wrong artifact.
+
 ## Licensing of contributions
 
 Duet is MIT-licensed. Contributions are accepted under the same terms (inbound = outbound); submitting a PR means you agree your contribution is licensed under the [MIT License](LICENSE). There is no CLA.

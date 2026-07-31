@@ -18,7 +18,22 @@ allprojects {
   // re-resolve after `publishToMavenLocal`. The real (non-snapshot) Maven
   // publication — and the dev.modaal.duet namespace verification — stay
   // decision-gated with the public flip (doc 18 F0).
-  version = "0.1.0-SNAPSHOT"
+  //
+  // The NUMBER tracks the CURRENT release line — it matches the most recent
+  // cut and stays there until the next one, which moves it in the commit it
+  // tags (CONTRIBUTING, Development rules §7). It stayed at 0.1.0-SNAPSHOT
+  // through the 0.1.1 cut, so tags 0.1.0 and 0.1.1 publish the SAME mutable
+  // coordinate: a Maven consumer cannot tell them apart, and an adopter pinned
+  // to one silently compiles against whatever the last `publishToMavenLocal`
+  // left in ~/.m2. That is how an adopter hit `Unresolved reference` on symbols
+  // 0.1.1 had graduated.
+  //
+  // Note what this does and does not fix. `main` now publishes 0.1.1-SNAPSHOT,
+  // but building FROM tag 0.1.1 still yields 0.1.0-SNAPSHOT — the tagged commit
+  // is unchanged, because re-pointing a pushed tag is worse than the defect.
+  // The 0.1.0/0.1.1 pair is permanently indistinguishable; §7 is what keeps it
+  // from recurring at 0.1.2.
+  version = "0.1.1-SNAPSHOT"
 }
 
 subprojects {
