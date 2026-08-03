@@ -24,10 +24,12 @@ plugins {
 kotlin {
   jvmToolchain(21)
 
-  // kotlin.uuid.Uuid is the canonical UUID type in common code (FC2 M6); it is
-  // still experimental stdlib API at Kotlin 2.3.21, so opt in module-wide.
+  // kotlin.uuid.Uuid / kotlin.time.Instant are the canonical UUID/date types
+  // in common code (FC2 M6); both are still experimental stdlib
+  // API at Kotlin 2.3.21, so opt in module-wide.
   compilerOptions {
     optIn.add("kotlin.uuid.ExperimentalUuidApi")
+    optIn.add("kotlin.time.ExperimentalTime")
   }
 
   val xcf = XCFramework("DuetKernel")

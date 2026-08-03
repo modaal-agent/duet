@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.2] — 2026-08-03
+
+Kotlin-only, additive. Swift consumers pinned `exact: "0.1.1"`/`"0.1.0"` are
+unaffected. Per CONTRIBUTING §7, this cut moves the Kotlin Maven coordinate to
+`0.1.2-SNAPSHOT` — consumers bump their version catalog alongside their family
+ref.
+
+### Added — the common canonical Instant (kernel)
+
+`CanonicalInstantSerializer` over `kotlin.time.Instant`, registered
+contextually for ALL targets in `CanonicalSerializers.module` — the
+multiplatform canonical date the platform hook's KDoc owed. The wire
+form is byte-identical to the JVM `InstantMillisSerializer`
+(`yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`, sub-millisecond digits truncated), proven by
+`CanonicalInstantCrossSerializerTest`; the first consumer is the reference
+adopter's capture feature, whose committed fixtures are the external byte
+validation. The JVM-only `java.time.Instant` registration is unchanged —
+JVM-authored twin corpora keep resolving it.
+
 ## [0.1.1] — 2026-07-30
 
 Kotlin-only, additive. Swift consumers pinned `exact: "0.1.0"` are unaffected

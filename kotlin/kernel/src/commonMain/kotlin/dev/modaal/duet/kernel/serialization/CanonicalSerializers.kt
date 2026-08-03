@@ -16,15 +16,19 @@ import kotlinx.serialization.modules.contextual
  * Contextual registrations:
  *  - `kotlin.uuid.Uuid` — common ([CanonicalUuidSerializer]), all targets. The
  *    canonical UUID type for KMP-flavor feature code.
+ *  - `kotlin.time.Instant` — common ([CanonicalInstantSerializer]), all targets;
+ *    byte-identical to the JVM form below. The canonical date type for
+ *    KMP-flavor feature code (the multiplatform Instant the platform hook's
+ *    KDoc owed, discharged at 0.1.2).
  *  - platform hook ([registerPlatformContextualSerializers]): the JVM `actual`
  *    registers `java.time.Instant` (millisecond ISO-8601 UTC) and `java.util.UUID`
  *    — the types JVM-authored feature code (the pre-KMP corpus shape) already
- *    carries. The Apple `actual` is empty; a multiplatform Instant is owed only
- *    when an Instant-carrying feature crosses the boundary (see the expect KDoc).
+ *    carries. The Apple `actual` is empty.
  */
 object CanonicalSerializers {
   val module = SerializersModule {
     contextual(CanonicalUuidSerializer)
+    contextual(CanonicalInstantSerializer)
     registerPlatformContextualSerializers()
   }
 

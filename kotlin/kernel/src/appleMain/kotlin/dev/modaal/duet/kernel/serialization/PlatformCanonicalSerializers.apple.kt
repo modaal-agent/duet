@@ -6,12 +6,11 @@ package dev.modaal.duet.kernel.serialization
 import kotlinx.serialization.modules.SerializersModuleBuilder
 
 /**
- * Apple `actual`: empty — deliberately. UUID support is common
- * ([CanonicalUuidSerializer], `kotlin.uuid.Uuid`); `Instant`'s canonical
- * serializer is built on `java.time.Instant` (absent on Kotlin/Native) and no
- * boundary-crossing feature carries an Instant yet. See the expect KDoc for
- * what is owed when one does.
+ * Apple `actual`: empty — deliberately. UUID and Instant support are both
+ * common now ([CanonicalUuidSerializer] over `kotlin.uuid.Uuid`,
+ * [CanonicalInstantSerializer] over `kotlin.time.Instant`); nothing is
+ * platform-only on this side.
  */
 actual fun SerializersModuleBuilder.registerPlatformContextualSerializers() {
-  // Intentionally empty: UUID is common; Instant is unused on Apple.
+  // Intentionally empty: UUID and Instant are common.
 }

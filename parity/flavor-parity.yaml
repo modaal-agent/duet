@@ -182,6 +182,10 @@ singles:
     reason: the sum-encoding vehicle is per-flavor by design (FC2/FC3) — Swift = marker protocol + CLI codegen; KMP = the derived CanonicalSumSerializer
   - surface: kernel
     flavor: kotlin
+    file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalInstantSerializer.kt
+    reason: common canonical Instant (kotlin.time.Instant, all targets — 0.1.2); Swift dates encode through DuetTesting's CanonicalJSON date strategy, byte-identical by the cross-serializer test
+  - surface: kernel
+    flavor: kotlin
     file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalJson.kt
     reason: compact canonical writer for record artifacts + replay; the pretty §6 writer is CLI-side (the one-writer decision)
   - surface: kernel

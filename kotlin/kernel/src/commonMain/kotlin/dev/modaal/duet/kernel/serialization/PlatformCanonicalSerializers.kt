@@ -14,10 +14,10 @@ import kotlinx.serialization.modules.SerializersModuleBuilder
  *    `java.util.UUID` (lowercase 8-4-4-4-12) — both carried by JVM-authored
  *    feature code; the java-backed serializers are byte-identical to the
  *    common [CanonicalUuidSerializer] form where the types overlap.
- *  - Apple `actual`: empty. `kotlin.uuid.Uuid` is already common; no
- *    boundary-crossing feature carries an Instant yet. OWED when one does: a
- *    multiplatform canonical Instant (ISO-8601 UTC, exactly three fractional
- *    digits + `Z`), byte-validated by that feature's fixtures — do NOT
- *    approximate blind.
+ *  - Apple `actual`: empty. `kotlin.uuid.Uuid` and `kotlin.time.Instant` are
+ *    both common now — the multiplatform canonical Instant this KDoc owed
+ *    landed as [CanonicalInstantSerializer] (0.1.2), byte-validated by the
+ *    first Instant-carrying boundary feature's fixtures (the reference
+ *    adopter's capture).
  */
 expect fun SerializersModuleBuilder.registerPlatformContextualSerializers()

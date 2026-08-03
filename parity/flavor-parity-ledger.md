@@ -11,11 +11,11 @@ are the per-pair symbol waivers declared, with reasons, in
 
 | Surface | Pairs | Singles | Swift files | Swift LOC | Kotlin files | Kotlin LOC | Open deltas |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| kernel | 3 | 12 | 4 | 218 | 14 | 682 | 4 |
+| kernel | 3 | 13 | 4 | 218 | 15 | 753 | 4 |
 | replay | 3 | 2 | 4 | 447 | 4 | 284 | 7 |
 | shells | 7 | 4 | 9 | 615 | 9 | 610 | 6 |
 | testing | 9 | 6 | 13 | 2445 | 11 | 1717 | 19 |
-| **total** | 22 | 24 | 30 | 3725 | 38 | 3293 | 36 |
+| **total** | 22 | 25 | 30 | 3725 | 39 | 3364 | 36 |
 
 ## Open deltas
 
@@ -63,13 +63,14 @@ are the per-pair symbol waivers declared, with reasons, in
 | Surface | Flavor | File | LOC | Reason |
 | --- | --- | --- | --- | --- |
 | kernel | swift | swift/Sources/Duet/CanonicalSumCodable.swift | 17 | the sum-encoding vehicle is per-flavor by design (FC2/FC3) — Swift = marker protocol + CLI codegen; KMP = the derived CanonicalSumSerializer |
+| kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalInstantSerializer.kt | 68 | common canonical Instant (kotlin.time.Instant, all targets — 0.1.2); Swift dates encode through DuetTesting's CanonicalJSON date strategy, byte-identical by the cross-serializer test |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalJson.kt | 136 | compact canonical writer for record artifacts + replay; the pretty §6 writer is CLI-side (the one-writer decision) |
-| kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSerializers.kt | 36 | kotlinx-serialization registry for the canonical dialect; the Swift dialect rides Codable + the CLI's emission rule-set |
+| kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSerializers.kt | 40 | kotlinx-serialization registry for the canonical dialect; the Swift dialect rides Codable + the CLI's emission rule-set |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSumSerializer.kt | 116 | the KMP derived sum serializer (FC2); the Swift mirror is generated coders via the CanonicalSumCodable marker + duet canonical-sum |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalUuidSerializer.kt | 34 | canonical UUID lowercasing for the KMP flavor; Swift UUIDs encode through the generated coders |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/EffectJson.kt | 36 | canonical effect encoding for the KMP flavor; the Swift twin is Effect.encode (recorded as that pair's delta) |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.kt | 23 | expect declaration for per-target contextual serializers — internal plumbing of the KMP flavor |
-| kernel | kotlin | kotlin/kernel/src/appleMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.apple.kt | 17 | Apple-target actualization of the expect above |
+| kernel | kotlin | kotlin/kernel/src/appleMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.apple.kt | 16 | Apple-target actualization of the expect above |
 | kernel | kotlin | kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.jvm.kt | 18 | JVM-target actualization of the expect above |
 | kernel | kotlin | kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/InstantMillisSerializer.kt | 34 | JVM Instant canonical form; dates cross the dialect as millis — no Swift type twin |
 | kernel | kotlin | kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/UuidSerializer.kt | 29 | JVM UUID serializer actualization |
