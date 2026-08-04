@@ -14,8 +14,8 @@ are the per-pair symbol waivers declared, with reasons, in
 | kernel | 3 | 13 | 4 | 218 | 15 | 753 | 4 |
 | replay | 3 | 2 | 4 | 447 | 4 | 284 | 7 |
 | shells | 7 | 4 | 9 | 615 | 9 | 610 | 6 |
-| testing | 9 | 6 | 13 | 2445 | 11 | 1717 | 19 |
-| **total** | 22 | 25 | 30 | 3725 | 39 | 3364 | 36 |
+| testing | 10 | 5 | 13 | 2445 | 12 | 2336 | 24 |
+| **total** | 23 | 24 | 30 | 3725 | 40 | 3983 | 41 |
 
 ## Open deltas
 
@@ -42,6 +42,11 @@ are the per-pair symbol waivers declared, with reasons, in
 | Scenario.swift ↔ Scenario.kt | swift | `buildExpression` | result-builder plumbing — the Swift DSL's compiler hooks |
 | Scenario.swift ↔ Scenario.kt | kotlin | `whenAction` | when is a Kotlin keyword; the When step's builder function is whenAction |
 | ScenarioRunner.swift ↔ ScenarioRunner.kt | swift | `ScenarioError` | failure surfaces as a thrown typed error on Swift; Kotlin fails the running test directly |
+| ChainScenario.swift ↔ ChainScenario.kt | swift | `ChainStep` | the type-erased chain statement is public result-builder currency on Swift; the Kotlin builder's statement type is internal |
+| ChainScenario.swift ↔ ChainScenario.kt | swift | `When` | when is a Kotlin keyword; the When step's builder function is whenAction (the Scenario pair's idiom) |
+| ChainScenario.swift ↔ ChainScenario.kt | swift | `buildBlock` | result-builder plumbing — the Swift DSL's compiler hooks |
+| ChainScenario.swift ↔ ChainScenario.kt | swift | `buildExpression` | result-builder plumbing — the Swift DSL's compiler hooks |
+| ChainScenario.swift ↔ ChainScenario.kt | kotlin | `whenAction` | when is a Kotlin keyword; the When step's builder function is whenAction |
 | FixtureRunner.swift ↔ FixtureRunner.kt | swift | `Document` | the Codable fixture-document model is a named type on Swift; kotlinx.serialization decodes inline |
 | FixtureRunner.swift ↔ FixtureRunner.kt | swift | `FixtureError` | failure surfaces as a thrown typed error on Swift; Kotlin fails the running test directly |
 | FixtureRunner.swift ↔ FixtureRunner.kt | swift | `canonicalDecoder` | decoder configuration is Swift-side; the Kotlin Json instance is CanonicalJson's |
@@ -83,7 +88,6 @@ are the per-pair symbol waivers declared, with reasons, in
 | shells | kotlin | kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RetainedRoot.kt | 48 | the Android retained-scope carrier (doc 20 Q2, promoted from receipt to API on the 2026-07-30 graduation review); iOS needs no twin — UIApplication-scoped singletons give the scene glue the same reach app-side |
 | testing | swift | swift/Sources/DuetTesting/CanonicalJSON.swift | 34 | source-compatibility facade delegating to DuetReplay.ReplayCanonical (the S2 one-writer move) |
 | testing | swift | swift/Sources/DuetTesting/FixtureRecorder.swift | 16 | the Swift-lane recorder (scenario → fixture bytes); the Kotlin lane records via BoundaryReplay compact artifacts materialized by the CLI |
-| testing | swift | swift/Sources/DuetTesting/ChainScenario.swift | 594 | chain authoring DSL — Swift-lane by the recorded scope limit (a ChainScenario mirror gates any Kotlin-only authoring offering) |
 | testing | swift | swift/Sources/DuetTesting/TestClock.swift | 84 | virtual clock; the KMP flavor's virtual time is kotlinx-coroutines-test's scheduler (platform-provided) |
-| testing | kotlin | kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/ChainRunner.kt | 167 | chain fixture replay for the Kotlin lane; authoring is Swift-lane (see the ChainScenario.swift single) |
+| testing | kotlin | kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/ChainRunner.kt | 167 | fixture-path chain replay for the Kotlin lane (the protocol runner's path); the Swift lane replays chains through ChainScenario verify only |
 | testing | kotlin | kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/EffectAssertions.kt | 14 | effectsOf assertion sugar for Kotlin tests; the Swift shape is TestStore.expectEffects directly |

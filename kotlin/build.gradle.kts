@@ -33,7 +33,7 @@ allprojects {
   // is unchanged, because re-pointing a pushed tag is worse than the defect.
   // The 0.1.0/0.1.1 pair is permanently indistinguishable; §7 is what keeps it
   // from recurring at 0.1.2.
-  version = "0.1.2-SNAPSHOT"
+  version = "0.2.0-SNAPSHOT"
 }
 
 subprojects {

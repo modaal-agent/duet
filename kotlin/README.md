@@ -7,7 +7,7 @@ artifacts, group `dev.modaal.duet`:
 | Artifact | What it is |
 | --- | --- |
 | `kernel` | The core: `Store` runtime, `Effect` as data, the `KernelClock` seam, canonical serialization (writer + `CanonicalSumSerializer` + the pinned configuration), and the boundary adapters (`dev.modaal.duet.replay` — the protocol registry/server + `SpineBoundary`). KMP: JVM + Apple slices (the `DuetKernel` XCFramework, SKIE route). |
-| `kernel-test` | The host-lane test support (JVM): the scenario DSL + record/verify runners (the corpus's sole writer), fixture replay + first-divergence reporting, `ChainRunner`, the exhaustive `TestStore`, `WorkerTester`, the deterministic-async toolkit, and the kernel-trace apparatus. |
+| `kernel-test` | The host-lane test support (JVM): the scenario DSLs (feature + chain dialects) + record/verify runners (the corpus's sole writer), fixture replay + first-divergence reporting, `ChainRunner`, the exhaustive `TestStore`, `WorkerTester`, the deterministic-async toolkit, and the kernel-trace apparatus. |
 | `shells-compose` | The shell half's twins (C6): `StoreHost` + `Working`/`adopt`, `ChildStores`/`ChildSlot`, `ProjectionJoin`/`StateTransitions`, `Relay`, `PresentationRegistry`, and the handle vocabulary. Headless (coroutines/Flow only — no Compose dependency); hosts live in the retained/logical scope. |
 
 ## Lanes

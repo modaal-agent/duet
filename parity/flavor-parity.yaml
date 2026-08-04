@@ -119,6 +119,20 @@ pairs:
       - swift: ScenarioError
         reason: failure surfaces as a thrown typed error on Swift; Kotlin fails the running test directly
   - surface: testing
+    swift: swift/Sources/DuetTesting/ChainScenario.swift
+    kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/ChainScenario.kt
+    deltas:
+      - swift: ChainStep
+        reason: the type-erased chain statement is public result-builder currency on Swift; the Kotlin builder's statement type is internal
+      - swift: When
+        reason: when is a Kotlin keyword; the When step's builder function is whenAction (the Scenario pair's idiom)
+      - swift: buildBlock
+        reason: result-builder plumbing — the Swift DSL's compiler hooks
+      - swift: buildExpression
+        reason: result-builder plumbing — the Swift DSL's compiler hooks
+      - kotlin: whenAction
+        reason: when is a Kotlin keyword; the When step's builder function is whenAction
+  - surface: testing
     swift: swift/Sources/DuetTesting/TestStore.swift
     kotlin: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/TestStore.kt
   - surface: testing
@@ -268,16 +282,12 @@ singles:
     reason: the Swift-lane recorder (scenario → fixture bytes); the Kotlin lane records via BoundaryReplay compact artifacts materialized by the CLI
   - surface: testing
     flavor: swift
-    file: swift/Sources/DuetTesting/ChainScenario.swift
-    reason: chain authoring DSL — Swift-lane by the recorded scope limit (a ChainScenario mirror gates any Kotlin-only authoring offering)
-  - surface: testing
-    flavor: swift
     file: swift/Sources/DuetTesting/TestClock.swift
     reason: virtual clock; the KMP flavor's virtual time is kotlinx-coroutines-test's scheduler (platform-provided)
   - surface: testing
     flavor: kotlin
     file: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/ChainRunner.kt
-    reason: chain fixture replay for the Kotlin lane; authoring is Swift-lane (see the ChainScenario.swift single)
+    reason: fixture-path chain replay for the Kotlin lane (the protocol runner's path); the Swift lane replays chains through ChainScenario verify only
   - surface: testing
     flavor: kotlin
     file: kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/EffectAssertions.kt

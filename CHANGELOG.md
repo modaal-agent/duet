@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.2.0] — 2026-08-04
+
+Kotlin-only. A minor, not a patch: the testing surface gains a whole dialect
+(chain authoring) and the flavor-parity map retires a recorded single — the
+pre-1.0 convention keeps surface growth of this size on the minor lane. Swift
+consumers pinned `exact: "0.1.x"` are unaffected. Per CONTRIBUTING §7, this cut
+moves the Kotlin Maven coordinate to `0.2.0-SNAPSHOT` — consumers bump their
+version catalog alongside their family ref.
+
+### Added — chain authoring, Kotlin dialect (`kernel-test`)
+
+`ChainScenario.kt` — the Kotlin twin of `DuetTesting/ChainScenario.swift`,
+retiring the flavor-lockstep single whose recorded reason gated exactly this
+offering (*"a ChainScenario mirror gates any Kotlin-only authoring
+offering"*):
+
+- **`ChainNode`** (key + seed + reducer + the three explicit serializers — the
+  `ChainRunner.node` precedent) and a **`chainScenario { … }`** builder with
+  `whenAction` / `hop` / `then` / `thenEffects`. The Swift `Hop` closure's
+  explicit parameter type — the type the recorded delegate payload is decoded
+  as — becomes an explicit `delegateSerializer` parameter, matching the
+  dialect's explicit-serializer style.
+- **`ChainScenarioRunner.record`** emits the COMPACT canonical artifact under
+  `parity/.runs/record/kotlin/` (the CLI materializes through the one pretty
+  writer; this flavor still ships no on-disk pretty writer). **`verify`**
+  byte-gates node seeds against `initialStates`, per-step node + action (drift
+  is `structure` with a regen hint), the `linkToNext` markers, and
+  `expectedEffects` — with the same deferred-then contract and failure shapes
+  as `ScenarioRunner` (the shared formatter golden is unchanged).
+- The JVM's erased generics cannot fail Swift's typed box cast, so the per-run
+  box registry pins each node key to its declaring `ChainNode` handle — a
+  second handle sharing a key is an authoring error (receipt in
+  `ChainScenarioRunnerTest`). Call-site lines ride the stack-frame channel and
+  `source` is explicit, as in the feature dialect.
+- The Kotlin corpus gains its own chain self-gate
+  (`kotlin/parity/fixtures/chain-ping-pong.fixture.json`), behaviorally
+  byte-identical to the Swift lane's twin — only `scenario.source` and step
+  `line` metadata differ, by construction.
+
+Validated against a migrating adopter's frozen chain corpus: Kotlin-authored
+chains (including a four-node, three-hop escalation seam) verify byte-exactly
+against fixtures recorded by the Swift DSL, and drifted-seed / edited-hop
+negative controls fail as `structure`.
+
 ## [0.1.2] — 2026-08-03
 
 Kotlin-only, additive. Swift consumers pinned `exact: "0.1.1"`/`"0.1.0"` are

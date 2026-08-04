@@ -27,12 +27,12 @@ import kotlinx.serialization.json.jsonPrimitive
  * value embedded in the next step's action — the shell-forwarding invariant, as data.
  * Chains record no state (leaf fixtures own state evolution).
  *
- * Authoring lives on the Swift side (`ChainScenario` + hops carrying the typed
- * delegate→parent-action mapping); this runner is the replay half: dialect-2 metadata
- * (labels, lines, scenario source) lands in failures, divergences carry the first
- * divergent JSON path (FixtureDiff), every run writes a machine report (RunReport),
- * and the replay stops at the first divergence. Swift authoring mirror:
- * DuetTesting/ChainScenario.swift.
+ * Authoring lives in the chain scenario DSL (`ChainScenario` on either flavor — hops
+ * carry the typed delegate→parent-action mapping); this runner is the fixture-path
+ * replay half: dialect-2 metadata (labels, lines, scenario source) lands in failures,
+ * divergences carry the first divergent JSON path (FixtureDiff), every run writes a
+ * machine report (RunReport), and the replay stops at the first divergence. Kotlin
+ * authoring twin: ChainScenario.kt; Swift: DuetTesting/ChainScenario.swift.
  */
 object ChainRunner {
   /** A typed node adapter: closes over the node's state and exposes decode→reduce→canonical-effects. */
