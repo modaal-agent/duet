@@ -32,6 +32,8 @@ Duet's correctness story is a recorded conformance corpus — fixtures that both
 
    The failure this rule exists to prevent already happened: the `0.1.1` cut left `version = "0.1.0-SNAPSHOT"`, so tags `0.1.0` and `0.1.1` published the same mutable coordinate. Nothing in either flavor's build complained — the tags differ in git, and to Maven they are one artifact that the last `publishToMavenLocal` overwrites. An adopter pinned to `0.1.1` built against the `0.1.0` jar and failed at `Unresolved reference` on symbols `0.1.1` had graduated, with no signal pointing at the version. Pre-publication this is invisible precisely because mavenLocal has no provenance; after publication it becomes an immutable, public wrong artifact.
 
+8. **Docs state the present rule, not the transition.** Pattern pages (`docs/`), contract prose, and README sections are forward-looking: state what the system does and the action the reader takes. Do not frame a rule as a replacement of past practice — "X replaces hand-rolled Y", "previously", "no longer" — the reader has no such past. Historical contrast belongs in the changelog, commit messages, and migration guides, where the change itself is the subject.
+
 ## Licensing of contributions
 
 Duet is MIT-licensed. Contributions are accepted under the same terms (inbound = outbound); submitting a PR means you agree your contribution is licensed under the [MIT License](LICENSE). There is no CLA.

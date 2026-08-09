@@ -88,7 +88,7 @@ kotlin/      the KMP flavor: Maven artifacts dev.modaal.duet:kernel / :kernel-te
 contracts/   the normative contracts, versioned with the code:
              store-kernel-contract.md · serialization.md · replay-protocol-v1.md ·
              kernel-trace-v0.md · presentation-contract.md
-docs/        pattern pages that ship with the framework (workers.md)
+docs/        pattern pages that ship with the framework (workers.md · composition.md)
 parity/      the flavor twin map (flavor-parity.yaml) + the generated per-release
              flavor-parity ledger — LOC and open deltas per flavor
 scripts/     flavor-lockstep-lint.py, the twin-map gate (CONTRIBUTING, rule 1)

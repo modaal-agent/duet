@@ -43,10 +43,14 @@ lifecycle callback. Subscription-shaped workers (callback registries, Combine
 pipelines) set up in `run()` and then `await untilCancelled()` — teardown stays
 structured without a `stop()` hook.
 
-Isolation replaces hand-rolled locks: stateful workers are Swift `actor`s (or
-`@MainActor` classes when main-bound); on Kotlin they confine state to the
-host's scope. Spawning unstructured tasks inside a worker is the same review
-defect it would be in feature code.
+Stateful workers are Swift `actor`s (or `@MainActor` classes when main-bound);
+on Kotlin they confine state to the host's scope. Isolation is what guards
+worker state — a hand-rolled lock or serial queue in a worker is a review
+defect. On Swift this rule is compiler-verified only under strict concurrency —
+the package needs `-strict-concurrency=complete` (or the Swift 6 language
+mode); under plain Swift 5 mode the compiler checks none of it (see
+[Isolation checking](#isolation-checking)). Spawning unstructured tasks inside
+a worker is the same review defect it would be in feature code.
 
 **Mount-bracket is the default.** Conditional or per-entity processing is
 normally an effect-level concern (cancel-in-flight by effect id), not a worker
@@ -56,6 +60,45 @@ logical mount on both platforms.
 
 The host keeps a ledger: `StoreHost.liveWorkerCount` must be zero after
 teardown. Shell churn tests extend their teardown assertions to it.
+
+## Isolation checking
+
+Facts about the isolation rule that are easy to assume wrong, all
+Swift-specific (Kotlin's confinement is structural — state lives in the host's
+scope):
+
+- **The required package setting.** The rule above is enforced by the compiler
+  only when the package builds with `-strict-concurrency=complete` (Swift 5
+  mode) or in the Swift 6 language mode. Under plain Swift 5 mode, `Sendable`
+  conformances and actor-isolation claims are never checked. Trap: Swift 6
+  mode needs `swift-tools-version:6.0` plus `.swiftLanguageMode(.v6)` —
+  `.unsafeFlags(["-swift-version", "6"])` in a 5.9 manifest is a silent no-op,
+  because SwiftPM appends its own `-swift-version 5` afterwards and the last
+  flag wins.
+- **`@MainActor` moves `run()`'s execution, not just its checking.** On a
+  worker class it makes `run()`'s body run on the main actor, so annotating a
+  worker that performs off-main work changes its behaviour. The specific case
+  to look for: a worker that routes CPU-bound work (say an image encode)
+  off-main with `.subscribe(on:)` or a `DispatchQueue`. Under `@MainActor` the
+  build stays green with no diagnostic on those lines while the closures are
+  treated as main-isolated — the off-main routing and the isolation claim
+  contradict each other silently.
+- **Removing a lock is not free.** When a class becomes `@MainActor`, its
+  hand-rolled mutex looks deletable — but Combine closures writing the state
+  claim main isolation, and if the publisher they hang off documents no
+  delivery queue, the writes can still arrive off-main. Deleting the lock
+  requires either a `receive(on:)` hop or proof of the publisher's delivery
+  queue.
+- **`Working` needs no change for a `@MainActor` adopter.** Its only
+  requirement is a nonisolated `func run() async`, which a `@MainActor` async
+  method witnesses — the compiler inserts the hop. Assuming the reverse (that
+  conforming requires matching the protocol's isolation) would stop an adopter
+  before they start; it does not.
+- **`@unchecked Sendable` on a `@MainActor` class is invisible to the
+  compiler.** Such a class is already implicitly `Sendable`, so the
+  declaration compiles with no diagnostic even under complete checking. No
+  build setting catches it — treat it as a review flag on any `Working`
+  conformer.
 
 ## Ingress shapes
 
