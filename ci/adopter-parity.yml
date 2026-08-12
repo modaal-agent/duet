@@ -1,17 +1,23 @@
 # Duet adopter parity gate — CI template.
 #
 # Copy to your repo's .github/workflows/parity.yml. Two gates, both required:
-#   duet verify          — meta-checks (declaration lockstep + fixture symmetry),
-#                          then both platform lanes replay the shared fixtures
-#                          (host Swift + JVM Kotlin — no simulator, no emulator),
-#                          with the per-fixture coverage gate.
+#   duet verify          — meta-checks (declaration lockstep + fixture symmetry +
+#                          the spec↔fixture cross-reference), then both platform
+#                          lanes replay the shared fixtures (host Swift + JVM
+#                          Kotlin — no simulator, no emulator), with the
+#                          per-fixture coverage gate.
 #   duet record --check  — the drift gate: fixtures and generated coders
 #                          are build products; CI fails if a committed artifact
 #                          is stale rather than silently regenerating it.
 #
+# The toolchain arrives as the RELEASED BINARY: your repo's tools/duet wrapper
+# resolves the pin (parity/duet-tools.ref) to that tag's release asset —
+# checksum-verified, cached under .duet-family/duet-bin/ — and falls back to a
+# source build only when no release is reachable.
+#
 # Lines marked ADAPT are yours; lines marked PRIVATE-PHASE exist only until the
-# family publishes (released `duet` binary via its own tap + a URL/registry
-# package dependency) and then delete wholesale.
+# family publishes (anonymous release downloads + a URL/registry package
+# dependency) and then delete wholesale.
 name: parity
 
 on:
@@ -36,6 +42,12 @@ jobs:
     # are on both images). macos-15's default is below the floor. Dual-lane
     # both, like the framework's own workflow, if you support both.
     runs-on: macos-26
+    # PRIVATE-PHASE: release assets on a private repo are API-only, so the
+    # wrapper's `gh release download` needs a token with contents:read on
+    # duet-tools. Deletes at publication — the download is anonymous on a
+    # public repo.
+    env:
+      GH_TOKEN: ${{ secrets.DUET_FAMILY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -53,22 +65,16 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      # PRIVATE-PHASE: check the family out and run the CLI from source. At
-      # publication this whole block becomes one line (install the released
-      # binary), DUET_TOOLS_HOME retires with the adopter's tools/duet wrapper,
-      # and private checkouts need a token with contents:read on both repos.
+      # PRIVATE-PHASE: the FRAMEWORK half still needs a checkout (adopter
+      # manifests reference the Duet package pre-publication; a private repo
+      # needs a token with contents:read). The TOOLCHAIN half needs no
+      # checkout: tools/duet downloads the released binary at the pin,
+      # authenticated by the job-level GH_TOKEN above.
       - uses: actions/checkout@v4
         with:
           repository: modaal-agent/duet
           path: .duet-family/modaal-agent-duet
           token: ${{ secrets.DUET_FAMILY_TOKEN }}
-      - uses: actions/checkout@v4
-        with:
-          repository: modaal-agent/duet-tools
-          path: .duet-family/modaal-agent-duet-tools
-          token: ${{ secrets.DUET_FAMILY_TOKEN }}
-      - name: Point the toolchain at the checkout
-        run: echo "DUET_TOOLS_HOME=$GITHUB_WORKSPACE/.duet-family/modaal-agent-duet-tools" >> "$GITHUB_ENV"
       # PRIVATE-PHASE + ADAPT: pre-publication, adopter manifests reference the
       # Duet package by LOCAL PATH (the single swap point). Rewrite that path to
       # the checkout above — one sed per manifest that declares it. Retires at
@@ -78,11 +84,10 @@ jobs:
       #    sed -i '' "s|<your local duet path>|$GITHUB_WORKSPACE/.duet-family/modaal-agent-duet|" \
       #      <path/to/your>/Package.swift
 
-      # ADAPT: keep only the lints your repo carries. `duet verify` already runs
-      # the declaration-lockstep lint as its meta-check; the spec↔fixture
-      # cross-reference lint (prose drift the byte gate can't see) is separate.
-      - name: spec-fixture lint
-        run: python3 parity/scripts/spec-fixture-lint.py
+      # ADAPT: the meta-checks (declaration lockstep, fixture symmetry, the
+      # spec↔fixture cross-reference) are toolchain-owned inside `duet verify` —
+      # an adopter repo carries no copy of them. Add steps here only for lints
+      # your repo itself owns.
 
       - name: duet verify (meta-checks + both lanes + coverage gate)
         run: tools/duet verify
