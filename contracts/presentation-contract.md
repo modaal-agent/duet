@@ -52,7 +52,7 @@ shells) nests them into the app-wide **presentation tree**.
 
 Rules:
 
-- **One modal slot per node** (R14). Stacked presentation is **composition**: a
+- **One modal slot per node.** Stacked presentation is **composition**: a
   presented child owning its *own* slot yields a chain (the app's
   `CaptureView` cover → picker-sheet chain is the exhibit — app-live since W1:
   MainNav's slot holds the cover, `CaptureState.sheet` holds the picker). Same-owner
@@ -81,7 +81,7 @@ Rules:
   one growth, recorded here as the contract prescribes. Rules: one stage per
   node; payloads are pure values like every other kind carrier; a stage plus a
   sibling modal `slot`-analogue (Root's `isEnterCodePresented`) composes under
-  the same one-modal-slot-per-node reading of R14.
+  the same one-modal-slot-per-node reading.
 
   **Alternative considered at review — a replace-top `path`** (`path:
   [RootRoute]`, every transition replaces the active leaf). The VALUE shape
@@ -126,7 +126,7 @@ Rules:
   navigation-shaped fields and check the algebra covers them. Findings:
   `path` ×2 (Timeline, Shared), modal `slot` ×5 (MainNav, Timeline, Capture,
   MemoryDetail, Shared), `tabs` ×1 (MainNav), `stage` ×1 (RootNav's `phase`,
-  L0.1) with its sibling modal flag (`isEnterCodePresented` — the R14
+  L0.1) with its sibling modal flag (`isEnterCodePresented` — the
   one-slot-per-node reading recorded at L0.1). Nothing needed a sixth primitive;
   no L0.2 is proposed. Two boundary rulings the sweep surfaced, recorded so the
   next wave doesn't re-litigate them:
@@ -167,7 +167,7 @@ Kinds in force today:
 | --- | --- | --- | --- |
 | timeline | path | `memoryDetail` | `memoryId, context, startEditing, startSharing` |
 | timeline | slot | `sharePicker` | `memoryId, config` |
-| memorydetail | slot | `sharePicker` | `config` (app-live since W1 — the nested slot on a composed node: R14 chains) |
+| memorydetail | slot | `sharePicker` | `config` (app-live since W1 — the nested slot on a composed node: one slot per node, chained) |
 | capture | slot | `photoSource / photoLibrary / camera / videoSource / videoRecorder / videoLibrary / voiceRecorder / location / friends / date` | — (all payload-free; app-live since W1). ONE slot spans what iOS renders through three channels — confirmation dialogs, sheets, full-screen covers — the channel split is manner (§5). The legacy `activeSheet` + `activeFullScreen` view-state pair collapsed into it. |
 | shared | path | `memoryDetail` | `memoryId, context, startEditing` (route kind #2 — W2; no `startSharing`: memory deep links rebase the my-lane spine only) |
 | shared | slot | `sharePicker` | `memoryId, config` (the third mount) |
@@ -217,7 +217,7 @@ profile likewise owns NO slot (a permanent tab child, timeline-precedent hoist):
 its intents (`friendToggleTapped`, `friendRenameSubmitted`, `deleteAccountTapped`,
 …) mutate list/card/danger state — the delete-arm two-tap is STATE on a reducer
 clock, not a modal kind; the remove/rename alerts are precedent-class manner (§6).
-shared (app-live since W2 — the second subtree root; the Q5 control group retired):
+shared (app-live since W2 — the second subtree root):
 `memorySelected` (recipient/author context from the row, read-on-tap folded in),
 `editRequested` (author route, was a delegate), `shareRequested/shareSheetDismissed`
 (the third picker mount), `backPressed`, `detail(event)`/`sharePicker(event)` (its
@@ -246,8 +246,8 @@ push animation curves, corner radii, drag indicators. The semantic/manner
 firewall keeps fixtures byte-identical across platforms.
 
 **Plugin registry seam [W1 — landed for the my-lane host].**
-`DuetShells.PresentationRegistry` is the helper; `MainNavShell.presentation`
-is the first instance, carrying `TimelineRoute` (detail push), `TimelineSheet`
+`DuetShells.PresentationRegistry` is the helper; the reference adopter's main
+navigation shell is the first instance, carrying `TimelineRoute` (detail push), `TimelineSheet`
 (share picker + detents), and — since the Capture conversion — `MainSheet` (the
 capture cover's chrome: single `.large` detent, corner radius; the invite arm's
 feature converted with W1's closer; priming's with W2's closer — every `MainSheet`
@@ -328,7 +328,7 @@ the recorder KINDS are tree state; the AVCapture/AVAudioRecorder session interna
 are the island, boundary "none": recorders return only `(url, durationMs)`) — see
 `manifest.yaml → presentation.islands`. W2's candidate — the reaction picker —
 was DECIDED by the third-verb heuristic: its chrome (long-press picker, the
-spec-029 flight overlay with its `activeFlight` view state) writes exactly two
+a later flight overlay with its `activeFlight` view state) writes exactly two
 verbs (`reactionSet`, `reactionCleared`) and hosts no structure, so it is
 island-precedent-class, NOT an island — no ledger entry.
 Island-precedent-class, deliberately NOT ledgered (pure-manner sub-surfaces whose

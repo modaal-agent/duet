@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Modaal.dev
 // Licensed under the MIT License. See LICENSE file for details.
 
-// MT4 fork glue (extracted from the reference adopter’s navigation shells): breaks the
+// Extracted from the reference adopter’s navigation shells: breaks the
 // child-environment ↔ parent-store construction cycle without IUO closures. The
 // composition root creates the relay, hands `send` to the child environment it is
 // building, and assigns `sink` once the parent store exists.

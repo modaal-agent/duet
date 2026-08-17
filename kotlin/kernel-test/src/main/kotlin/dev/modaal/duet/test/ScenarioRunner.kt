@@ -20,7 +20,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 /**
- * Executes a [Scenario] in one of two modes (FT2). Swift mirror:
+ * Executes a [Scenario] in one of two modes. Swift mirror:
  * DuetTesting/ScenarioRunner.swift.
  *
  * - **record** (`REGEN_FIXTURES=1` or `-Dduet.regenFixtures=1`): drives the pure
@@ -30,8 +30,8 @@ import kotlinx.serialization.json.put
  *   artifact under `parity/.runs/record/kotlin/`; the `duet` CLI materializes it
  *   into the §6 fixture file through the framework's ONE pretty writer
  *   (`duet record --platform kotlin`, or `duet write-fixtures` for a framework
- *   repo's own corpus). Fixtures are build products — never hand-edited (R10);
- *   this flavor ships no on-disk writer at all (F4·S2, G1).
+ *   repo's own corpus). Fixtures are build products — never hand-edited;
+ *   this flavor ships no on-disk writer at all.
  * - **verify**: drives the reducer through every variant AND byte-gates each step
  *   against the committed fixture. A step's trailing local `then`s run BEFORE its
  *   byte gate: a failing then states the author's *intent* and wins the header, with
@@ -111,7 +111,7 @@ object ScenarioRunner {
         put("initialState", json.encodeToJsonElement(stateSerializer, variants.initialState()))
         put("steps", JsonArray(steps))
       }
-      // Compact artifact — the CLI materializes the §6 file (one writer, F4·S2).
+      // Compact artifact — the CLI materializes the §6 file (one writer).
       val artifactDir = File(FixtureRunner.fixturesDirectory().parentFile, ".runs/record/kotlin")
       artifactDir.mkdirs()
       val file = File(artifactDir, "${variant.fixture}.fixture.json")
@@ -367,7 +367,7 @@ object ScenarioRunner {
 
     /**
      * Splits a node list at its first `branch`: everything before is the shared prefix;
-     * everything after must also be a `branch` (branches are alternate ENDINGS — R11
+     * everything after must also be a `branch` (branches are alternate ENDINGS — the rule
      * stays intact because the structure is static: every branch always runs, no
      * runtime value chooses). A `context` whose children fork must be the last node at
      * its level, and its variants bubble up.

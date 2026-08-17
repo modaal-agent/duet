@@ -4,15 +4,15 @@
 import Foundation
 import Duet
 
-/// FT2 — the scenario DSL. A scenario is the *authored source* of a parity fixture:
+/// The scenario DSL. A scenario is the *authored source* of a parity fixture:
 /// spec-style, nested, with local `Then` assertions that carry code pointers. The
 /// fixture JSON is compiled FROM it (`ScenarioRunner` record mode) and replayed on both
 /// platforms; `Then`/`ThenEffects` closures run on the authoring platform only and are
-/// never exported (R11: scenarios contain no logic the fixture can't carry).
+/// never exported (scenarios contain no logic the fixture can't carry).
 ///
 /// Deliberately NOT supported: `if`/`switch`/loops inside a scenario body. The builder
 /// omits `buildOptional`/`buildEither`, so conditional scenarios are a *compile error* —
-/// that is R11 enforced by the type system, not by review. R11's target is
+/// that is the rule enforced by the type system, not by review. Its target is
 /// *data-dependent* control flow (what gets recorded must never depend on a runtime
 /// value); `Branch` is static structure — every branch always runs, each as its own
 /// recorded fixture — so alternates are expressible without weakening the rule.
@@ -136,7 +136,7 @@ public func Context<State, Action, Payload: Equatable>(
 /// `<fixture>.<slug>` (nested branches append: `<fixture>.<slug>.<slug>`). Branches
 /// are terminal: once one appears at a level, only Branches may follow at that level.
 ///
-/// R11 note: branches are *static* alternates — every branch always runs and records;
+/// Note: branches are *static* alternates — every branch always runs and records;
 /// no runtime value chooses between them. `if` remains a compile error.
 public func Branch<State, Action, Payload: Equatable>(
   _ label: String, line: UInt = #line,

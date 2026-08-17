@@ -9,7 +9,7 @@ import XCTest
 /// **pure reducer only** — no runtime, no handlers, no clocks. Runner semantics:
 /// contracts/serialization.md §5. Kotlin mirror: `kernel-testsupport` FixtureRunner.kt.
 ///
-/// Dialect 2 (FT1): fixtures may carry `scenario.source`, per-step `label`/`line`, and
+/// Dialect 2: fixtures may carry `scenario.source`, per-step `label`/`line`, and
 /// `dialect: 2`. All of it is *metadata* — the byte gate still compares only
 /// `action`/`expectedState`/`expectedEffects`. On divergence the runner reports the
 /// first divergent JSON path (FixtureDiff), the step label, and the scenario source

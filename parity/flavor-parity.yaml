@@ -193,7 +193,7 @@ singles:
   - surface: kernel
     flavor: swift
     file: swift/Sources/Duet/CanonicalSumCodable.swift
-    reason: the sum-encoding vehicle is per-flavor by design (FC2/FC3) — Swift = marker protocol + CLI codegen; KMP = the derived CanonicalSumSerializer
+    reason: the sum-encoding vehicle is per-flavor by design — Swift = marker protocol + CLI codegen; KMP = the derived CanonicalSumSerializer
   - surface: kernel
     flavor: kotlin
     file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalInstantSerializer.kt
@@ -209,7 +209,7 @@ singles:
   - surface: kernel
     flavor: kotlin
     file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSumSerializer.kt
-    reason: the KMP derived sum serializer (FC2); the Swift mirror is generated coders via the CanonicalSumCodable marker + duet canonical-sum
+    reason: the KMP derived sum serializer; the Swift mirror is generated coders via the CanonicalSumCodable marker + duet canonical-sum
   - surface: kernel
     flavor: kotlin
     file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalUuidSerializer.kt
@@ -241,13 +241,13 @@ singles:
   - surface: kernel
     flavor: kotlin
     file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/runtime/StoreScopes.kt
-    reason: retained/logical component-scope runtime (the Q2 stance); iOS has no config-change death — no Swift twin by design
+    reason: retained/logical component-scope runtime (the config-change stance); iOS has no config-change death — no Swift twin by design
 
   # ── replay ────────────────────────────────────────────────────────────
   - surface: replay
     flavor: swift
     file: swift/Sources/DuetReplay/ReplayCanonical.swift
-    reason: the ONE §6 pretty writer (the S2 one-writer decision) — CLI-side machinery; the KMP flavor emits compact artifacts the CLI materializes
+    reason: the ONE §6 pretty writer (the one-writer decision) — CLI-side machinery; the KMP flavor emits compact artifacts the CLI materializes
   - surface: replay
     flavor: kotlin
     file: kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/BoundaryReplay.kt
@@ -269,13 +269,13 @@ singles:
   - surface: shells
     flavor: kotlin
     file: kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RetainedRoot.kt
-    reason: the Android retained-scope carrier (doc 20 Q2, promoted from receipt to API on the 2026-07-30 graduation review); iOS needs no twin — UIApplication-scoped singletons give the scene glue the same reach app-side
+    reason: the Android retained-scope carrier (promoted from receipt to API on the 2026-07-30 graduation review); iOS needs no twin — UIApplication-scoped singletons give the scene glue the same reach app-side
 
   # ── testing ───────────────────────────────────────────────────────────
   - surface: testing
     flavor: swift
     file: swift/Sources/DuetTesting/CanonicalJSON.swift
-    reason: source-compatibility facade delegating to DuetReplay.ReplayCanonical (the S2 one-writer move)
+    reason: source-compatibility facade delegating to DuetReplay.ReplayCanonical (the one-writer move)
   - surface: testing
     flavor: swift
     file: swift/Sources/DuetTesting/FixtureRecorder.swift
@@ -295,4 +295,4 @@ singles:
 
 excludes:
   - prefix: kotlin/consumer-receipt/
-    reason: the F3 consumer receipt package — an adopter exhibit, not framework surface
+    reason: the consumer receipt package — an adopter exhibit, not framework surface

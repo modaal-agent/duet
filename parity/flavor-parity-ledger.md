@@ -13,9 +13,9 @@ are the per-pair symbol waivers declared, with reasons, in
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | kernel | 3 | 13 | 4 | 218 | 15 | 753 | 4 |
 | replay | 3 | 2 | 4 | 447 | 4 | 284 | 7 |
-| shells | 7 | 4 | 9 | 615 | 9 | 610 | 6 |
-| testing | 10 | 5 | 13 | 2445 | 12 | 2336 | 24 |
-| **total** | 23 | 24 | 30 | 3725 | 40 | 3983 | 41 |
+| shells | 7 | 4 | 9 | 614 | 9 | 610 | 6 |
+| testing | 10 | 5 | 13 | 2445 | 12 | 2335 | 24 |
+| **total** | 23 | 24 | 30 | 3724 | 40 | 3982 | 41 |
 
 ## Open deltas
 
@@ -67,11 +67,11 @@ are the per-pair symbol waivers declared, with reasons, in
 
 | Surface | Flavor | File | LOC | Reason |
 | --- | --- | --- | --- | --- |
-| kernel | swift | swift/Sources/Duet/CanonicalSumCodable.swift | 17 | the sum-encoding vehicle is per-flavor by design (FC2/FC3) — Swift = marker protocol + CLI codegen; KMP = the derived CanonicalSumSerializer |
+| kernel | swift | swift/Sources/Duet/CanonicalSumCodable.swift | 17 | the sum-encoding vehicle is per-flavor by design — Swift = marker protocol + CLI codegen; KMP = the derived CanonicalSumSerializer |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalInstantSerializer.kt | 68 | common canonical Instant (kotlin.time.Instant, all targets — 0.1.2); Swift dates encode through DuetTesting's CanonicalJSON date strategy, byte-identical by the cross-serializer test |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalJson.kt | 136 | compact canonical writer for record artifacts + replay; the pretty §6 writer is CLI-side (the one-writer decision) |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSerializers.kt | 40 | kotlinx-serialization registry for the canonical dialect; the Swift dialect rides Codable + the CLI's emission rule-set |
-| kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSumSerializer.kt | 116 | the KMP derived sum serializer (FC2); the Swift mirror is generated coders via the CanonicalSumCodable marker + duet canonical-sum |
+| kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalSumSerializer.kt | 116 | the KMP derived sum serializer; the Swift mirror is generated coders via the CanonicalSumCodable marker + duet canonical-sum |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/CanonicalUuidSerializer.kt | 34 | canonical UUID lowercasing for the KMP flavor; Swift UUIDs encode through the generated coders |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/EffectJson.kt | 36 | canonical effect encoding for the KMP flavor; the Swift twin is Effect.encode (recorded as that pair's delta) |
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.kt | 23 | expect declaration for per-target contextual serializers — internal plumbing of the KMP flavor |
@@ -79,14 +79,14 @@ are the per-pair symbol waivers declared, with reasons, in
 | kernel | kotlin | kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/PlatformCanonicalSerializers.jvm.kt | 18 | JVM-target actualization of the expect above |
 | kernel | kotlin | kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/InstantMillisSerializer.kt | 34 | JVM Instant canonical form; dates cross the dialect as millis — no Swift type twin |
 | kernel | kotlin | kotlin/kernel/src/jvmMain/kotlin/dev/modaal/duet/kernel/serialization/UuidSerializer.kt | 29 | JVM UUID serializer actualization |
-| kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/runtime/StoreScopes.kt | 45 | retained/logical component-scope runtime (the Q2 stance); iOS has no config-change death — no Swift twin by design |
-| replay | swift | swift/Sources/DuetReplay/ReplayCanonical.swift | 188 | the ONE §6 pretty writer (the S2 one-writer decision) — CLI-side machinery; the KMP flavor emits compact artifacts the CLI materializes |
+| kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/runtime/StoreScopes.kt | 45 | retained/logical component-scope runtime (the config-change stance); iOS has no config-change death — no Swift twin by design |
+| replay | swift | swift/Sources/DuetReplay/ReplayCanonical.swift | 188 | the ONE §6 pretty writer (the one-writer decision) — CLI-side machinery; the KMP flavor emits compact artifacts the CLI materializes |
 | replay | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/BoundaryReplay.kt | 66 | the KMP boundary-replay session (record artifacts + the replay runner); the Swift flavor's equivalent machinery is ReplayServer + DuetTesting's FixtureRunner/FixtureRecorder |
 | shells | swift | swift/Sources/DuetShells/CombineBridging.swift | 48 | the Combine→AsyncStream bridge (kernelStream) — Swift-flavor idiom; the KMP flavor is Flow-native |
 | shells | swift | swift/Sources/DuetShells/ViewShell.swift | 60 | the UIKit hosting substrate (view shells + Activatable); Compose renders via composables — no class twin (Kotlin's Activatable lives in ChildHandles.kt, that pair's delta) |
 | shells | kotlin | kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RestoredSpineBox.kt | 52 | the Swift twin rides in RouteSpineCodec.swift (that pair's swift delta) — same duties, own file on Kotlin; graduated from the adopter's app-side copy on the 2026-07-30 graduation review |
-| shells | kotlin | kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RetainedRoot.kt | 48 | the Android retained-scope carrier (doc 20 Q2, promoted from receipt to API on the 2026-07-30 graduation review); iOS needs no twin — UIApplication-scoped singletons give the scene glue the same reach app-side |
-| testing | swift | swift/Sources/DuetTesting/CanonicalJSON.swift | 34 | source-compatibility facade delegating to DuetReplay.ReplayCanonical (the S2 one-writer move) |
+| shells | kotlin | kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RetainedRoot.kt | 48 | the Android retained-scope carrier (promoted from receipt to API on the 2026-07-30 graduation review); iOS needs no twin — UIApplication-scoped singletons give the scene glue the same reach app-side |
+| testing | swift | swift/Sources/DuetTesting/CanonicalJSON.swift | 34 | source-compatibility facade delegating to DuetReplay.ReplayCanonical (the one-writer move) |
 | testing | swift | swift/Sources/DuetTesting/FixtureRecorder.swift | 16 | the Swift-lane recorder (scenario → fixture bytes); the Kotlin lane records via BoundaryReplay compact artifacts materialized by the CLI |
 | testing | swift | swift/Sources/DuetTesting/TestClock.swift | 84 | virtual clock; the KMP flavor's virtual time is kotlinx-coroutines-test's scheduler (platform-provided) |
 | testing | kotlin | kotlin/kernel-test/src/main/kotlin/dev/modaal/duet/test/ChainRunner.kt | 167 | fixture-path chain replay for the Kotlin lane (the protocol runner's path); the Swift lane replays chains through ChainScenario verify only |

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Flavor-lockstep linter for the framework's OWN contract surfaces (G4).
+"""Flavor-lockstep linter for the framework's OWN contract surfaces.
 
 The adopter-repo lockstep-lint pins feature reducer twins; this lint applies the
 same rail to the framework itself: the per-flavor residue (kernel, replay

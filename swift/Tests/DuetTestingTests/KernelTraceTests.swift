@@ -6,9 +6,9 @@ import DuetTesting
 import Foundation
 import XCTest
 
-/// G3 — the kernel-trace fixtures (Swift side): the contract-observable runtime
+/// The kernel-trace fixtures (Swift side): the contract-observable runtime
 /// rules recorded as replayable canonical traces under virtual time. The Kotlin
-/// kernel reproduces these at F3; contract text: contracts/kernel-trace-v0.md.
+/// kernel reproduces these; contract text: contracts/kernel-trace-v0.md.
 /// Regenerate with REGEN_FIXTURES=1 (the corpus rule: the fixture diff is the
 /// review artifact).
 @MainActor

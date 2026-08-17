@@ -6,7 +6,7 @@ import DuetShells
 import Foundation
 import XCTest
 
-/// ViewShell receipts (spec 15 §3.3 — the node-lifecycle piece): the `isActive`
+/// ViewShell receipts (the node-lifecycle piece): the `isActive`
 /// latch dedupes the bracket, `unbind()` runs BEFORE the host unwinds, the
 /// owned host tears down everything `bind()` registered, and re-activation
 /// re-runs `bind()` against the re-armed host.

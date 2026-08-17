@@ -4,7 +4,7 @@
 import Foundation
 import Duet
 
-/// Virtual-time clock for T1/T2 tests (contract §5). `sleep` suspends until the test
+/// Virtual-time clock for reducer and effect tests (contract §5). `sleep` suspends until the test
 /// calls `advance(byNanoseconds:)` past the deadline. Kotlin mirror: `runTest` virtual time.
 public final class TestClock: KernelClock, @unchecked Sendable {
   private struct Sleeper {

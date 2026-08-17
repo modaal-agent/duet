@@ -21,8 +21,8 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 /**
- * Replays a chain fixture (the cross-node SEAM dialect — S4-Q2, dialect 2 since FT
- * round 2): each step names a node, an action, and the expected effects; `linkToNext:
+ * Replays a chain fixture (the cross-node SEAM dialect, dialect 2): each step
+ * names a node, an action, and the expected effects; `linkToNext:
  * true` asserts the step's final `notifyListener` payload is byte-identical to the
  * value embedded in the next step's action — the shell-forwarding invariant, as data.
  * Chains record no state (leaf fixtures own state evolution).
@@ -102,7 +102,7 @@ object ChainRunner {
 
       // The seam invariant: the previous node's delegate payload IS this action's
       // embedded value. Effects byte-gates fire first (stop-at-first), so reaching a
-      // broken link means the fixture itself is inconsistent (hand-edit — R10).
+      // broken link means the fixture itself is inconsistent (hand-edited).
       pendingLink?.let { expectedValue ->
         val embedded =
           (rawAction as? JsonObject)?.get("value")
@@ -115,7 +115,7 @@ object ChainRunner {
             ParityRunFailure(
               step = index, label = label, line = line, kind = "structure", node = nodeName,
               message =
-                "action value ≠ previous delegate payload (hand-edited fixture? R10) " +
+                "action value ≠ previous delegate payload (hand-edited fixture?) " +
                   "— regenerate: verify record"))
         }
         pendingLink = null

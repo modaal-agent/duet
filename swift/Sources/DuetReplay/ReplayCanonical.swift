@@ -6,9 +6,9 @@ import Foundation
 /// The canonical writers + decoder (contracts/serialization.md §1–§2 compact,
 /// §6 pretty) — OUTSIDE any XCTest-linking target so a plain executable (the
 /// replay-protocol server, the CLI) can host them. `DuetTesting`'s
-/// `CanonicalJSON` delegates both halves here. Since F4·S2 this is THE §6
-/// writer: the CLI materializes every cross-flavor recording through it and the
-/// Kotlin flavor ships no pretty writer at all (G1 — the on-disk form has one
+/// `CanonicalJSON` delegates both halves here. This is THE §6 writer: the CLI
+/// materializes every cross-flavor recording through it and the Kotlin flavor
+/// ships no pretty writer at all (the on-disk form has one
 /// implementation, so the flavors cannot drift). The Kotlin compact mirror must
 /// still produce byte-identical strings — that half is the byte-gate currency.
 public enum ReplayCanonical {

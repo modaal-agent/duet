@@ -38,7 +38,7 @@ private let counterScenario = Scenario<CounterState, CounterAction, CounterEffec
   Then("the two live ticks stuck; the cancelled one didn't") { $0.count == 3 }
 }
 
-/// Static alternate endings (R11: every branch always runs; each records its own
+/// Static alternate endings (every branch always runs; each records its own
 /// `counter-endings.<slug>.fixture.json`).
 private let counterBranchScenario = Scenario<CounterState, CounterAction, CounterEffectPayload>(
   feature: "counter",

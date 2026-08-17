@@ -7,7 +7,7 @@ package dev.modaal.duet.shells
 // late-init contortions. The composition root creates the relay, hands `send`
 // to the child environment (or worker) it is building, and assigns `sink` once
 // the parent store exists. Also the sanctioned ingress for app-level
-// orchestration events emitted by workers (doc 20 §4.2) — the same
+// orchestration events emitted by workers — the same
 // delegate-events-as-actions machinery children use.
 
 /**

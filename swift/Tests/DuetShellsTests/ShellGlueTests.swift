@@ -7,15 +7,15 @@ import DuetShells
 import Foundation
 import XCTest
 
-/// Shell glue receipts. ProjectionJoin's tests pin R13 (re-apply on EITHER input —
+/// Shell glue receipts. ProjectionJoin's tests pin the join rule (re-apply on EITHER input —
 /// the two-source race is the whole point of the type); StoreHost's pin the
 /// reverse-order, idempotent teardown that replaces hand-enumerated `teardown()`
 /// bodies; `kernelStream()`'s pin that effect cancellation reaches the upstream
-/// Combine subscription (kernel contract R2 across the bridge).
+/// Combine subscription (cancellation across the bridge).
 @MainActor
 final class ShellGlueTests: XCTestCase {
 
-  // MARK: - ProjectionJoin (R13)
+  // MARK: - ProjectionJoin
 
   func testProjectionJoinAppliesStateAgainstInitialAuxThenSelfHealsWhenAuxLands() async {
     let state = CurrentValueSubject<Int, Never>(0)
@@ -31,7 +31,7 @@ final class ShellGlueTests: XCTestCase {
     state.send(1)
     XCTAssertEqual(applied, ["0|empty", "1|empty"])
 
-    // …and the projection self-heals when the aux source lands (R13).
+    // …and the projection self-heals when the aux source lands.
     aux.send("index")
     await settle()
     XCTAssertEqual(applied, ["0|empty", "1|empty", "1|index"])
@@ -145,7 +145,7 @@ final class ShellGlueTests: XCTestCase {
 
     // Consume the way `Store.execute` does: a task iterating the stream, cancelled
     // at teardown. Task cancellation is what terminates the stream and unwinds the
-    // upstream subscription — R2 across the bridge.
+    // upstream subscription — cancellation across the bridge.
     let consumer = Task { @MainActor in
       var received: [Int] = []
       for await value in stream {
@@ -160,7 +160,7 @@ final class ShellGlueTests: XCTestCase {
     XCTAssertEqual(received, [1, 2])
     XCTAssertTrue(
       upstreamCancelled.isSet,
-      "cancelling the consuming effect must cancel the upstream subscription (R2)")
+      "cancelling the consuming effect must cancel the upstream subscription")
   }
 
   func testFinishedStreamCompletesImmediately() async {

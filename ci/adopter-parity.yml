@@ -15,9 +15,7 @@
 # checksum-verified, cached under .duet-family/duet-bin/ — and falls back to a
 # source build only when no release is reachable.
 #
-# Lines marked ADAPT are yours; lines marked PRIVATE-PHASE exist only until the
-# family publishes (anonymous release downloads + a URL/registry package
-# dependency) and then delete wholesale.
+# Lines marked ADAPT are yours.
 name: parity
 
 on:
@@ -42,12 +40,6 @@ jobs:
     # are on both images). macos-15's default is below the floor. Dual-lane
     # both, like the framework's own workflow, if you support both.
     runs-on: macos-26
-    # PRIVATE-PHASE: release assets on a private repo are API-only, so the
-    # wrapper's `gh release download` needs a token with contents:read on
-    # duet-tools. Deletes at publication — the download is anonymous on a
-    # public repo.
-    env:
-      GH_TOKEN: ${{ secrets.DUET_FAMILY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -65,24 +57,9 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      # PRIVATE-PHASE: the FRAMEWORK half still needs a checkout (adopter
-      # manifests reference the Duet package pre-publication; a private repo
-      # needs a token with contents:read). The TOOLCHAIN half needs no
-      # checkout: tools/duet downloads the released binary at the pin,
-      # authenticated by the job-level GH_TOKEN above.
-      - uses: actions/checkout@v4
-        with:
-          repository: modaal-agent/duet
-          path: .duet-family/modaal-agent-duet
-          token: ${{ secrets.DUET_FAMILY_TOKEN }}
-      # PRIVATE-PHASE + ADAPT: pre-publication, adopter manifests reference the
-      # Duet package by LOCAL PATH (the single swap point). Rewrite that path to
-      # the checkout above — one sed per manifest that declares it. Retires at
-      # the published-artifact swap.
-      #- name: Rewrite the local-path Duet dependency
-      #  run: |
-      #    sed -i '' "s|<your local duet path>|$GITHUB_WORKSPACE/.duet-family/modaal-agent-duet|" \
-      #      <path/to/your>/Package.swift
+      # Neither half needs a family checkout: your manifests resolve the Duet
+      # package by URL at the tag they pin, and tools/duet downloads the
+      # released toolchain binary at parity/duet-tools.ref.
 
       # ADAPT: the meta-checks (declaration lockstep, fixture symmetry, the
       # spec↔fixture cross-reference) are toolchain-owned inside `duet verify` —

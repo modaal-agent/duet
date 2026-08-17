@@ -14,7 +14,7 @@ import kotlinx.coroutines.test.runTest
 
 /**
  * Artifact-level smoke receipts for the Store runtime. The kernel's contract
- * rules are pinned exhaustively by the kernel-trace fixtures (G3, :kernel-test);
+ * rules are pinned exhaustively by the kernel-trace fixtures (:kernel-test);
  * these receipts prove the published artifact runs them at all.
  */
 @OptIn(ExperimentalCoroutinesApi::class)

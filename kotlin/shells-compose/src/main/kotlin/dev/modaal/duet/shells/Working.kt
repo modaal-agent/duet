@@ -6,14 +6,14 @@ package dev.modaal.duet.shells
 import kotlinx.coroutines.awaitCancellation
 
 // The worker seam: lifecycle-bound stateful processing, re-substrated on
-// structured concurrency (doc 20). A worker is an environment-side object that
+// structured concurrency. A worker is an environment-side object that
 // may own mutable state and long-lived subscriptions, bracketed by a host's
 // mount lifetime, feeding features ONLY through the existing seams —
 // environment Flows consumed by effect handlers, or actions through a
 // shell-bound Relay. Workers never touch stores or feature state ("no silent
-// ingress"); workers process, reducers decide (R16).
+// ingress"); workers process, reducers decide.
 //
-// Config-change stance (Q2): Android workers live in the RETAINED/logical
+// Config-change stance: Android workers live in the RETAINED/logical
 // component scope (the tree that survives rotation — InstanceKeeper-backed
 // under Decompose), so "one bracket per mount" means LOGICAL mount on both
 // platforms. View-bound scopes stay for view-side observation only.

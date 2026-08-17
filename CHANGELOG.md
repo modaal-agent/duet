@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.2.1] — 2026-08-17
+
+Patch. No API, behavior or byte-format change on either flavor: comments,
+documentation and one lint banner only. Per CONTRIBUTING §7 this cut moves the
+Kotlin Maven coordinate to `0.2.1-SNAPSHOT`, so the tag and the coordinate stay
+distinguishable.
+
+### Changed — the sources and contracts read for a reader outside the project
+
+Comment and prose references to identifiers a reader of this repository cannot
+resolve — plan sections, wave and gate labels, rule numbers from a document
+that does not ship here — are replaced by the statement each one referenced.
+Marks that resolve inside the published repository are unchanged: `CONTRIBUTING
+§7`, `contracts/serialization.md §4`, each contract document's own layer,
+stage, and failure-rule labels.
+
+Two consequences a consumer can see, both textual: `DuetTesting`'s scenario
+DSL documents the no-conditionals rule by stating it rather than by naming it,
+and `parity/flavor-parity.yaml`'s waiver reasons — which the lockstep lint
+renders verbatim into `parity/flavor-parity-ledger.md` — read the same way.
+
+### Changed — the CI template ships without private-phase steps
+
+`ci/adopter-parity.yml` drops the job-level `GH_TOKEN`, the framework checkout
+step and the commented local-path rewrite: an adopter's manifests resolve the
+framework by URL at the tag they pin, and `tools/duet` downloads the released
+toolchain binary anonymously. `ci/README.md` follows. `ADAPT` markers stay;
+`PRIVATE-PHASE` markers are gone from the shipped template.
+
 ## [0.2.0] — 2026-08-04
 
 Kotlin-only. A minor, not a patch: the testing surface gains a whole dialect
@@ -86,7 +115,7 @@ the JVM variants, kernel's recorded stance).
   one-shot process-death spine holder — `take` drains, `discard` settles on
   a funnel mount, `place` is the first-write-wins late-delivery path. Closes
   the ledger's recorded Swift-only delta for the type.
-- **`RetainedRoot<T>`** — the Q2 retained carrier, promoted from mechanics
+- **`RetainedRoot<T>`** — the retained carrier, promoted from mechanics
   receipt to API: an `InstanceKeeper.Instance` owning the logical scope and
   the composition root, pinning the teardown ORDER (component before scope).
   With it, essenty `instance-keeper` is **promoted from test-scope substrate
@@ -97,7 +126,7 @@ the JVM variants, kernel's recorded stance).
 ## [0.1.0] — 2026-07-29
 
 The first tagged code release: the Swift-flavor extraction — the framework's
-first code drop — the KMP flavor's packaging (F3), and the toolchain (F4).
+first code drop, the KMP flavor's packaging, and the toolchain.
 This tag is the anchor for URL-based SPM consumption
 (`.package(url: "…/duet.git", exact: "0.1.0")`); pre-1.0, breaking changes
 land in minor versions with no deprecation cycle, so consumers pin exact and
@@ -137,27 +166,26 @@ re-pin deliberately.
   the toolchain package could not build at all, under any toolchain. Masked
   until now by a case-sensitive dev volume.
 
-### Added — CI templates and the verification MCP surface (F4·S5b)
+### Added — CI templates and the verification MCP surface
 
 - **`ci/`** — the adopter parity template (`adopter-parity.yml`: spec-fixture
   lint → `duet verify` → `duet record --check`, with the private-phase steps
   marked for wholesale deletion at publication) plus `ci/README.md`; this repo
   and duet-tools each gained their own `.github/workflows/ci.yml` running
   exactly the CONTRIBUTING "Building" commands. The workflows first execute on
-  GitHub at the public flip; the **Modaal-free receipt run** (F4's open gate,
-  2026-07-25) proved every one of them green from clean clones of the three
-  open repos — adopter corpus verify 122/122 dual-lane, `record --check`
-  zero-churn, both flavor suites, both lints — with zero Modaal product bits
-  in the loop.
+  GitHub at the public flip; a receipt run on 2026-07-25 proved every one of
+  them green from clean clones of the three open repos — adopter corpus verify
+  122/122 dual-lane, `record --check` zero-churn, both flavor suites, both
+  lints — with no consuming-toolchain bits in the loop.
 - **`duet mcp`** (in the family: duet-tools) — the standalone agent surface
-  (the toolchain plan's §5): a stdio MCP server over the same verification
+  — a stdio MCP server over the same verification
   verbs (`duet_verify`/`duet_record`/`duet_explain`/`duet_materialize`/
   `duet_scope`), hand-rolled JSON-RPC, zero new dependencies. Tool results are
   the verbs' `--json` reports (returned as `structuredContent` too); the
   authoring verbs are deliberately not served. One `mcpServers` entry gives
   any agent harness the toolchain.
 
-### Added — the flavor-lockstep lint, the parity ledger, and the workers page (F4·S5, G4)
+### Added — the flavor-lockstep lint, the parity ledger, and the workers page
 
 - **`scripts/flavor-lockstep-lint.py`** — the framework's own contract surfaces
   are now twin-mapped (`parity/flavor-parity.yaml`: 22 pairs, 22 declared
@@ -176,7 +204,7 @@ re-pin deliberately.
   `StoreHost.adopt` bracket, `WorkerTester` and its leak guarantee, the named
   ingress shapes, and the logical-tests-only stance.
 
-### Changed — the toolchain moves to its own repo; the ceremony killer lands (F4·S3, G2)
+### Changed — the toolchain moves to its own repo; the ceremony killer lands
 
 - **`tools/` extracted to [`modaal-agent/duet-tools`](https://github.com/modaal-agent/duet-tools)**
   — SwiftPM resolves one URL package per repository root, and the toolchain now
@@ -194,11 +222,11 @@ re-pin deliberately.
   [`modaal-agent/duet-macros`](https://github.com/modaal-agent/duet-macros)
   (its own repo: a macro pins swift-syntax into every consumer graph). Both
   vehicles assemble from **one emission rule-set** (`CanonicalSumEmission`,
-  exported by duet-tools) — FC3's copy-paste twins are dead; the **arms'
+  exported by duet-tools) — no copy-paste twins survive; the **arms'
   lockstep gate** pins the same worst-case enum byte-for-byte in both repos'
   tests, so an emission change must consciously update both in one commit.
 
-### Changed — one §6 writer (F4·S2, G1)
+### Changed — one §6 writer
 
 - **The §6 pretty writer has exactly ONE implementation** —
   `DuetReplay.ReplayCanonical.prettyCanonicalString` (XCTest-free, hosted by the
@@ -211,25 +239,25 @@ re-pin deliberately.
   framework repo's own corpus). The on-disk form cannot drift per flavor by
   construction — the `PrettyWriterParity`-class proof pairs retire with the twin
   (the Swift-side receipt survives as `PrettyWriterStabilityTests`).
-- **`duet writer-check` retired** — the FC3-a probe verb's job is done: the
+- **`duet writer-check` retired** — the probe verb's job is done: the
   CLI-side writer IS the writer, and `duet record --check` is its standing byte
-  gate. Chain-schema regeneration (the FC2 remainder) is covered by receipt: an
+  gate. Chain-schema regeneration is covered by receipt: an
   unscoped `duet record` regenerates the full corpus — 46 leaf + 15 chain
   fixtures — byte-identically through the one writer.
 - `kotlin/` root build gains the `-PregenFixtures=1` → `duet.regenFixtures`
   system-property mapping (the same channel an adopter repo wires — env vars do
   not survive the Gradle daemon boundary).
 
-### Added — the `duet` CLI (`tools/duet`, F4·S1)
+### Added — the `duet` CLI (`tools/duet`)
 
 - **The open toolchain CLI**, extracted from the reference adopter’s
   `tools/verify` and renamed to its real verb surface: `duet verify` (meta-checks
   + both platform lanes in parallel + the coverage gate), `duet record`
-  (scenario-driven fixture regeneration; `--check` = the R10 CI drift gate),
+  (scenario-driven fixture regeneration; `--check` = the CI drift gate),
   `duet explain`, `duet materialize`, `duet protocol-run` (the flavor-neutral
   replay-protocol lane — leaves AND chains through the one `reduce` op;
   `--runner` drives any conforming flavor runner), and `duet writer-check`
-  (retires when the writer move lands at F4·S2). Its own SPM package under
+  (retires when the writer move lands). Its own SPM package under
   `tools/` — library consumers never resolve it; zero third-party dependencies.
 - **Repo-layout neutrality**: the CLI discovers the adopter repo root via
   `parity/fixtures` and derives the platform roots from the repo's own parity
@@ -242,18 +270,18 @@ re-pin deliberately.
   drift from the flavor it gates (G1). The §6 pretty writer lives CLI-side,
   proven byte-identical against the reference corpus by `writer-check`.
 
-### Added — the KMP flavor (`kotlin/`, F3)
+### Added — the KMP flavor (`kotlin/`)
 
 - **`dev.modaal.duet:kernel`** — the KMP flavor's core (commonMain): the
   `Store` runtime, `Effect` as data, the `KernelClock` seam, canonical
-  serialization (the multiplatform writer, the FC2-derived
+  serialization (the multiplatform writer, the derived
   `CanonicalSumSerializer` + registry convention, the pinned configuration,
   platform Instant/UUID serializers), and the boundary adapters — the
   registry-driven replay surface (`ReplayFeature`/`ReplayRegistry`/
   `BoundaryReplay`/`ReplayServer`) and `SpineBoundary` (spine persistence as
   core String functions). Targets: JVM (the host lane Android consumers
   resolve) + the Apple slices aggregated into the `DuetKernel` XCFramework
-  (SKIE route; static). One kernel alignment fell out of the G3 gate, exactly
+  (SKIE route; static). One kernel alignment fell out of the cross-flavor kernel gate, exactly
   as designed: **handler invocation moved into `execute`** (synchronous with
   effect start, matching the Swift flavor) — the `cancel-in-flight` restart
   interleaving is unreachable otherwise.
@@ -267,9 +295,9 @@ re-pin deliberately.
   coroutine-test's `advanceUntilIdle` is FOREGROUND-filtered — background-scope
   work (workers, shell observations) drains via `runCurrent`/`yield`, and
   virtual time stays an explicit act (`advanceTimeBy`).
-- **`dev.modaal.duet:shells-compose`** — the shell half's twins (C6, the
+- **`dev.modaal.duet:shells-compose`** — the shell half's twins (the
   mirror rule), headless by design (no Compose dependency). Config-change
-  stance per doc 20 Q2: hosts live in the RETAINED/logical scope —
+  stance: hosts live in the RETAINED/logical scope —
   InstanceKeeper as substrate, not API (test-scope dependency only; the
   RetainedScopeTest receipt confirms rotation never crosses the worker
   bracket).
@@ -289,16 +317,16 @@ re-pin deliberately.
   a commonMain receipt feature) built via SKIE, with a Swift consumer
   replaying the committed kotlin-corpus fixtures across the boundary.
 
-#### Twin thinness record (the C6 exit criterion)
+#### Twin thinness record
 
 | Twin | LOC (K) | Thinness vs the Swift realization |
 | --- | --- | --- |
 | `StoreHost` + `Working`/`adopt` | ~110 | same duties; scope-parameterized (coroutine structured concurrency replaces ambient `Task`); `adoptTeardown` named (SAM ambiguity) |
 | `ChildStores`/`ChildSlot` | ~90 | duty-identical port; main-confined by contract instead of `@MainActor` |
-| `ProjectionJoin`/`StateTransitions` | ~110 | R13 duties identical; collection rides the host scope — a reduce is observed within the same main-loop turn, not before `send` returns (StateFlow conflation coalesces intermediates; value-driven appliers make both safe) |
+| `ProjectionJoin`/`StateTransitions` | ~110 | duties identical; collection rides the host scope — a reduce is observed within the same main-loop turn, not before `send` returns (StateFlow conflation coalesces intermediates; value-driven appliers make both safe) |
 | `Relay` | ~15 | verbatim twin |
 | `PresentationRegistry` | ~50 | generic over `Surface` where Swift pins `AnyView` (no erasure type needed; keeps the artifact Compose-free); sealed-leaf → root-registration resolution via `isInstance` |
-| Handles (`Activatable`, `StoreChild`, `ViewShellChild`) | ~45 | carry ONLY the activate/teardown ordering contract — Compose composition lifetimes absorb the view half (S4-Q4) |
+| Handles (`Activatable`, `StoreChild`, `ViewShellChild`) | ~45 | carry ONLY the activate/teardown ordering contract — Compose composition lifetimes absorb the view half |
 | `KernelClock` | ~15 | the seam alone: coroutine virtual time IS the test realization (no `TestClock` type) |
 | `WorkerTester` | ~60 | same guarantees; no lock (virtual scheduler), no main-loop-pumping caveats |
 | `untilCancelled` | 1 | `awaitCancellation` — the platform provides the park |
@@ -315,7 +343,7 @@ re-pin deliberately.
 
 ### Added
 
-- **The deterministic-async toolkit v1** (F2·S5, spec 15 §6.3) — the corpus's
+- **The deterministic-async toolkit v1** — the corpus's
   flake-class fixes productized in `DuetTesting`: `settleUntil` /
   `settle(byResending:until:)` (turn control + the re-send-until-projected
   pattern, class B), `ChildDeallocLedger` (the churn-ledger weak-tracking
@@ -324,7 +352,7 @@ re-pin deliberately.
   `SuitePollingDefaults` (the suite-wide bounds as values, assertion-library
   agnostic). Virtual time (`TestClock`) predates the slice.
 
-- **Kernel-trace fixtures, v0** (F2·S5, spec 18 G3 — Swift side): the
+- **Kernel-trace fixtures, v0** (Swift side): the
   contract-observable runtime rules recorded as replayable canonical traces
   under virtual time — `KernelTraceRecorder`/`KernelTraceEvent` (`DuetTesting`)
   plus six rule fixtures (`swift/Tests/parity/fixtures/kernel-trace/`:
@@ -333,10 +361,10 @@ re-pin deliberately.
   re-record). Design contract: [contracts/kernel-trace-v0.md](contracts/kernel-trace-v0.md)
   — lockstep delivery (delivery order IS reduce order) and
   one-ending-per-window (cross-effect ending order is contract-undefined);
-  the Kotlin kernel reproduces the traces at F3, then kernel contract v1
+  the Kotlin kernel reproduces the traces, then kernel contract v1
   freezes.
 
-- **The node-lifecycle piece** (F2·S4, spec 15 §3.3) — what retires the six
+- **The node-lifecycle piece** — what retires the six
   RIBs symbols: `Activatable` (the handles' main-actor lifecycle surface,
   replacing the erased `Interactable`) and `ViewShell` (an `isActive` latch,
   `bind()`/`unbind()` hooks, and an owned `StoreHost` that unwinds at
@@ -386,7 +414,7 @@ re-pin deliberately.
   Duet targets and internal references made self-contained.
 - **Framework test suites** (44 tests) with their own fixture corpus under
   `swift/Tests/parity/fixtures/`, governed by the same corpus rules as a consuming
-  repo: kernel runtime + TestStore receipts, shell-glue receipts (R13 join,
+  repo: kernel runtime + TestStore receipts, shell-glue receipts (the join,
   reverse-order teardown, bridge cancellation), reconciler and spine receipts,
   scenario/chain DSL end-to-end (recorded fixtures + `linkToNext`), pretty-writer
   byte-stability, the formatter golden, replay-protocol receipts, and canonical

@@ -5,13 +5,13 @@ import Foundation
 import Duet
 import XCTest
 
-/// Executes a `Scenario` in one of two modes (FT2):
+/// Executes a `Scenario` in one of two modes:
 ///
 /// - **record** (`REGEN_FIXTURES=1`): drives the pure reducer through every *variant*
 ///   of the scenario (a linear scenario is one variant; `Branch`es fork into one
 ///   variant per root→leaf path), runs every local `Then`, and compiles one dialect-2
 ///   fixture per variant into `parity/fixtures/`. Fixtures are build products — never
-///   hand-edited (R10); the scenario runners are the only writers.
+///   hand-edited; the scenario runners are the only writers.
 /// - **verify**: drives the reducer through every variant AND byte-gates each step
 ///   against the committed fixture. A step's trailing local `Then`s run BEFORE its
 ///   byte gate: a failing Then states the author's *intent* and wins the header, with
@@ -333,7 +333,7 @@ public enum ScenarioRunner {
 
     /// Splits a node list at its first `Branch`: everything before is the shared
     /// prefix; everything after must also be a `Branch` (branches are alternate
-    /// ENDINGS — R11 stays intact because the structure is static: every branch
+    /// ENDINGS — the no-conditionals rule holds because the structure is static: every branch
     /// always runs, no runtime value chooses). A `Context` whose children fork must
     /// be the last node at its level, and its variants bubble up.
     private static func expand(

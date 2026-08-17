@@ -1,6 +1,6 @@
 # The replay protocol — v1 (the flavor seam)
 
-**Status: v1 — NORMATIVE. Formalized at F3 from the v0 spike shape (FC3-a),
+**Status: v1 — NORMATIVE. Formalized from the v0 spike shape,
 which replayed the full reference corpus — chains included — faster than the
 in-process lane. Changes to this contract require a protocol-version bump;
 the wire shape below is frozen for v1.**

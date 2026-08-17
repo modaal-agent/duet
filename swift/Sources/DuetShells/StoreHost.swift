@@ -4,7 +4,7 @@
 import Foundation
 import Duet
 
-// MT4 fork glue, shell duty 1: hosting stores means guaranteeing their teardown.
+// Shell duty 1: hosting stores means guaranteeing their teardown.
 // Before this helper every composition root hand-enumerated its stores, reconcilers,
 // and observations in teardown() — the forgotten-entry bug class the churn specs
 // exist to catch. StoreHost turns that enumeration into registration at creation

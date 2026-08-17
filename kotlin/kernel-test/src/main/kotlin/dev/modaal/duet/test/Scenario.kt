@@ -6,7 +6,7 @@ package dev.modaal.duet.test
 import dev.modaal.duet.kernel.Effect
 
 /**
- * FT2 — the scenario DSL, Kotlin dialect. Mirrors DuetTesting/Scenario.swift:
+ * The scenario DSL, Kotlin dialect. Mirrors DuetTesting/Scenario.swift:
  * a scenario is the authored source of a parity fixture; `Then`/`ThenEffects` closures
  * are local assertions (never exported). Kotlin cannot capture a compile-time source
  * *path* (no `#filePath`), so `source` is an explicit parameter and call-site lines come
@@ -14,8 +14,8 @@ import dev.modaal.duet.kernel.Effect
  * platform asymmetry).
  *
  * Control flow inside a scenario body is not blocked by the compiler here (unlike the
- * Swift result builder, which omits buildOptional/buildEither) — R11 relies on review
- * on this platform. A second documented asymmetry. R11's target is *data-dependent*
+ * Swift result builder, which omits buildOptional/buildEither) — the rule relies on
+ * review on this platform. A second documented asymmetry. Its target is *data-dependent*
  * control flow (what gets recorded must never depend on a runtime value); `branch` is
  * static structure — every branch always runs, each as its own recorded fixture — so
  * alternates are expressible without weakening the rule.
@@ -103,9 +103,9 @@ class ScenarioBuilder<S, A, P> internal constructor() {
    * `<fixture>.<slug>` (nested branches append: `<fixture>.<slug>.<slug>`). Branches
    * are terminal at their level: once one appears, only branches may follow there.
    *
-   * R11 note: branches are *static* alternates — every branch always runs and records;
+   * Note: branches are *static* alternates — every branch always runs and records;
    * no runtime value chooses between them. Data-dependent control flow stays banned; on
-   * the JVM there is still no compile-time enforcement, so R11 relies on review.
+   * the JVM there is still no compile-time enforcement, so the rule relies on review.
    */
   fun branch(label: String, block: ScenarioBuilder<S, A, P>.() -> Unit) {
     val child = ScenarioBuilder<S, A, P>()

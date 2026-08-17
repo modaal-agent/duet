@@ -17,7 +17,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.builtins.serializer
 
 /**
- * G3 — the cross-flavor kernel gate: the KMP kernel replays the six committed
+ * The cross-flavor kernel gate: the KMP kernel replays the six committed
  * Swift-recorded trace fixtures BYTE-IDENTICALLY under coroutine virtual time
  * (contracts/kernel-trace-v0.md). The scripted feature mirrors the Swift
  * KernelTraceTests' exactly; the Swift recorder is the writer of record —
@@ -138,7 +138,7 @@ class KernelTraceTest {
       committed,
       produced,
       "kernel trace '$fixture' diverged from the committed Swift-recorded fixture — " +
-        "a kernel-flavor behavior difference (the G3 gate)")
+        "a kernel-flavor behavior difference (the cross-flavor kernel gate)")
   }
 
   /** The ONE fixture set, both flavors: swift/Tests/parity/fixtures/kernel-trace. */

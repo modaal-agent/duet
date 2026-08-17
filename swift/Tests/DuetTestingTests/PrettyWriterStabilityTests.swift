@@ -7,7 +7,7 @@ import XCTest
 
 /// §6 writer stability, pinned through the committed fixtures themselves: every
 /// fixture on disk, re-emitted by THE pretty writer (ReplayCanonical — the one
-/// implementation since F4·S2; the Kotlin flavor ships none), must be
+/// implementation; the Kotlin flavor ships none), must be
 /// byte-identical to the file. This is the framework-side receipt that the
 /// on-disk form cannot drift; adopter repos get the same guarantee from
 /// `duet record --check`.

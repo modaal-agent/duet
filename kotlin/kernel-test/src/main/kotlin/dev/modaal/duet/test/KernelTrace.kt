@@ -22,7 +22,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-// G3 — the kernel-trace apparatus, Kotlin side: the KMP flavor replays the SAME
+// The kernel-trace apparatus, Kotlin side: the KMP flavor replays the SAME
 // committed trace fixtures the Swift flavor records
 // (swift/Tests/parity/fixtures/kernel-trace/), byte-identically, under
 // coroutine virtual time. Contract: contracts/kernel-trace-v0.md. The Swift

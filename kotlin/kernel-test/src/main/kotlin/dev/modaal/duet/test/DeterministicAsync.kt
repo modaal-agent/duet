@@ -10,7 +10,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.yield
 
 /**
- * The deterministic-async toolkit, Kotlin half (spec 15 §6.3) — mirror-ruled
+ * The deterministic-async toolkit, Kotlin half — mirror-ruled
  * against DuetTesting/DeterministicAsync.swift, with the thinness the platform
  * earns recorded per primitive:
  *
@@ -25,8 +25,7 @@ import kotlinx.coroutines.yield
  *   primitive that CANNOT ride virtual time (GC is not virtual); it polls
  *   wall-clock briefly around explicit `System.gc()` requests.
  * - **[SuiteWallClockBudget]** — the degraded-host signature as an opt-in
- *   diagnostic (never a bound-widening prompt — the flake registry's standing
- *   rule).
+ *   diagnostic (never a bound-widening prompt — that is the standing rule).
  */
 
 /**

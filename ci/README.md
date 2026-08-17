@@ -5,8 +5,8 @@ What a repo in the Duet family — or a repo *adopting* Duet — runs in CI.
 ## Adopter repos
 
 [`adopter-parity.yml`](adopter-parity.yml) is the template: copy it to
-`.github/workflows/parity.yml` in your repo and follow the `ADAPT` /
-`PRIVATE-PHASE` markers inside. The gate is two commands:
+`.github/workflows/parity.yml` in your repo and follow the `ADAPT` markers
+inside. The gate is two commands:
 
 ```sh
 duet verify          # meta-checks + both platform lanes + coverage gate
@@ -35,6 +35,5 @@ The family's own workflows live in each repo's `.github/workflows/ci.yml`:
   sidecar — as the tag's release assets, the artifact adopter wrappers
   resolve from their `parity/duet-tools.ref` pin.
 
-The repos are private while the family incubates: the same workflows run on
-the private remotes today and go public unchanged at the flip. The commands
-they run are also the local gate — see each repo's CONTRIBUTING.
+The commands they run are also the local gate — see each repo's
+CONTRIBUTING.

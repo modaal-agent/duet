@@ -7,7 +7,7 @@ import kotlin.time.Duration.Companion.nanoseconds
 import kotlinx.coroutines.delay
 
 /**
- * The clock seam for clocked effects (the C8 mirror twin, narrowed per FC2):
+ * The clock seam for clocked effects:
  * effect handlers take a [KernelClock] from the environment instead of calling
  * `delay` directly, which is what makes timeout/dwell effects fixture-visible
  * and deterministically testable. Swift-flavor mirror: Duet/Clock.swift

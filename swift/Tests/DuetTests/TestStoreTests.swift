@@ -5,7 +5,7 @@ import Duet
 import DuetTesting
 import XCTest
 
-/// T1 (exhaustive reducer via TestStore) + T2 (effect execution on virtual time):
+/// Exhaustive reducer via TestStore + effect execution on virtual time:
 /// the ticker effect starts, ticks on clock advance, cancels in-flight, and never
 /// fires after cancellation. Contract §5 rules E1–E5 exercised end-to-end.
 @MainActor

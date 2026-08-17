@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 //
 // Targets: JVM (the host lane — Android consumers resolve this variant) plus the
 // Apple slices aggregated into the DuetKernel XCFramework (the SKIE consumption
-// route, spec 16 §8: SKIE gives sealed → exhaustive Swift enums and the
+// route): SKIE gives sealed → exhaustive Swift enums and the
 // Flow/suspend runtime; Swift Export at Kotlin 2.3.21 traps on non-empty
 // `Reduced.effects` and cannot bridge Flow).
 plugins {
@@ -25,7 +25,7 @@ kotlin {
   jvmToolchain(21)
 
   // kotlin.uuid.Uuid / kotlin.time.Instant are the canonical UUID/date types
-  // in common code (FC2 M6); both are still experimental stdlib
+  // in common code; both are still experimental stdlib
   // API at Kotlin 2.3.21, so opt in module-wide.
   compilerOptions {
     optIn.add("kotlin.uuid.ExperimentalUuidApi")
@@ -44,7 +44,7 @@ kotlin {
     target.binaries.framework {
       baseName = "DuetKernel"
       // Static: symbols link straight into the consumer binary, no runtime
-      // dylib lookup — the FC2 spike's proven configuration.
+      // dylib lookup.
       isStatic = true
       xcf.add(this)
     }

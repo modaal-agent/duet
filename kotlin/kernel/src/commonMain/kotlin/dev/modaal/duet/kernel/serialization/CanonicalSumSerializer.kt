@@ -19,7 +19,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 /**
- * FC2-a arm (b) — the DERIVED canonical sum-type serializer: one generic base replaces
+ * The DERIVED canonical sum-type serializer: one generic base replaces
  * every hand-written per-case `{"case": …, "value": …}` coder (contracts/serialization.md §4).
  *
  * How it works: each sealed subclass is plainly `@Serializable` (+ `@SerialName` when a
@@ -40,7 +40,7 @@ import kotlinx.serialization.json.put
  * The declaration cost per sealed root is the `@Serializable(with = …)` on the ROOT plus
  * one registry line per case — after which every USE of the type (fields, `List<T>`,
  * nullable fields, nested payloads) resolves the serializer from the declaration:
- * the doc-10 §3 per-use-site attachment multiplication is gone by construction.
+ * per-use-site attachment multiplication is gone by construction.
  *
  * Public kotlinx API only: no class discriminators, no SealedClassSerializer internals.
  * Inline decode rebuilds `{prop: value}` from the subclass descriptor's single element

@@ -6,7 +6,7 @@ The API contract that **both** core flavors implement:
 - KMP flavor: `dev.modaal.duet:kernel` (+ `:kernel-test`) — this repository,
   `kotlin/`
 
-**v1 is declared FROZEN (F3 exit, G3): the contract-observable runtime rules
+**v1 is declared FROZEN: the contract-observable runtime rules
 are machine-verified — both flavors replay the kernel-trace fixtures
 (kernel-trace-v0.md) byte-identically under virtual time. Changes to frozen
 semantics happen only at a major version; a machine-verified, frozen twin has
@@ -140,7 +140,7 @@ Rules:
    emission) is queued and processed after the current reduce completes. No recursive reduce.
 5. **Teardown cancels every in-flight effect** (Swift `teardown()` + best-effort in `deinit`;
    Kotlin: host cancels the `CoroutineScope`). Hosts MUST call it when the screen/scope dies —
-   this is the lifecycle guarantee `cancelOnDeactivate(interactor:)` used to give (Q4).
+   this is the lifecycle guarantee `cancelOnDeactivate(interactor:)` used to give.
 6. Effect handlers must be **cooperatively cancellable**: check `Task.isCancelled` /rely on
    coroutine cancellation at every suspension. The kernel guarantees delivery stops after
    cancel; it cannot stop a handler that never suspends.
@@ -164,7 +164,7 @@ Conventions (all fixture-enforced):
    no post-attach commands, no imperative unwind.
 3. **Delegate outputs as data.** A child declares its `Delegate` enum beside its
    `Action`; each parent embeds it as ONE action case (`.detail(…)`, `.sharePicker(…)`).
-   Parent logic imports child logic (arrow parent→child, acyclic — R1-revised).
+   Parent logic imports child logic (arrow parent→child, acyclic).
 4. **Shell duties** (the Router analog, per platform, per interior node): observe the
    node's route state → build child stores+views on route appearance (env derived from
    the parent's; plugin children behind a contract-module builder) → forward child
@@ -205,7 +205,7 @@ Failure rules (each is a test failure, not a silent pass):
 Determinism: `TestStore` runs handlers against the test `Environment` (fake clock, fixed
 UUIDs). Swift uses `KernelClock` (kernel-owned protocol: `sleep(nanoseconds:)`) with
 `TestClock.advance(by:)`; Kotlin uses `kotlinx.coroutines.test.runTest` virtual time +
-`TestDispatcher`. **A wall-clock sleep in a T1/T2 test is a contract violation** — tests must
+`TestDispatcher`. **A wall-clock sleep in a reducer or effect test is a contract violation** — tests must
 pass with virtual time only — this is what keeps the parity lane in the seconds range.
 
 ## 6. Golden fixture runner **[S0]**

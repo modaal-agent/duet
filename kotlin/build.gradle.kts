@@ -3,8 +3,8 @@
 
 // Root of the KMP flavor. Plugin versions are hoisted here (`apply false`) so the
 // single Kotlin/Native-bearing module (:kernel) and the JVM modules share one
-// plugin classpath — the K5a lesson from the FC2 spike (two sibling KMP modules
-// collide on the shared KotlinNativeBundleBuildService; hoisting is the fix).
+// plugin classpath: two sibling KMP modules collide on the shared
+// KotlinNativeBundleBuildService, and hoisting is the fix.
 plugins {
   alias(libs.plugins.kotlin.multiplatform) apply false
   alias(libs.plugins.kotlin.jvm) apply false
@@ -16,8 +16,8 @@ allprojects {
   group = "dev.modaal.duet"
   // -SNAPSHOT so mavenLocal consumers (adopters, pre-publication) always
   // re-resolve after `publishToMavenLocal`. The real (non-snapshot) Maven
-  // publication — and the dev.modaal.duet namespace verification — stay
-  // decision-gated with the public flip (doc 18 F0).
+  // publication — and the dev.modaal.duet namespace verification — are not in
+  // place yet; consumers resolve the snapshot from mavenLocal.
   //
   // The NUMBER tracks the CURRENT release line — it matches the most recent
   // cut and stays there until the next one, which moves it in the commit it
@@ -33,7 +33,7 @@ allprojects {
   // is unchanged, because re-pointing a pushed tag is worse than the defect.
   // The 0.1.0/0.1.1 pair is permanently indistinguishable; §7 is what keeps it
   // from recurring at 0.1.2.
-  version = "0.2.0-SNAPSHOT"
+  version = "0.2.1-SNAPSHOT"
 }
 
 subprojects {

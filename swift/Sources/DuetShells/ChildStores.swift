@@ -3,9 +3,9 @@
 
 import Foundation
 
-// S4 shell duty 2+4, factored once: build children on route appearance, tear them down
+// Shell duties 2+4, factored once: build children on route appearance, tear them down
 // on route disappearance. This is the whole "Router" brain — everything else in a shell
-// is observation + forwarding one-liners. Unit-tested by the S4-Q6 churn drill.
+// is observation + forwarding one-liners. Unit-tested by the churn drill.
 
 /// Multi-child reconciler for stack routes. Keyed by the route VALUE: pushing the
 /// byte-identical route twice shares one store (one source of truth per identity;

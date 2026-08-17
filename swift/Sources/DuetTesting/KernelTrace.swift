@@ -4,13 +4,13 @@
 import Duet
 import Foundation
 
-// G3 (spec 18 §2.1) — kernel-trace fixtures: the corpus methodology extended to
+// Kernel-trace fixtures: the corpus methodology extended to
 // the KERNEL itself. The contract-observable runtime rules (synchronous
 // send→reduce, effect start order, cancel-by-id, teardown-cancels-everything,
 // reentrancy queueing, virtual-time ordering) are recorded as replayable traces
 // both kernel flavors must reproduce under virtual time — machine-verifying
 // what the twin TestStores pin per platform by assertion. Contract:
-// contracts/kernel-trace-v0.md (v0 — frozen at F3 exit with the Kotlin traces).
+// contracts/kernel-trace-v0.md (v0 — frozen with the Kotlin traces).
 
 /// One observable kernel event, in trace order. Payload strings are canonical
 /// JSON (contracts/serialization.md) so the trace itself is byte-comparable.

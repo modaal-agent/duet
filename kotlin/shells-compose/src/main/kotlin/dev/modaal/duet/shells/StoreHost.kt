@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
  * `teardownAll()` is a no-op. Swift-flavor mirror: DuetShells/StoreHost.swift.
  *
  * [scope] is the host's coroutine scope — main-confined by contract (the same
- * scope the hosted stores run on) and, per the Q2 decision, a RETAINED/logical
+ * scope the hosted stores run on) and, by the config-change stance, a RETAINED/logical
  * scope on Android: the host lives in the component tree that survives
  * configuration change, so rotation never crosses the worker bracket. Adopted
  * workers' `run()` coroutines launch into it; cancelling the scope is the

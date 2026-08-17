@@ -16,7 +16,7 @@ import kotlinx.serialization.json.JsonPrimitive
  * (DuetReplay/ReplayCanonical.swift) must produce byte-identical strings.
  *
  * The §6 pretty writer (the on-disk fixture form) is deliberately ABSENT from
- * this flavor (F4·S2, G1): fixture files are materialized by the `duet` CLI
+ * this flavor: fixture files are materialized by the `duet` CLI
  * through the framework's one pretty implementation — the record mode emits
  * compact artifacts only, so the on-disk form cannot drift per flavor.
  *

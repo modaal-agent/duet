@@ -3,7 +3,7 @@
 
 import Foundation
 
-/// The handles' lifecycle surface (spec 15 §3.3): what `StoreChild` /
+/// The handles' lifecycle surface: what `StoreChild` /
 /// `ViewShellChild` need from the node they carry — the framework's replacement
 /// for the erased RIBs `Interactable`. Main-actor native: mount mechanics run
 /// on the main actor by construction, so the bracket is isolated rather than
@@ -20,7 +20,7 @@ public protocol Activatable: AnyObject {
 /// become plain properties on the subclass, and the activate/deactivate bracket
 /// becomes `bind()`/`unbind()` under an `isActive` latch.
 ///
-/// Decision of record (F2's first, spec 15 §7): a CLASS, not a
+/// Decision of record: a CLASS, not a
 /// protocol-with-default-implementation — the latch and the owned `StoreHost`
 /// are stored state protocol extensions cannot hold, and a base class keeps the
 /// adopter surface to two overrides.

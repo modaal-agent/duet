@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
-/** R13 join + transition-pair receipts, and the registry's sealed-root resolution. */
+/** Projection-join + transition-pair receipts, and the registry's sealed-root resolution. */
 class ObservationsTest {
 
   @Test
@@ -28,7 +28,7 @@ class ObservationsTest {
     // Project thin against initialAux…
     assertEquals(listOf("state-1" to 0), applied)
 
-    // …self-heal when the aux source lands (R13), and re-apply on state moves.
+    // …self-heal when the aux source lands, and re-apply on state moves.
     aux.emit(42)
     runCurrent()
     state.value = "state-2"

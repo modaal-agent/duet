@@ -6,8 +6,8 @@ import Foundation
 
 /// The canonical JSON writer facade — contracts/serialization.md §1–§2 compact and
 /// §6 pretty. Both halves are owned by `DuetReplay.ReplayCanonical` (the ONE
-/// implementation, shared with the replay-protocol server and the `duet` CLI —
-/// F4·S2); this facade only spares test code the extra import. The Kotlin flavor
+/// implementation, shared with the replay-protocol server and the `duet` CLI);
+/// this facade only spares test code the extra import. The Kotlin flavor
 /// mirrors the compact half byte-identically (the byte-gate currency) and ships
 /// no pretty writer at all — the on-disk form has one implementation.
 public enum CanonicalJSON {

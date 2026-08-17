@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
 /**
- * The Q2 mechanics receipt (doc 20 §8): Android workers live in the
+ * The config-change mechanics receipt: Android workers live in the
  * RETAINED/logical scope — the component tree that survives configuration
  * change (Decompose's retained tree, `InstanceKeeper`-backed). The 2026-07-30
  * graduation review promoted the receipt shape to API: [RetainedRoot] is

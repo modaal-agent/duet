@@ -10,7 +10,7 @@ import Foundation
 // streams consumed by effect handlers, or actions through a shell-bound Relay.
 // Workers never touch stores or feature state ("no silent ingress"), and a
 // worker that grows decision logic is asking to move it into a reducer:
-// workers process, reducers decide (R16).
+// workers process, reducers decide.
 //
 // Deliberately freestanding: no kernel type appears in this file, so a legacy
 // app can adopt the worker bracket before it adopts the kernel.

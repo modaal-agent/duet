@@ -1,9 +1,8 @@
 // Copyright (c) 2026 Modaal.dev
 // Licensed under the MIT License. See LICENSE file for details.
 
-// The generic handle vocabulary (spec 15 §3.3), moved framework-side at F2:
-// what `attachChild`/`detachChild` actually did for a store-first node rides
-// these value handles instead. UIKit-bound (the view half of a handle is a
+// The generic handle vocabulary: what `attachChild`/`detachChild` actually did
+// for a store-first node rides these value handles instead. UIKit-bound (the view half of a handle is a
 // `UIViewController`), so absent from the macOS host test lane — the receipts
 // are the consuming app's churn specs, which exercise the handles against real
 // mounts.

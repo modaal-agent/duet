@@ -4,11 +4,11 @@
 import Combine
 import Foundation
 
-// MT4 fork glue, shell duty 4 — the R13 helper. R13 (doc 08 §3.1, from the MT2
-// finding): a projection over feature state PLUS an auxiliary async source must
-// re-apply whenever ANY input arrives — the sources race, and a projection that only
-// re-runs on state updates silently drops rows when state lands first. This type owns
-// the subscription mechanics so the join rule can't be forgotten per call site.
+// Shell duty 4 — the projection-join helper: a projection over feature state PLUS
+// an auxiliary async source must re-apply whenever ANY input arrives — the sources
+// race, and a projection that only re-runs on state updates silently drops rows when
+// state lands first. This type owns the subscription mechanics so the join rule can't
+// be forgotten per call site.
 
 /// Joins a store's state publisher with one auxiliary source (an index, a cache, a
 /// repository stream) and re-runs `apply` on every input.
@@ -20,7 +20,7 @@ import Foundation
 /// - The aux side hops to the main queue (`receive(on:)`): repository streams emit
 ///   on background queues.
 /// - `apply` runs with the latest of both. The first state emission applies against
-///   `initialAux` — project thin, self-heal when the aux source lands (R13).
+///   `initialAux` — project thin, self-heal when the aux source lands.
 @MainActor
 public final class ProjectionJoin<State: Equatable, Aux>: HostedObservation {
   /// The latest auxiliary value, for hosts that resolve through it outside `apply`.
@@ -72,7 +72,7 @@ public final class ProjectionJoin<State: Equatable, Aux>: HostedObservation {
 
 /// Observes a store's state synchronously on the main actor, delivering `(old, new)`
 /// transition pairs — the seam where shells hang analytics and presentation gates
-/// without deciding anything themselves (R8). The first emission delivers
+/// without deciding anything themselves. The first emission delivers
 /// `(current, current)`; duplicates are filtered.
 @MainActor
 public final class StateTransitions<State: Equatable>: HostedObservation {

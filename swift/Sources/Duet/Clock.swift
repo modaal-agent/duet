@@ -5,7 +5,7 @@ import Foundation
 
 /// The kernel's clock seam. Effects that wait must wait through this — never
 /// `Task.sleep` directly — so tests can substitute virtual time
-/// (contract §5: a wall-clock sleep in a T1/T2 test is a contract violation).
+/// (contract §5: a wall-clock sleep in a reducer or effect test is a contract violation).
 ///
 /// Nanosecond-based (not `Duration`): the seam stays a single primitive with an
 /// exact Kotlin twin (coroutine virtual time is nanosecond-based too); a

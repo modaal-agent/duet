@@ -348,7 +348,7 @@ object ChainScenarioRunner {
         buildJsonObject { for (box in boxes.created) put(box.key, box.initialStateTree()) })
       put("steps", JsonArray(steps))
     }
-    // Compact artifact — the CLI materializes the §6 file (one writer, F4·S2).
+    // Compact artifact — the CLI materializes the §6 file (one writer).
     val artifactDir = File(FixtureRunner.fixturesDirectory().parentFile, ".runs/record/kotlin")
     artifactDir.mkdirs()
     val file = File(artifactDir, "${scenario.fixture}.fixture.json")

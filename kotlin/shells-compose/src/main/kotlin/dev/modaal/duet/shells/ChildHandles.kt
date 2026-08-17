@@ -5,10 +5,10 @@ package dev.modaal.duet.shells
 
 import dev.modaal.duet.kernel.Store
 
-// The generic handle vocabulary (spec 15 §3.3) — Kotlin twins. Thinness note:
+// The generic handle vocabulary — Kotlin twins. Thinness note:
 // the Swift handles are UIKit-bound (they carry the child's UIViewController;
 // mounts install it view-first). On Compose the view half does not exist —
-// composition lifetimes do view mount/teardown (S4-Q4) — so the twins carry
+// composition lifetimes do view mount/teardown — so the twins carry
 // exactly the part the platform does NOT absorb: the activate/teardown
 // ORDERING contract a composition root must uphold when route state drops a
 // child. Swift-flavor mirror: DuetShells/ChildHandles.swift.

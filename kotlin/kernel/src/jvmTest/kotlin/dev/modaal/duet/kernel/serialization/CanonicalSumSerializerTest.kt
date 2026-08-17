@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 
 /**
- * Dialect receipts for the derived sum serializer (FC2 arm b): the
+ * Dialect receipts for the derived sum serializer: the
  * `{"case": …, "value": …}` envelope, the three payload shapes, the omit-nil
  * rule, and the loud failure modes. The registry convention under test is the
  * shipped one: `@SerialName` per case + one registry line per case.

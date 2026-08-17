@@ -92,7 +92,7 @@ is absent on `cancel`.
 }
 ```
 
-### Dialect 2 (FT1 — scenario-compiled fixtures)
+### Dialect 2 (scenario-compiled fixtures)
 
 Fixtures compiled from scenarios add **metadata that is NOT part of the byte gate**:
 
@@ -122,7 +122,7 @@ replay tooling needs no tree awareness.
 
 The comparable projection stays exactly `initialState` + each step's
 `action`/`expectedState`/`expectedEffects`; dialect-1 files remain replayable (metadata
-is simply absent). Fixtures are **build products** (R10): the only writer is the
+is simply absent). Fixtures are **build products**: the only writer is the
 scenario runner's record mode (`duet record`); hand-edits are review defects.
 
 Runner semantics (identical both platforms):
@@ -153,7 +153,7 @@ enter as action payloads recorded in the fixture).
 
 ### Chain fixtures, dialect 2
 
-`chain-*.fixture.json` pin composition SEAMS (S4): per-step `node` + `action` +
+`chain-*.fixture.json` pin composition SEAMS: per-step `node` + `action` +
 `expectedEffects` (never `expectedState` — state evolution belongs to leaf fixtures),
 `linkToNext: true` asserting the step's final `notifyListener` payload is byte-identical
 to the next step's embedded action value. Dialect 2 adds the same metadata as feature
@@ -168,7 +168,7 @@ the delegate→parent-action mapping) and recorded like feature fixtures.
 Verification never reads bytes off disk directly — both gates compare re-serialized
 canonical strings (§1) — but fixture *files* are committed and reviewed, so their
 formatting is pinned too. One format, byte-identical from both platforms' record modes,
-so re-recording anywhere yields clean git diffs and CI can enforce R10 with
+so re-recording anywhere yields clean git diffs and CI can enforce the build-product rule with
 `duet record --check` (regenerate + fail-if-changed):
 
 - 2-space indent; key/value separator `": "` (no space before the colon).

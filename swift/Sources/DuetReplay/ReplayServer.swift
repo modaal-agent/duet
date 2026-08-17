@@ -5,7 +5,7 @@ import Foundation
 
 /// The replay-protocol server — a JSON-lines stdio loop over an app's adapter
 /// registry. Protocol v1, the versioned flavor seam — normative contract:
-/// contracts/replay-protocol-v1.md (formalized at F3 from the proven v0 shape;
+/// contracts/replay-protocol-v1.md (formalized from the proven v0 shape;
 /// the wire format is unchanged, the version stamp advances):
 ///
 ///   handshake (stdout, on start):

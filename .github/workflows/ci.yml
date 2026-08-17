@@ -1,8 +1,5 @@
-# The framework's own gate (F4 CI templates): both flavor suites + the
-# flavor-lockstep lint. Committed while the repo is still private — these jobs
-# first run for real at the public flip; until then the same commands are the
-# local gate (CONTRIBUTING "Building") and the Modaal-free receipt runs them
-# from clean clones.
+# The framework's own gate: both flavor suites + the flavor-lockstep lint.
+# The same commands are the local gate (CONTRIBUTING "Building").
 name: ci
 
 on:

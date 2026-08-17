@@ -9,7 +9,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 
 /**
- * The spine-persistence path through the core (FC2-b, productized): process-death
+ * The spine-persistence path through the core: process-death
  * capture/restore as core-owned String functions over the app's spine type, so NO
  * platform-side spine codec exists — the app boundary is string-only.
  *

@@ -4,7 +4,7 @@
 
 One score, two performers. Duet is a framework for building iOS and Android apps as verifiable twins: shared pure logic, platform-native UI, and a recorded fixture corpus that both platforms must replay **byte-identically**. Record a feature's behavior on one platform, verify it on the other — parity is a CI gate, not a code-review aspiration.
 
-> **Status: pre-release.** Both flavors and the toolchain have landed (`swift/`, `kotlin/`, the [`duet-tools`](https://github.com/modaal-agent/duet-tools) CLI) together with the normative contracts (`contracts/`). No artifacts are published yet — treat the API surface as a preview until the first tagged release.
+> **Status: pre-release.** Both flavors and the toolchain have landed (`swift/`, `kotlin/`, the [`duet-tools`](https://github.com/modaal-agent/duet-tools) CLI) together with the normative contracts (`contracts/`). The Swift packages resolve by URL at a tag; the Kotlin artifacts are not on a Maven repository yet and resolve from `mavenLocal()`. Treat the API surface as a preview: pre-1.0 minors are breaking by family convention, so pin exactly.
 
 The CI matrix (each job writes its toolchain and verdict to the run's job summary):
 

@@ -77,8 +77,7 @@ python3 scripts/flavor-lockstep-lint.py --write-ledger  # regenerate parity/flav
 ```
 
 The `duet` CLI itself is developed in [`duet-tools`](https://github.com/modaal-agent/duet-tools)
-(check out as a sibling directory — pre-publication, the family's manifests reference each
-other by sibling path).
+(a separate package, which resolves this repo by URL at an exact tag).
 
 CI runs exactly the commands above: this repo's gate is `.github/workflows/ci.yml`
 (both flavor suites + the flavor-lockstep lint); the adopter-facing parity template

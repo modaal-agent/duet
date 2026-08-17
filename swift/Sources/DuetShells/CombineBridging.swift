@@ -3,17 +3,17 @@
 
 import Combine
 
-// MT4 fork glue — THE Combine→AsyncStream adapter (doc 08 §3.4: the single audited
-// bridge between the app's Combine repository layer and the kernel's AsyncStream
-// handler seam). R6's concurrency addendum bans bridging continuations inline in
-// feature or app code; environments call `.kernelStream()` instead, and this file is
-// the only place the continuation lives.
+// THE Combine→AsyncStream adapter: the single audited bridge between an app's
+// Combine repository layer and the kernel's AsyncStream handler seam. Bridging
+// continuations inline in feature or app code is banned; environments call
+// `.kernelStream()` instead, and this file is the only place the continuation
+// lives.
 
 extension Publisher where Failure == Never, Output: Sendable {
   /// Bridges a Combine publisher into the kernel's effect-stream currency. The
   /// subscription starts when the stream is created and is cancelled when the
   /// consuming effect terminates (`onTermination` → `cancel()`), so effect
-  /// cancellation (kernel contract R2) propagates all the way to the upstream
+  /// cancellation propagates all the way to the upstream
   /// publisher.
   ///
   /// `Output: Sendable` is the seam's contract made explicit: values crossing the

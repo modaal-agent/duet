@@ -10,8 +10,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
 /**
- * The retained carrier (the Q2 mechanics receipt, promoted from receipt to
- * API on the 2026-07-30 graduation review): an `InstanceKeeper.Instance` owning the
+ * The retained carrier (promoted from mechanics receipt to API on the
+ * 2026-07-30 graduation review): an `InstanceKeeper.Instance` owning the
  * app's logical scope and its composition root.
  * `instanceKeeper().getOrCreate { RetainedRoot(…) }` in a thin Activity
  * returns the SAME instance across configuration change — rotation never

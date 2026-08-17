@@ -4,13 +4,13 @@
 import Foundation
 import XCTest
 
-// The deterministic-async toolkit v1 (spec 15 §6.3): async test code must be
-// deterministic BY CONSTRUCTION — R3's no-wall-clock rule extended to test
-// helpers, with the corpus's flake-class fixes productized so the deterministic
+// The deterministic-async toolkit v1: async test code must be deterministic BY
+// CONSTRUCTION — the no-wall-clock rule extended to test helpers, with the
+// corpus's flake-class fixes productized so the deterministic
 // shape is the path of least resistance. A test that flakes under virtual time
 // is a bug, never a bound-widening opportunity.
 
-/// Suite-wide polling defaults as a TYPE (flake registry: suite-wide 3 s):
+/// Suite-wide polling defaults as a TYPE (the measured suite-wide bound, 3 s):
 /// the framework is assertion-library-agnostic, so these are the VALUES —
 /// a Nimble/Quick suite feeds them into `PollingDefaults` (its config type),
 /// an XCTest suite into its expectation timeouts. One source, no per-test
@@ -37,8 +37,8 @@ public func settleUntil(
   return condition()
 }
 
-/// The re-send-until-projected pattern (flake registry class B, the InviteCode
-/// fix, productized): a subscription that attaches on its own task can miss the
+/// The re-send-until-projected pattern, productized: a subscription that
+/// attaches on its own task can miss the
 /// first emission, so the test RE-SENDS the stimulus each settle round until
 /// the projection lands — no sleeps, no bound widening. Returns whether the
 /// projection held within the budget.
@@ -85,7 +85,7 @@ public final class ChildDeallocLedger {
   public var liveCount: Int { boxes.filter { $0.object != nil }.count }
 }
 
-/// Environment health (the flake registry's env-check discipline, opt-in): the
+/// Environment health (the env-check discipline, opt-in): the
 /// degraded-run signature is suite wall-time far above the settled budget — a
 /// stale simulator / loaded host should read as a DIAGNOSTIC, not a red test
 /// that tempts bound widening. Start it in the suite's setup, assert in

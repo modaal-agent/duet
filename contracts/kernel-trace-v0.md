@@ -2,7 +2,7 @@
 
 **Status: EXECUTED both flavors — the gate is MET and kernel contract v1 is
 declared FROZEN (store-kernel-contract.md). Swift recorded the traces at F2;
-the Kotlin kernel replayed all six BYTE-IDENTICALLY at F3 under coroutine
+the Kotlin kernel replayed all six BYTE-IDENTICALLY under coroutine
 virtual time (repeat-stable; negative control trips). The Swift recorder is
 the writer of record; the Kotlin side verifies only. One alignment fell out of
 the gate, exactly as designed: the KMP kernel's handler invocation moved into
@@ -69,13 +69,13 @@ Two recorder-level rules make traces canonical rather than scheduling-shaped:
   neither kernel defines their order). Rule scenarios are authored so each
   ending lands in its own scripted window (separated by an `advance` or a
   `send`). Multi-effect teardown unwind order stays a per-platform TestStore
-  assertion — the spec-18 §2.1 fallback applied at trace-design grain instead
+  assertion — the per-platform fallback applied at trace-design grain instead
   of surrendering byte-identity wholesale.
 
-## 4. Cross-flavor verification (F3)
+## 4. Cross-flavor verification
 
 The Kotlin kernel replays the same scripted scenarios under coroutine virtual
 time and must produce byte-identical traces. If a residual concurrency-idiom
 mismatch surfaces that scenario discipline cannot absorb, the recorded fallback
 is: this rule-spec stays normative and the affected rule is pinned by
-per-platform assertion — i.e. today's state, no regression (spec 18 G3).
+per-platform assertion — i.e. today's state, no regression.
