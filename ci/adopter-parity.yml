@@ -41,7 +41,7 @@ jobs:
     # both, like the framework's own workflow, if you support both.
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # ADAPT: the toolchain pin (see the note above) — the image default may
       # be older than the verified floor.
@@ -50,12 +50,12 @@ jobs:
         with:
           xcode-version: "26.6"
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v5
 
       # Neither half needs a family checkout: Swift manifests resolve the Duet
       # package by URL at the tag they pin, Gradle resolves dev.modaal.duet:*
