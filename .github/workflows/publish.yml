@@ -1,0 +1,73 @@
+# Maven publish — fires on a release tag push. The artifacts land as ONE
+# commit in the modaal-agent/maven repository, which GitHub Pages serves as
+# the family's static Maven host (https://modaal-agent.github.io/maven).
+#
+# The version IS the tag: the build is invoked with -PpublishVersion=<tag>,
+# so the published coordinate cannot lag the version literal in
+# kotlin/build.gradle.kts (CONTRIBUTING, Development rules §7). The staging,
+# atomicity and immutability rules live in kotlin/scripts/publish-maven.sh —
+# the same script a maintainer runs locally for a rehearsal.
+#
+# Credential: MAVEN_HOST_TOKEN, a fine-grained PAT scoped to the
+# modaal-agent/maven repository with contents read/write and nothing else
+# (fine-grained PATs expire — renew it there when the publish job starts
+# failing at the host checkout). Consumers stay anonymous — the static host
+# serves unauthenticated GETs.
+name: publish
+
+on:
+  push:
+    tags:
+      # Release tags only (0.3.0, 1.2.3, …).
+      - "[0-9]*.[0-9]*.[0-9]*"
+
+jobs:
+  maven:
+    # macOS: the kernel's Kotlin/Native Apple targets (ios*/macosArm64) only
+    # build on a macOS host — same constraint as the kotlin CI job.
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Check out the Maven host
+        uses: actions/checkout@v4
+        with:
+          repository: modaal-agent/maven
+          token: ${{ secrets.MAVEN_HOST_TOKEN }}
+          path: .maven-host
+
+      # Stage → assert atomic → assert immutable → copy + metadata → commit.
+      - name: Stage and publish (kotlin/scripts/publish-maven.sh)
+        run: |
+          git -C .maven-host config user.name "duet publish"
+          git -C .maven-host config user.email "noreply@modaal.dev"
+          kotlin/scripts/publish-maven.sh "${GITHUB_REF_NAME}" .maven-host --commit
+
+      # The script exits 0 without committing when the tag is already fully
+      # published (a re-run); push only what it committed.
+      - name: Push the host commit
+        run: |
+          cd .maven-host
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then
+            echo "nothing to push (version already published)"
+          else
+            git push origin HEAD:main
+          fi
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "### maven publish — ${GITHUB_REF_NAME}"
+            echo ""
+            echo "- host: modaal-agent/maven → https://modaal-agent.github.io/maven"
+            echo "- coordinates: dev.modaal.duet:{kernel,kernel-jvm,kernel-iosarm64,kernel-iossimulatorarm64,kernel-macosarm64,kernel-test,shells-compose}"
+          } >> "$GITHUB_STEP_SUMMARY"

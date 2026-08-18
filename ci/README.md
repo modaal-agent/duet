@@ -28,7 +28,11 @@ The family's own workflows live in each repo's `.github/workflows/ci.yml`:
 - **duet** — `swift test` (framework suites replay the repo's own fixture
   corpus), `cd kotlin && ./gradlew test` (KMP suites), and
   `python3 scripts/flavor-lockstep-lint.py` (development rule 1: one contract
-  surface across the two core flavors).
+  surface across the two core flavors); plus `publish.yml`: a release-tag
+  push stages the Maven artifacts with the version derived from the tag,
+  asserts the coordinate set is complete and the version unpublished, and
+  lands the release as one commit on the family's static Maven host
+  (`https://modaal-agent.github.io/maven`).
 - **duet-tools** — `swift test` (the CLI's own suite; the `duet` framework
   dependency is an exact-version URL pin), plus `release.yml`: a tag push
   builds the macOS-arm64 `duet` binary and publishes it — with its checksum

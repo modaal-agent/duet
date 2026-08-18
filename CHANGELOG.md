@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.3.0] — 2026-08-18
+
+Kotlin-only in effect: the Maven publication goes live. No API, behavior or
+byte-format change on either flavor; Swift consumers pinned `exact: "0.2.1"`
+can stay put.
+
+### Added — the Kotlin artifacts are published
+
+- `dev.modaal.duet:*` releases are served from the family's static Maven
+  repository, `https://modaal-agent.github.io/maven`. Consumers add one
+  repository block (see `kotlin/README.md`, "Consuming") and pin the release
+  version — mavenLocal is no longer required to resolve the framework.
+- `.github/workflows/publish.yml`: a release-tag push stages the publication
+  set with the version DERIVED FROM THE TAG (`-PpublishVersion=<tag>`),
+  asserts the set is complete (all seven coordinates — `kernel` + its four
+  per-target coordinates, `kernel-test`, `shells-compose`), refuses to
+  overwrite an already-published version, and lands the release as one
+  commit on the host. `kotlin/scripts/publish-maven.sh` is the same path run
+  locally for a rehearsal.
+
+### Changed — the version literal is the dev default only
+
+`kotlin/build.gradle.kts` reads `version` from `-PpublishVersion` and falls
+back to the `-SNAPSHOT` literal, which now serves only `publishToMavenLocal`
+iteration. A published coordinate cannot lag a hand-moved literal
+(CONTRIBUTING, Development rules §7 — rewritten for the tag-derived scheme).
+
 ## [0.2.1] — 2026-08-17
 
 Patch. No API, behavior or byte-format change on either flavor: comments,

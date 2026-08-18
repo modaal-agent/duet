@@ -57,9 +57,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      # Neither half needs a family checkout: your manifests resolve the Duet
-      # package by URL at the tag they pin, and tools/duet downloads the
-      # released toolchain binary at parity/duet-tools.ref.
+      # Neither half needs a family checkout: Swift manifests resolve the Duet
+      # package by URL at the tag they pin, Gradle resolves dev.modaal.duet:*
+      # from the family's static Maven repository (the repository block in
+      # your settings.gradle.kts — see the framework's kotlin/README.md), and
+      # tools/duet downloads the released toolchain binary at
+      # parity/duet-tools.ref.
 
       # ADAPT: the meta-checks (declaration lockstep, fixture symmetry, the
       # spec↔fixture cross-reference) are toolchain-owned inside `duet verify` —

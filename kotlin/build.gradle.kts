@@ -14,26 +14,18 @@ plugins {
 
 allprojects {
   group = "dev.modaal.duet"
-  // -SNAPSHOT so mavenLocal consumers (adopters, pre-publication) always
-  // re-resolve after `publishToMavenLocal`. The real (non-snapshot) Maven
-  // publication — and the dev.modaal.duet namespace verification — are not in
-  // place yet; consumers resolve the snapshot from mavenLocal.
+  // Published versions are DERIVED FROM THE TAG: the publish workflow
+  // (.github/workflows/publish.yml) passes `-PpublishVersion=<tag>`, so a
+  // tagged publish is exact by construction and cannot lag the tag
+  // (CONTRIBUTING, Development rules §7 — the 0.1.0/0.1.1 pair records what
+  // a hand-moved literal costs).
   //
-  // The NUMBER tracks the CURRENT release line — it matches the most recent
-  // cut and stays there until the next one, which moves it in the commit it
-  // tags (CONTRIBUTING, Development rules §7). It stayed at 0.1.0-SNAPSHOT
-  // through the 0.1.1 cut, so tags 0.1.0 and 0.1.1 publish the SAME mutable
-  // coordinate: a Maven consumer cannot tell them apart, and an adopter pinned
-  // to one silently compiles against whatever the last `publishToMavenLocal`
-  // left in ~/.m2. That is how an adopter hit `Unresolved reference` on symbols
-  // 0.1.1 had graduated.
-  //
-  // Note what this does and does not fix. `main` now publishes 0.1.1-SNAPSHOT,
-  // but building FROM tag 0.1.1 still yields 0.1.0-SNAPSHOT — the tagged commit
-  // is unchanged, because re-pointing a pushed tag is worse than the defect.
-  // The 0.1.0/0.1.1 pair is permanently indistinguishable; §7 is what keeps it
-  // from recurring at 0.1.2.
-  version = "0.2.1-SNAPSHOT"
+  // The `-SNAPSHOT` literal is the DEVELOPMENT default only, for
+  // `publishToMavenLocal` while iterating: consumers opt into it explicitly
+  // (the adopter repos gate mavenLocal behind a `duetMavenLocal=1` property).
+  // It tracks the current release line — a cut moves it in the commit that
+  // gets tagged, same rule as before, but nothing published depends on it.
+  version = providers.gradleProperty("publishVersion").getOrElse("0.3.0-SNAPSHOT")
 }
 
 subprojects {
@@ -45,5 +37,24 @@ subprojects {
   val regenFixtures = providers.gradleProperty("regenFixtures")
   tasks.withType<Test>().configureEach {
     systemProperty("duet.regenFixtures", regenFixtures.getOrElse(""))
+  }
+}
+
+subprojects {
+  // The publish workflow stages every publication here first
+  // (kotlin/scripts/publish-maven.sh): the staged tree is asserted COMPLETE —
+  // all coordinates present for the version — before anything reaches the
+  // static Maven host, because `kernel`'s Gradle Module Metadata is what
+  // routes consumers to the per-target coordinates and a partial upload is a
+  // broken release, not a smaller one.
+  plugins.withId("maven-publish") {
+    configure<PublishingExtension> {
+      repositories {
+        maven {
+          name = "staging"
+          url = uri(rootProject.layout.projectDirectory.dir("build/staging-maven"))
+        }
+      }
+    }
   }
 }
