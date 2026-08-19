@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Added — the mock dialect is a contract page
+
+`contracts/mock-dialect-v1.md` binds the two mock engines — the Swift
+template bundle (swift-sourcery-templates) and the Kotlin KSP processor
+(kotlin-ksp-mocks, `dev.modaal:mocks-processor`) — to ONE generated member
+vocabulary: `<fn>CallCount`/`<fn>Args`/`<fn>Handler`, the property
+counters, the subject/channel stream shape, the constructor-seeded bag,
+and the exact unset-handler failure string. Each engine's test suite pins
+the strings; changing the dialect is a versioned contract event landing in
+both engines together.
+
 ## [0.3.0] — 2026-08-18
 
 Kotlin-only in effect: the Maven publication goes live. No API, behavior or
