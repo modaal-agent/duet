@@ -34,6 +34,8 @@ Duet's correctness story is a recorded conformance corpus — fixtures that both
 
 8. **Docs state the present rule, not the transition.** Pattern pages (`docs/`), contract prose, and README sections are forward-looking: state what the system does and the action the reader takes. Do not frame a rule as a replacement of past practice — "X replaces hand-rolled Y", "previously", "no longer" — the reader has no such past. Historical contrast belongs in the changelog, commit messages, and migration guides, where the change itself is the subject.
 
+9. **Test doubles never live in a product's `Sources/`, `#if DEBUG` included.** A DEBUG gate keeps a double out of release binaries, not out of the module's API surface or its compile graph. A double one test target uses lives in that test target; a double shared across targets or with consumers ships in a dedicated test-support product that only test targets link — `DuetTesting` is that product here: `WorkerTester` ships in it, and the library sources carry zero fakes and zero `#if DEBUG`.
+
 ## Licensing of contributions
 
 Duet is MIT-licensed. Contributions are accepted under the same terms (inbound = outbound); submitting a PR means you agree your contribution is licensed under the [MIT License](LICENSE). There is no CLA.
