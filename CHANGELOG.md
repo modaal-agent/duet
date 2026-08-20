@@ -1,17 +1,11 @@
 # Changelog
 
-## Unreleased
+## [0.4.0] — 2026-08-20
 
-### Added — the mock dialect is a contract page
-
-`contracts/mock-dialect-v1.md` binds the two mock engines — the Swift
-template bundle (swift-sourcery-templates) and the Kotlin KSP processor
-(kotlin-ksp-mocks, `dev.modaal:mocks-processor`) — to ONE generated member
-vocabulary: `<fn>CallCount`/`<fn>Args`/`<fn>Handler`, the property
-counters, the subject/channel stream shape, the constructor-seeded bag,
-and the exact unset-handler failure string. Each engine's test suite pins
-the strings; changing the dialect is a versioned contract event landing in
-both engines together.
+Additive on both flavors: `Relay` gains `bindSink`, and the two mock engines
+are bound to one written member vocabulary. No existing declaration changes
+shape, no behavior changes, and the byte formats are untouched — a consumer
+moving its pin from `0.2.1` to `0.4.0` recompiles unchanged.
 
 ### Added — `Relay` binds a sink to a weak owner
 
@@ -25,6 +19,17 @@ closure over values, a deliberate strong capture). The weak hold buys a
 different thing per flavor and each doc comment says which: an ARC cycle broken
 across the mount on Swift, a torn-down owner left collectible on Kotlin.
 Additive — `sink` stays public and existing assignments are unchanged.
+
+### Added — the mock dialect is a contract page
+
+`contracts/mock-dialect-v1.md` binds the two mock engines — the Swift
+template bundle (swift-sourcery-templates) and the Kotlin KSP processor
+(kotlin-ksp-mocks, `dev.modaal:mocks-processor`) — to ONE generated member
+vocabulary: `<fn>CallCount`/`<fn>Args`/`<fn>Handler`, the property
+counters, the subject/channel stream shape, the constructor-seeded bag,
+and the exact unset-handler failure string. Each engine's test suite pins
+the strings; changing the dialect is a versioned contract event landing in
+both engines together.
 
 ## [0.3.0] — 2026-08-18
 
