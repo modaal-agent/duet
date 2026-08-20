@@ -17,4 +17,31 @@ public final class Relay<Event>: @unchecked Sendable {
   public func send(_ event: Event) {
     sink?(event)
   }
+
+  /// Sets `sink` to a closure that holds `owner` weakly and passes it back to
+  /// `handler`. Events sent after `owner` deallocates are dropped, the same way
+  /// events sent before wiring are.
+  ///
+  /// This is the sink form for the case where the capture IS an owner object —
+  /// the store, shell, or worker whose mount the wiring belongs to. The weak hold
+  /// keeps the mount free of an ARC cycle: the owner holds the relay it wired, and
+  /// the relay does not hold the owner back. (The Kotlin twin's weak hold buys a
+  /// different thing — there it keeps a torn-down shell collectible rather than
+  /// reachable from a live relay.)
+  ///
+  /// ```swift
+  /// routeRelay.bindSink(self) { root, route in root.store.send(.routed(route)) }
+  /// ```
+  ///
+  /// Assign `sink` directly when the capture is not an owner object — a closure
+  /// over values, or a strong capture the wiring deliberately wants.
+  public func bindSink<Owner: AnyObject>(
+    _ owner: Owner,
+    _ handler: @escaping (Owner, Event) -> Void
+  ) {
+    sink = { [weak owner] event in
+      guard let owner else { return }
+      handler(owner, event)
+    }
+  }
 }

@@ -13,6 +13,19 @@ and the exact unset-handler failure string. Each engine's test suite pins
 the strings; changing the dialect is a versioned contract event landing in
 both engines together.
 
+### Added — `Relay` binds a sink to a weak owner
+
+`bindSink(owner) { owner, event in … }` on Swift and
+`bindSink(owner) { owner, event -> … }` on Kotlin set `sink` to a closure that
+holds the owner weakly and hands it back to the handler. Events sent after the
+owner goes away are dropped, the same way events sent before wiring are. Reach
+for it where the capture is the owning store, shell, or worker; assign `sink`
+directly where the capture is not an owner object (a method reference, a
+closure over values, a deliberate strong capture). The weak hold buys a
+different thing per flavor and each doc comment says which: an ARC cycle broken
+across the mount on Swift, a torn-down owner left collectible on Kotlin.
+Additive — `sink` stays public and existing assignments are unchanged.
+
 ## [0.3.0] — 2026-08-18
 
 Kotlin-only in effect: the Maven publication goes live. No API, behavior or
