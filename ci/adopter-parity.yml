@@ -36,7 +36,7 @@ jobs:
     # specific Swift frontend — pin the toolchain your repo's own proofs run
     # on. The framework's verified floor is the GA line, Xcode 26.6 / Swift
     # 6.3.3 (macos-26 image + a setup-xcode pin); the newest proven line is
-    # Xcode 27 beta (the `xcode-27` preview image's default — JDK 21 + Gradle
+    # Xcode 27 beta (the `xcode-27` preview image's default — a JDK and Gradle
     # are on both images). macos-15's default is below the floor. Dual-lane
     # both, like the framework's own workflow, if you support both.
     runs-on: macos-26

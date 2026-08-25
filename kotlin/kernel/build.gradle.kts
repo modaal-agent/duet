@@ -22,11 +22,11 @@ plugins {
 }
 
 kotlin {
-  jvmToolchain(21)
+  jvmToolchain(25)
 
   // kotlin.uuid.Uuid / kotlin.time.Instant are the canonical UUID/date types
   // in common code; both are still experimental stdlib
-  // API at Kotlin 2.3.21, so opt in module-wide.
+  // API at Kotlin 2.4.10, so opt in module-wide.
   compilerOptions {
     optIn.add("kotlin.uuid.ExperimentalUuidApi")
     optIn.add("kotlin.time.ExperimentalTime")
@@ -63,7 +63,7 @@ kotlin {
 }
 
 // Keep the framework build hermetic: no SKIE analytics collection or upload
-// (a typed DSL in 0.10.13 — there are no `skie.analytics.*` Gradle properties).
+// (a typed DSL in 0.10.14 — there are no `skie.analytics.*` Gradle properties).
 skie {
   analytics {
     enabled.set(false)

@@ -12,7 +12,7 @@ The CI matrix (each job writes its toolchain and verdict to the run's job summar
 | --- | --- | --- |
 | `swift` · macos-26 | Xcode 26.6 (Swift 6.3.3) | the GA floor — the adopter toolchain |
 | `swift` · xcode-27 | Xcode 27 beta (Swift 6.4) | the newest proven line |
-| `kotlin` | Temurin 21 · Gradle | the KMP flavor suites (pure KMP — no Android SDK) |
+| `kotlin` | Temurin 25 · Gradle | the KMP flavor suites (pure KMP — no Android SDK) |
 | `flavor-lockstep` | python3 | one contract surface across the two flavors, ledger fresh |
 
 ## Why

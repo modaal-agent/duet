@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.5.0] — 2026-08-25
+
+Kotlin-only in effect: the build toolchain moves to Kotlin 2.4.10, Gradle
+9.7.1 and JDK 25. No API changes, no behavior changes, no byte-format changes
+on either flavor — the Swift half is byte-identical to `0.4.0`, and Swift
+consumers pinned `exact: "0.4.0"` can stay there.
+
+Two things a Kotlin consumer has to match before moving its pin, both
+consequences of the compiler and toolchain move rather than of any source
+change here.
+
+### Changed — the toolchain: Kotlin 2.4.10, Gradle 9.7.1, JDK 25
+
+`kotlin` 2.4.10, `coroutines` 1.11.0, `serialization` 1.11.0, `skie` 0.10.14,
+every module's `jvmToolchain(25)`, and the wrapper at Gradle 9.7.1. The
+wrapper now also carries `distributionSha256Sum`, so the distribution it
+downloads is verified before it is unpacked; a version bump and its digest
+move together from here on.
+
+**Your build JVM must be a 25.** The published `-jvm` variants are compiled to
+class-file major 69. A consumer building on a Java 21 JVM cannot read them.
+
+**Your Kotlin must be 2.4 or newer.** The Apple `.klib` artifacts are emitted
+by the 2.4 compiler and carry its ABI version; a 2.3 compiler will not consume
+them. The reverse direction is unaffected — this release's own build resolves
+and compiles against `0.4.0`'s 2.3-built klibs, so a project can move its
+Kotlin version first and its Duet pin second.
+
+Verified before the cut: the Kotlin lane (92 tasks — the JVM suites, the
+macosArm64 / iosArm64 / iosSimulatorArm64 klibs, every SKIE task and the
+consumer-receipt frameworks), the Swift lane (64 tests), and the
+flavor-lockstep lint (23 pairs, 24 singles, 41 open deltas).
+
 ## [0.4.0] — 2026-08-20
 
 Additive on both flavors: `Relay` gains `bindSink`, and the two mock engines

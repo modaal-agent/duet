@@ -1,8 +1,8 @@
 [versions]
-kotlin = "2.3.21"
-coroutines = "1.10.2"
-serialization = "1.9.0"
-skie = "0.10.13"
+kotlin = "2.4.10"
+coroutines = "1.11.0"
+serialization = "1.11.0"
+skie = "0.10.14"
 essenty = "2.5.0"
 
 [libraries]
