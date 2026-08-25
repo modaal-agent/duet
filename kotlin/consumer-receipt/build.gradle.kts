@@ -29,7 +29,11 @@ kotlin {
       baseName = "DuetReceipt"
       isStatic = true
       // Surface the kernel's replay types through the receipt framework.
-      export(project(":kernel"))
+      // Write `dependencies.project(…)`, not `project(…)`: inside
+      // `framework { }` no `DependencyHandler` is in scope, so the bare form
+      // resolves to `Project.project(String)` and hands `export` a `Project`,
+      // which Gradle 10 rejects as a dependency notation.
+      export(dependencies.project(":kernel"))
       xcf.add(this)
     }
   }
