@@ -1,5 +1,64 @@
 # Changelog
 
+## [0.6.0] — 2026-08-26
+
+Swift-only in effect: `DuetShells` gains `AnyActionHandler`, and `Relay` drops
+its `Sendable` conformance. The Kotlin half is byte-identical to `0.5.0` — no
+API, behavior or byte-format change on that flavor — and Kotlin consumers
+pinned `0.5.0` can stay there.
+
+One item needs a read before a Swift consumer moves its pin: the `Relay`
+conformance removal below.
+
+### Added — `AnyActionHandler` in `DuetShells`
+
+`AnyActionHandler<A>` is the view→shell event-forwarding value: an erased
+callback a shell hands to the view it mounted, built against a weak owner.
+
+```swift
+presenter.saveRequested = AnyActionHandler(self) { shell, _ in
+  shell.store.send(.saveTapped)
+}
+
+// in the view
+Button("Save") { saveRequested?.invoke() }
+```
+
+The owner is held weakly, so an invocation arriving after the mount tears down
+is a no-op and the handler adds no reference back to the shell. `mapHandler`
+composes a handler with a transform applied on the way in, and the `A == Void`
+specialization invokes without an argument. `docs/composition.md` states when
+to reach for this and when to reach for `Relay`.
+
+The Kotlin flavor has no twin by design: a plain `((Event) -> Unit)?` carries
+the same duties there. The reason is declared in `parity/flavor-parity.yaml`
+and counted in the ledger.
+
+### Changed — `Relay` is no longer `Sendable`
+
+`Relay` was declared `@unchecked Sendable`; it now carries no `Sendable`
+conformance, so the compiler checks that a relay stays in the isolation domain
+that formed it. Nothing else about the type changes: `sink`, `send` and
+`bindSink` keep their signatures and existing assignments compile unchanged.
+
+**What to check before moving your pin.** A relay stored in a `Sendable` type,
+captured by a `@Sendable` closure, or passed to another actor stops compiling.
+The fix that keeps the check is `@MainActor` on the type that holds it — a
+global-actor-isolated type is implicitly `Sendable`. Every `Relay` in every
+tree checked before this cut — this repo's own tests included — is confined to
+the main actor or to synchronous test code.
+
+### Changed — `bindSink` builds its weak hold through `AnyActionHandler`
+
+`bindSink(owner:_:)` constructs an `AnyActionHandler` and installs its invoke
+as `sink`, so the weak-owner capture is written once in the module. The
+observable contract is unchanged — the same weak hold, the same drop after the
+owner goes away, the same drop before wiring — and `RelayTests` is unedited
+across this release as the receipt.
+
+Verified before the cut: the Swift lane (70 tests) and the flavor-lockstep lint
+(23 pairs, 25 singles, 41 open deltas).
+
 ## [0.5.0] — 2026-08-25
 
 Kotlin-only in effect: the build toolchain moves to Kotlin 2.4.10, Gradle
