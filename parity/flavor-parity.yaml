@@ -256,6 +256,10 @@ singles:
   # ── shells ────────────────────────────────────────────────────────────
   - surface: shells
     flavor: swift
+    file: swift/Sources/DuetShells/AnyActionHandler.swift
+    reason: the view→shell event-forwarding value (weak-owner erased callback); the Kotlin flavor carries the same duties in a plain function type ((Event) -> Unit), so there is no type to pair — Relay is the flavor-paired half of the idiom
+  - surface: shells
+    flavor: swift
     file: swift/Sources/DuetShells/CombineBridging.swift
     reason: the Combine→AsyncStream bridge (kernelStream) — Swift-flavor idiom; the KMP flavor is Flow-native
   - surface: shells

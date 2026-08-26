@@ -89,6 +89,66 @@ Two carve-outs:
   environment closes over `host.adopt(…)`, so its home is where the host
   lives, not whichever level finds the factory convenient.
 
+## Forwarding events from a view
+
+A view hands its user-initiated events to the object that mounted it. The
+idiom has two shapes, and which one applies is decided by construction order.
+
+**The receiver exists when the view is built** — the ordinary case. The shell
+assigns an `AnyActionHandler` to the view's handler property, built against
+itself as a weak owner; the view stores it and invokes it:
+
+```swift
+// in the shell's bind()
+presenter.saveRequested = AnyActionHandler(self) { shell, _ in
+  shell.store.send(.saveTapped)
+}
+
+// in the view
+Button("Save") { saveRequested?.invoke() }
+```
+
+The owner is held weakly, so an invocation arriving after the mount tears down
+is a no-op and the handler adds no reference back to the shell.
+
+**The receiver does not exist yet** — a child environment that has to be built
+before the parent store it sends into. The composition root creates a `Relay`,
+hands its `send` to the child it is building, and binds the sink once the
+parent exists:
+
+```swift
+let routeRelay = Relay<Route>()
+let child = ChildBuilder(dependency: component).build(
+  onRoute: { routeRelay.send($0) })
+// … the parent store now exists
+routeRelay.bindSink(self) { root, route in root.store.send(.routed(route)) }
+```
+
+`bindSink` builds an `AnyActionHandler` internally, so both shapes share one
+weak-owner capture. Events sent before the sink is assigned are dropped:
+composition-root construction is synchronous, so nothing real fires in the gap.
+Assign `sink` directly when the capture is not an owner object — a closure over
+values, or a strong capture the wiring deliberately wants.
+
+Neither type is `Sendable`. That is what makes the compiler check that a
+handler stays in the isolation domain that formed it — for a view seam, the
+main actor. To pass one between domains, annotate the type `@MainActor`, which
+is implicitly `Sendable` and keeps the check.
+
+**The Kotlin dialect** uses a plain function type for the handler role, since
+`((Event) -> Unit)?` already carries optional wiring, composition, and — under
+a collecting runtime — a captured receiver that stays collectible:
+
+```kotlin
+@Composable
+fun DetailScreen(shell: DetailShell) {
+  Button(onClick = { shell.store.send(DetailAction.SaveTapped) }) { Text("Save") }
+}
+```
+
+`Relay` is flavor-paired and its API matches, including `bindSink`, whose weak
+hold buys a different thing per flavor — each doc comment says which.
+
 ## The degenerate cases are kept, not optimized away
 
 - **A level that owns nothing** has a Component that is pure forwarding. Keep

@@ -5,11 +5,16 @@
 // child-environment ↔ parent-store construction cycle without IUO closures. The
 // composition root creates the relay, hands `send` to the child environment it is
 // building, and assigns `sink` once the parent store exists.
+//
+// `Relay` is the late-binding cell of the `AnyActionHandler` idiom: hand a
+// handler forward where the receiver exists at hand-off, and create a relay
+// where construction order prevents that. `bindSink` builds an
+// `AnyActionHandler`, so the weak-owner capture is written once in this module.
 
 /// A settable event funnel: `send` forwards to whatever `sink` holds at that moment.
 /// Events before wiring are dropped by design — composition-root construction is
 /// synchronous, so nothing real can fire in the gap.
-public final class Relay<Event>: @unchecked Sendable {
+public final class Relay<Event> {
   public var sink: ((Event) -> Void)?
 
   public init() {}
@@ -39,9 +44,7 @@ public final class Relay<Event>: @unchecked Sendable {
     _ owner: Owner,
     _ handler: @escaping (Owner, Event) -> Void
   ) {
-    sink = { [weak owner] event in
-      guard let owner else { return }
-      handler(owner, event)
-    }
+    let forwarder = AnyActionHandler<Event>(owner, closure: handler)
+    sink = { event in forwarder.invoke(event) }
   }
 }

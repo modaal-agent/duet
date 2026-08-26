@@ -13,9 +13,9 @@ are the per-pair symbol waivers declared, with reasons, in
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | kernel | 3 | 13 | 4 | 218 | 15 | 753 | 4 |
 | replay | 3 | 2 | 4 | 447 | 4 | 284 | 7 |
-| shells | 7 | 4 | 9 | 641 | 9 | 635 | 6 |
+| shells | 7 | 5 | 10 | 770 | 9 | 635 | 6 |
 | testing | 10 | 5 | 13 | 2445 | 12 | 2335 | 24 |
-| **total** | 23 | 24 | 30 | 3751 | 40 | 4007 | 41 |
+| **total** | 23 | 25 | 31 | 3880 | 40 | 4007 | 41 |
 
 ## Open deltas
 
@@ -82,6 +82,7 @@ are the per-pair symbol waivers declared, with reasons, in
 | kernel | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/kernel/runtime/StoreScopes.kt | 45 | retained/logical component-scope runtime (the config-change stance); iOS has no config-change death — no Swift twin by design |
 | replay | swift | swift/Sources/DuetReplay/ReplayCanonical.swift | 188 | the ONE §6 pretty writer (the one-writer decision) — CLI-side machinery; the KMP flavor emits compact artifacts the CLI materializes |
 | replay | kotlin | kotlin/kernel/src/commonMain/kotlin/dev/modaal/duet/replay/BoundaryReplay.kt | 66 | the KMP boundary-replay session (record artifacts + the replay runner); the Swift flavor's equivalent machinery is ReplayServer + DuetTesting's FixtureRunner/FixtureRecorder |
+| shells | swift | swift/Sources/DuetShells/AnyActionHandler.swift | 126 | the view→shell event-forwarding value (weak-owner erased callback); the Kotlin flavor carries the same duties in a plain function type ((Event) -> Unit), so there is no type to pair — Relay is the flavor-paired half of the idiom |
 | shells | swift | swift/Sources/DuetShells/CombineBridging.swift | 48 | the Combine→AsyncStream bridge (kernelStream) — Swift-flavor idiom; the KMP flavor is Flow-native |
 | shells | swift | swift/Sources/DuetShells/ViewShell.swift | 60 | the UIKit hosting substrate (view shells + Activatable); Compose renders via composables — no class twin (Kotlin's Activatable lives in ChildHandles.kt, that pair's delta) |
 | shells | kotlin | kotlin/shells-compose/src/main/kotlin/dev/modaal/duet/shells/RestoredSpineBox.kt | 52 | the Swift twin rides in RouteSpineCodec.swift (that pair's swift delta) — same duties, own file on Kotlin; graduated from the adopter's app-side copy on the 2026-07-30 graduation review |
