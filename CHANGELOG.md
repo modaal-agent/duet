@@ -1,5 +1,51 @@
 # Changelog
 
+## [0.7.0] — 2026-08-30
+
+Swift-only in effect: the kernel's `Store` is now a `HostedObservation`, so
+`StoreHost.adopt(_:)` takes it. The Kotlin half is byte-identical to `0.5.0` —
+no API, behavior or byte-format change on that flavor — and Kotlin consumers
+pinned `0.5.0` can stay there.
+
+One item needs a read before a Swift consumer moves its pin: a module that
+declares its own `extension Store: HostedObservation`, or its own `cancel()` on
+`Store`, now collides with the framework's. Delete the local declaration — the
+framework's `cancel()` is `teardown()`, which is what a local one had to be.
+
+### Added — `Store` conforms to `HostedObservation`
+
+Cancelling a store cancels its in-flight effects, which is what a `StoreHost`
+asks of an observation, so `adopt(_:)` takes a store and hands it back for
+assignment the way `host(_:)` does:
+
+```swift
+override func bind() {
+  // Registered first, so it unwinds last: whatever the shell adopts on top of
+  // the store stops before the store cancels its effects.
+  host.adopt(store)
+
+  host.adopt(
+    StateTransitions(state: store.$state) { [weak self] _, state in
+      self?.apply(state)
+    })
+}
+```
+
+`host(_:)` is unchanged and reads best where the shell creates the kernel store
+in place. Reach for `adopt(_:)` in a shell whose store may be the kernel's or a
+mirror of a store running in another runtime: a mirror is a `HostedObservation`
+too, its `cancel()` stops the runtime behind it, and one line covers both — the
+shell's `bind()` then reads the same whichever it holds.
+
+The Kotlin flavor has no twin: its kernel store cannot implement an interface
+declared in the shells module, so `host(store)` is that flavor's one spelling.
+The reason is stated at the conformance; the lockstep ledger's symbol sets are
+unchanged, because `cancel` is `HostedObservation`'s requirement on both
+flavors already.
+
+`ShellGlueTests` carries the receipt: an adopted store's in-flight effect stops
+at `teardownAll()`, and what the shell adopted after the store unwinds first.
+
 ## [0.6.0] — 2026-08-26
 
 Swift-only in effect: `DuetShells` gains `AnyActionHandler`, and `Relay` drops
