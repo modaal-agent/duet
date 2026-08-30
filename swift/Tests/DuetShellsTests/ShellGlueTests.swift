@@ -129,6 +129,40 @@ final class ShellGlueTests: XCTestCase {
       effectTerminated.isSet, "hosted store's in-flight effect must be cancelled")
   }
 
+  func testStoreHostCancelsAnAdoptedStoresEffectsAndUnwindsItLast() async {
+    let host = StoreHost()
+
+    // A store adopted as an observation: `adopt` takes it because cancelling a
+    // store cancels its in-flight effects, and it hands the store back for
+    // assignment exactly as `host` does.
+    let effectTerminated = TerminationFlag()
+    let store = host.adopt(
+      Store<Int, Int, String>(
+        initialState: 0,
+        reducer: { state, action in
+          state = action
+          return [.run("observe", id: "adopt.observe")]
+        },
+        handler: { _ in
+          AsyncStream { continuation in
+            continuation.onTermination = { _ in effectTerminated.set() }
+          }
+        }))
+    store.send(1)
+    XCTAssertEqual(store.state, 1, "adopt returns the store the shell assigns")
+
+    // Registered after the store, so it unwinds BEFORE it: whatever the shell
+    // adopts on top of its store stops while the store is still reducing.
+    var order: [String] = []
+    host.adopt(teardown: { order.append("projection") })
+
+    host.teardownAll()
+    await settle()
+    XCTAssertEqual(order, ["projection"])
+    XCTAssertTrue(
+      effectTerminated.isSet, "adopted store's in-flight effect must be cancelled")
+  }
+
   // MARK: - kernelStream (the audited Combine→AsyncStream bridge)
 
   func testKernelStreamYieldsValuesAndCancelsUpstreamWhenConsumerIsCancelled() async {

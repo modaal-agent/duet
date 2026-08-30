@@ -96,3 +96,23 @@ public final class StoreHost {
 public protocol HostedObservation: AnyObject {
   func cancel()
 }
+
+/// The kernel's store is one: cancelling it cancels its in-flight effects, so
+/// `adopt(_:)` registers a store exactly as `host(_:)` does and hands it back
+/// the same way.
+///
+/// Which to write. `host(_:)` names the kernel store and reads best where the
+/// shell creates it in place. `adopt(_:)` is what a shell writes when the store
+/// it holds may be the kernel's OR a mirror of a store running in another
+/// runtime — a mirror is a `HostedObservation` too, and its `cancel()` stops
+/// the runtime behind it — so one line covers both and the shell's `bind()`
+/// reads the same either way.
+///
+/// This conformance is Swift-only: the Kotlin flavor's kernel store cannot
+/// implement an interface declared in the shells module, so `host(store)` is
+/// that flavor's one spelling.
+extension Store: HostedObservation {
+  public func cancel() {
+    teardown()
+  }
+}
