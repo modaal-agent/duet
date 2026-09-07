@@ -119,6 +119,10 @@ The normative contracts under `contracts/`, versioned with the code:
 
 The pattern pages under `docs/`: [`workers.md`](docs/workers.md) — lifecycle-bound stateful processing, the layer between platform services and pure logic; [`composition.md`](docs/composition.md) — the `<X>Dependency` + `<X>Component` pair at every composition level, the scope-ownership contract, and factory placement.
 
+## Tutorials
+
+The [Duet tutorials](https://docs.modaal.dev/tutorials/duet) build one app, Foyer, from its first Kotlin feature to the CI checks, theming, localization and analytics in nine steps, on both platforms. Every step's starting tree and finished tree is in [`duet-tutorials`](https://github.com/modaal-agent/duet-tutorials), pinned to one family release and gated in that repository's CI.
+
 ## Repository layout
 
 ```
