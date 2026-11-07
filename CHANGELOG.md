@@ -3,10 +3,10 @@
 ## [Unreleased]
 
 No API, behavior or byte-format change on either flavor: the repository gains
-an agent skill for apps built on Duet, its plugin manifests, its gate and its
-eval cases. Nothing here needs a tag to reach a user. The plugin carries no
-`version`, so an install follows the commit on `main`, and `npx skills` reads
-the default branch. Trees pinned to `0.7.0` stay there.
+an agent skill for apps built on Duet, its Claude Code plugin, its gate and its
+eval cases. Nothing here needs a tag to reach a user: Claude Code reads the
+plugin's own version, 1.0.0, from `main`, and `npx skills` reads the default
+branch. Trees pinned to `0.7.0` stay there.
 
 ### Added — the `duet` agent skill
 
@@ -39,10 +39,15 @@ and `/plugin install duet-ios-android@modaal-duet`, in other agents with
 agent's skills directory. The README's "Agent skill" section lists every
 channel.
 
-### Added — the plugin manifests
+### Added — the plugin
 
-`.claude-plugin/marketplace.json` declares the marketplace `modaal-duet`, and
-`.claude-plugin/plugin.json` the plugin `duet-ios-android` with the one skill.
+`.claude-plugin/marketplace.json` declares the marketplace `modaal-duet`, whose
+one plugin, `duet-ios-android`, has its root at `skills/`, so an install copies
+the skill and nothing else. `skills/.claude-plugin/plugin.json` names the one
+skill and the listing icon, and sets the plugin's version, 1.0.0. The version
+changes only with a change under `skills/` (CONTRIBUTING rule 11): a duet
+release that leaves the skill unchanged leaves the plugin's version, and an
+installed plugin updates when the version changes.
 
 ### Added — the skill's gate
 
@@ -56,7 +61,8 @@ manifests and the eval cases:
   tag;
 - every diagnostic it quotes, against duet-tools' tags: one only an older
   tag prints is reported as a note;
-- every command in a fenced block.
+- every command in a fenced block;
+- that a change under `skills/` raised the plugin's version.
 
 `--self-test` turns each check red on a seeded violation, and
 `scripts/test-skill-scripts.sh` tests the two scripts offline.
