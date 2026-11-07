@@ -36,6 +36,8 @@ Duet's correctness story is a recorded conformance corpus — fixtures that both
 
 9. **Test doubles never live in a product's `Sources/`, `#if DEBUG` included.** A DEBUG gate keeps a double out of release binaries, not out of the module's API surface or its compile graph. A double one test target uses lives in that test target; a double shared across targets or with consumers ships in a dedicated test-support product that only test targets link — `DuetTesting` is that product here: `WorkerTester` ships in it, and the library sources carry zero fakes and zero `#if DEBUG`.
 
+10. **A rename edits the agent skill in the same PR.** `skills/duet/` names this repository's Swift products, Kotlin artifacts and framework symbols. A change that renames or removes one edits `skills/duet/` in the same PR; `scripts/check-skill.sh` fails otherwise (C7, C8). A symbol the skill starts naming goes on the checker's `SYMBOLS` list. Run `scripts/check-skill.sh` and `scripts/check-skill.sh --self-test` before pushing; the `skill` workflow runs both on every PR and every Monday.
+
 ## Licensing of contributions
 
 Duet is MIT-licensed. Contributions are accepted under the same terms (inbound = outbound); submitting a PR means you agree your contribution is licensed under the [MIT License](LICENSE). There is no CLA.

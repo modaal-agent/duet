@@ -1,8 +1,10 @@
-# Duet
+# Duet: verifiable iOS and Android twins
 
 [![ci](https://github.com/modaal-agent/duet/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/modaal-agent/duet/actions/workflows/ci.yml)
 
-One score, two performers. Duet is a framework for building iOS and Android apps as verifiable twins: shared pure logic, platform-native UI, and a recorded fixture corpus that both platforms must replay **byte-identically**. Record a feature's behavior on one platform, verify it on the other — parity is a CI gate, not a code-review aspiration.
+Duet is a framework for building iOS and Android apps as verifiable twins: shared pure logic, platform-native UI, and a recorded fixture corpus that both platforms must replay **byte-identically**. Record a feature's behavior on one platform, verify it on the other — parity is a CI gate, not a code-review aspiration.
+
+One score, two performers.
 
 > **Status: pre-release, current line 0.7.0.** Both flavors, the contracts and the toolchain have landed. The Swift packages resolve by URL at a tag; the Kotlin artifacts resolve from the family's static Maven repository (`https://modaal-agent.github.io/maven` — the repository block is in `kotlin/README.md`). Pre-1.0 minors are breaking by family convention, so pin exactly. [CHANGELOG.md](CHANGELOG.md) states what each release carries and which flavor it touches — several releases are Swift-only in effect, and say so.
 
@@ -123,6 +125,19 @@ The pattern pages under `docs/`: [`workers.md`](docs/workers.md) — lifecycle-b
 
 The [Duet tutorials](https://docs.modaal.dev/tutorials/duet) build one app, Foyer, from its first Kotlin feature to the CI checks, theming, localization and analytics in nine steps, on both platforms. Every step's starting tree and finished tree is in [`duet-tutorials`](https://github.com/modaal-agent/duet-tutorials), pinned to one family release and gated in that repository's CI.
 
+## Agent skill
+
+[`skills/duet/`](skills/duet/SKILL.md) is an agent skill for working in a Duet tree: the three shapes (KMP flavor, Swift flavor, twins), the feature loop and its commands, composition, the Kotlin core on the iPhone, duet-services, the `duet` CLI, and the action for each diagnostic. It runs the CLI at the tree's pin, through the tree's `tools/duet` or its own `scripts/duet-cli.sh`, and names no version: it reads the tree's pins.
+
+| Agent | Install |
+| --- | --- |
+| Claude Code | `/plugin marketplace add modaal-agent/duet`, then `/plugin install duet-ios-android@modaal-duet` |
+| Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode and the other agents the [`skills`](https://skills.sh) CLI supports | `npx skills add modaal-agent/duet` |
+| an agent that reads a skills directory | copy `skills/duet/` into it, e.g. `~/.claude/skills/duet/` |
+| claude.ai, the Claude API | upload a zip of `skills/duet/` in the Skills settings, or create it with `POST /v1/skills` |
+
+The test-double skills install the same way: `npx skills add modaal-agent/kotlin-ksp-mocks` and `npx skills add modaal-agent/swift-sourcery-templates`. `scripts/check-skill.sh` checks the skill against this repository and against the newest duet-tools and duet-services tags; the `skill` workflow runs it on every push to `main`, every pull request and weekly.
+
 ## Repository layout
 
 ```
@@ -137,9 +152,12 @@ contracts/   the normative contracts, versioned with the code (the table above)
 docs/        pattern pages that ship with the framework (workers.md · composition.md)
 parity/      the flavor twin map (flavor-parity.yaml) + the generated per-release
              flavor-parity ledger — LOC and open deltas per flavor
-scripts/     flavor-lockstep-lint.py, the twin-map gate (CONTRIBUTING, rule 1)
+scripts/     flavor-lockstep-lint.py, the twin-map gate (CONTRIBUTING, rule 1);
+             check-skill.sh and test-skill-scripts.sh, the agent skill's gate
+skills/      the agent skill, skills/duet/ (SKILL.md, references/, scripts/)
+.claude-plugin/  marketplace.json and plugin.json: the Claude Code plugin over skills/duet/
 ci/          CI templates: the adopter parity workflow + notes; the family's own
-             workflows live in .github/workflows/ (ci.yml, publish.yml)
+             workflows live in .github/workflows/ (ci.yml, publish.yml, skill.yml)
 ```
 
 ## Toolchain floors
