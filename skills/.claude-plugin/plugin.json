@@ -1,11 +1,11 @@
 {
   "name": "duet-ios-android",
-  "version": "1.0.3",
-  "displayName": "Duet by Modaal: verifiable iOS and Android twins",
+  "version": "1.0.4",
+  "displayName": "Duet by Modaal: verifiable iOS and Android twins app architecture",
   "description": "Build native iOS and Android apps as verifiable twins on Duet: pure reducers, SwiftUI and Jetpack Compose shells, record/replay fixtures checked byte-for-byte in CI, and the duet CLI.",
   "author": {
-    "name": "Ivan Misuno",
-    "url": "https://github.com/modaal-agent/duet"
+    "name": "Modaal.dev",
+    "url": "https://modaal.dev"
   },
   "homepage": "https://github.com/modaal-agent/duet",
   "repository": "https://github.com/modaal-agent/duet",
