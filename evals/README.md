@@ -24,16 +24,19 @@ does not exist.
 
 ## Running them
 
-From the repository root, which is the plugin root:
+The plugin's root is `skills/`, and the runner reads cases only from inside a plugin's root, so a
+run copies the plugin and `evals/` into one scratch directory first. From the repository root:
 
 ```bash
-claude plugin eval ./ --ablation with-without --runs 1 --no-publish
+run=$(mktemp -d) && cp -R skills/. "$run" && cp -R evals "$run/evals"
+claude plugin eval "$run" --ablation with-without --runs 1 --no-publish \
+  --output-dir "evals/results/$(date +%Y-%m-%dT%H-%M-%S)"
 ```
 
-`evals/` is the runner's default directory. Results land in `evals/results/`, which is not
-committed. `--no-publish` keeps the HTML report local; without it the runner publishes the report
-to claude.ai when the account supports it. A run outside a terminal also needs `--trust-plugin`.
-`--case <glob>` selects one case; given twice, the last one wins.
+`evals/` is the runner's default directory. `--output-dir` puts the results in `evals/results/`,
+which is not committed. `--no-publish` keeps the HTML report local; without it the runner
+publishes the report to claude.ai when the account supports it. A run outside a terminal also
+needs `--trust-plugin`. `--case <glob>` selects one case; given twice, the last one wins.
 
 Each prompt describes the tree in its text and says the files are not available, so an arm answers
 from the prompt and, in the with-arm, from the skill.

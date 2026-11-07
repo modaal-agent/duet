@@ -1,5 +1,6 @@
 # The agent skill's gate: skills/duet/, the plugin manifests and the eval cases
-# (scripts/check-skill.sh, checks C1–C14), the checker's own self-test, and the
+# (scripts/check-skill.sh, checks C1–C14; C14 fails a change under skills/ that
+# leaves the plugin's version where it was), the checker's own self-test, and the
 # offline tests of the skill's two scripts. check-skill.sh clones duet-tools and
 # duet-services and reads their newest tags. The weekly run fails within a week
 # of a release that renames or removes a verb, an MCP tool or a product the
@@ -19,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # C14 finds the commit that set the plugin's version
       - name: check-skill
         run: scripts/check-skill.sh
       - name: check-skill self-test

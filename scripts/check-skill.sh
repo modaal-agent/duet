@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# check-skill.sh — the gate for the agent skill in skills/duet/ and the plugin manifests in
-# .claude-plugin/.
+# check-skill.sh — the gate for the agent skill in skills/duet/, the marketplace manifest in
+# .claude-plugin/ and the plugin manifest in skills/.claude-plugin/.
 #
 #   scripts/check-skill.sh                     # every check; C10–C12 clone duet-tools and
 #                                              # duet-services from GitHub into a temporary directory
@@ -32,7 +32,10 @@
 #   C12 every duet-services product, artifact and symbol on SERVICES_SYMBOLS the skill names exists
 #       at duet-services' newest tag
 #   C13 every command in a fenced shell block starts with an allowed command or the tree's scripts/
-#   C14 both .claude-plugin/*.json parse and agree; every evals/<case>/ holds prompt.md and a
+#   C14 the marketplace's one entry and its source's .claude-plugin/plugin.json parse and agree on
+#       the name; the plugin loads skills/duet/; `icon` is a file in the plugin; `version` is
+#       MAJOR.MINOR.PATCH, and nothing under the plugin's root changed since the commit that set it
+#       (needs the full git history; a note without it); every evals/<case>/ holds prompt.md and a
 #       grader of a known type; the skill's scripts pass `bash -n`
 #
 # Exit status: 0 when every check passes, 1 when one fails, 2 on a usage or setup error.
@@ -609,24 +612,7 @@ def check_tree(root, duet_dir, tools, services, report):
                     report.fail("C13", f"{doc.rel}:{number}: `{segment}` starts with a command outside the allowlist")
 
     # C14
-    plugin_dir = os.path.join(root, ".claude-plugin")
-    manifests = {}
-    for name_ in ("marketplace.json", "plugin.json"):
-        path = os.path.join(plugin_dir, name_)
-        try:
-            manifests[name_] = json.loads(read(path))
-        except (OSError, ValueError) as error:
-            report.fail("C14", f".claude-plugin/{name_}: {error}")
-    if len(manifests) == 2:
-        plugin_name = manifests["plugin.json"].get("name")
-        entries = manifests["marketplace.json"].get("plugins", [])
-        entry = next((e for e in entries if e.get("name") == plugin_name), None)
-        if entry is None:
-            report.fail("C14", f"marketplace.json lists no plugin named '{plugin_name}' (plugin.json's name)")
-        else:
-            source = entry.get("source")
-            if not isinstance(source, str) or not os.path.isfile(os.path.join(root, source, "skills", "duet", "SKILL.md")):
-                report.fail("C14", f"marketplace.json: source {source!r} holds no skills/duet/SKILL.md")
+    check_manifests(root, skill, report)
     evals = os.path.join(root, "evals")
     if os.path.isdir(evals):
         for case in sorted(os.listdir(evals)):
@@ -652,6 +638,77 @@ def check_tree(root, duet_dir, tools, services, report):
             result = subprocess.run(["bash", "-n", os.path.join(scripts, name_)], capture_output=True, text=True)
             if result.returncode:
                 report.fail("C14", f"skills/duet/scripts/{name_}: bash -n: {result.stderr.strip()}")
+
+
+def check_manifests(root, skill, report):
+    """C14's manifest half: the marketplace's one entry, its plugin's manifest, and the version."""
+    try:
+        marketplace = json.loads(read(os.path.join(root, ".claude-plugin", "marketplace.json")))
+    except (OSError, ValueError) as error:
+        report.fail("C14", f".claude-plugin/marketplace.json: {error}")
+        return
+    entries = marketplace.get("plugins", [])
+    source = entries[0].get("source") if len(entries) == 1 else None
+    if not (isinstance(source, str) and source.startswith("./")):
+        report.fail("C14", "marketplace.json: expected one plugin entry whose source is a ./ path")
+        return
+    plugin_rel = os.path.normpath(source)
+    plugin_root = os.path.join(root, plugin_rel)
+    manifest_rel = os.path.join(plugin_rel, ".claude-plugin", "plugin.json")
+    try:
+        plugin = json.loads(read(os.path.join(root, manifest_rel)))
+    except (OSError, ValueError) as error:
+        report.fail("C14", f"{manifest_rel}: {error}")
+        return
+    if plugin.get("name") != entries[0].get("name"):
+        report.fail("C14", f"{manifest_rel}: name {plugin.get('name')!r} is not the marketplace entry's {entries[0].get('name')!r}")
+    declared = plugin.get("skills", [])
+    declared = [declared] if isinstance(declared, str) else declared
+    scanned = [os.path.join(plugin_root, path) for path in declared] + [os.path.join(plugin_root, "skills")]
+    target = os.path.realpath(skill)
+    if not any(os.path.realpath(path) == target or os.path.realpath(os.path.join(path, "duet")) == target for path in scanned):
+        report.fail("C14", f"{manifest_rel}: neither its skills paths nor {plugin_rel}/skills/ hold skills/duet/")
+    icon = plugin.get("icon")
+    if icon is not None and not os.path.isfile(os.path.join(plugin_root, icon)):
+        report.fail("C14", f"{manifest_rel}: icon {icon!r} is not a file in the plugin")
+    version = plugin.get("version")
+    if not (isinstance(version, str) and re.fullmatch(r"\d+\.\d+\.\d+", version)):
+        report.fail("C14", f"{manifest_rel}: version {version!r} is not MAJOR.MINOR.PATCH")
+        return
+    check_version_raised(root, plugin_rel, manifest_rel, version, report)
+
+
+def check_version_raised(root, plugin_rel, manifest_rel, version, report):
+    """Claude Code installs a plugin's new version string only, so a change under the plugin's root
+    since the commit that set `version` fails until the version is raised."""
+    def git(*args):
+        return subprocess.run(["git", "-C", root, *args], capture_output=True, text=True)
+    top = git("rev-parse", "--show-toplevel")
+    if top.returncode or os.path.realpath(top.stdout.strip()) != os.path.realpath(root):
+        report.note("C14", "not a git checkout: the version-raise check did not run")
+        return
+    if git("rev-parse", "--is-shallow-repository").stdout.strip() == "true":
+        report.note("C14", "a shallow clone: the version-raise check needs the full history (fetch-depth: 0)")
+        return
+    base = None
+    for commit in git("log", "--format=%H", "--", manifest_rel).stdout.split():
+        shown = git("show", f"{commit}:{manifest_rel}")
+        try:
+            committed = json.loads(shown.stdout).get("version") if shown.returncode == 0 else None
+        except ValueError:
+            committed = None
+        if committed != version:
+            break
+        base = commit
+    if base is None:
+        return  # the working tree raises the version and the raise is not committed yet
+    changed = git("diff", "--name-only", base, "--", plugin_rel).stdout.splitlines()
+    changed += git("ls-files", "--others", "--exclude-standard", "--", plugin_rel).stdout.splitlines()
+    changed = sorted(set(changed))
+    if changed:
+        shown = ", ".join(changed[:3]) + (", …" if len(changed) > 3 else "")
+        report.fail("C14", f"{plugin_rel}/ changed since {base[:12]}, which set version {version} ({shown}): "
+                           f"raise `version` in {manifest_rel}")
 
 
 def read_if(path):
@@ -732,8 +789,8 @@ tools/duet verify
 FIXTURE_FILES = {
     "skills/duet/references/model.md": "# Model\n\nBack to [the skill](../SKILL.md).\n",
     "skills/duet/scripts/duet-cli.sh": "#!/bin/bash\necho ok\n",
-    ".claude-plugin/marketplace.json": json.dumps({"name": "m", "plugins": [{"name": "p", "source": "./"}]}),
-    ".claude-plugin/plugin.json": json.dumps({"name": "p"}),
+    ".claude-plugin/marketplace.json": json.dumps({"name": "m", "plugins": [{"name": "p", "source": "./skills"}]}),
+    "skills/.claude-plugin/plugin.json": json.dumps({"name": "p", "version": "1.0.0", "skills": "./duet"}),
     "evals/case/prompt.md": "---\ndescription: d\n---\nprompt\n",
     "evals/case/graders/fired.md": "---\ntype: tool_used\ntool: Skill\n---\n",
     "duet/Package.swift": '.library(name: "DuetShells", targets: ["DuetShells"]),\n',
@@ -764,12 +821,16 @@ def write_tree(base, files):
             handle.write(content)
 
 
+def scratch_git(path, *args):
+    subprocess.run(["git", "-C", path, "-c", "user.name=self-test", "-c", "user.email=self-test@example.invalid",
+                    "-c", "commit.gpgsign=false", "-c", "tag.gpgsign=false", *args],
+                   check=True, capture_output=True)
+
+
 def git_repo(path, versions):
     os.makedirs(path)
     def git(*args):
-        subprocess.run(["git", "-C", path, "-c", "user.name=self-test", "-c", "user.email=self-test@example.invalid",
-                        "-c", "commit.gpgsign=false", "-c", "tag.gpgsign=false", *args],
-                       check=True, capture_output=True)
+        scratch_git(path, *args)
     git("init", "-q")
     for tag, files in versions:
         for name_ in os.listdir(path):
@@ -809,8 +870,18 @@ SEEDS = {
     "C11": lambda r: append(f"{r}/skills/duet/SKILL.md", "\n| Output | Action |\n| --- | --- |\n| `no release prints this` | x |\n"),
     "C12": lambda r: append(f"{r}/skills/duet/SKILL.md", "\nAdd `dev.modaal.duet.services:nowhere`.\n"),
     "C13": lambda r: append(f"{r}/skills/duet/SKILL.md", "\n```bash\nnpm install something\n```\n"),
-    "C14": lambda r: write_tree(r, {".claude-plugin/plugin.json": json.dumps({"name": "renamed"})}),
+    "C14": lambda r: write_tree(r, {"skills/.claude-plugin/plugin.json": json.dumps({"name": "renamed", "version": "1.0.0", "skills": "./duet"})}),
+    "C14 version": lambda r: commit_without_raise(r),
 }
+
+
+def commit_without_raise(root):
+    """A commit that sets version 1.0.0, then a commit that changes the skill and keeps it."""
+    scratch_git(root, "init", "-q")
+    scratch_git(root, "add", "-A")
+    scratch_git(root, "commit", "-q", "-m", "1.0.0")
+    append(f"{root}/skills/duet/references/model.md", "\nA paragraph.\n")
+    scratch_git(root, "commit", "-q", "-am", "the skill changes, the version stays")
 
 
 def self_test():
@@ -838,11 +909,11 @@ def self_test():
         else:
             print("self-test: ok    the baseline fixture passes, C11 notes the older tag")
         for check, seed in SEEDS.items():
-            root = fresh(f"seed-{check}")
+            root = fresh(f"seed-{check.replace(' ', '-')}")
             seed(root)
             report = Report()
             check_tree(root, os.path.join(root, "duet"), tools, services, report)
-            if report.failed(check):
+            if report.failed(check.split()[0]):
                 print(f"self-test: ok    {check} fails on its seeded violation")
             else:
                 print(f"self-test: FAIL  {check} passed its seeded violation")

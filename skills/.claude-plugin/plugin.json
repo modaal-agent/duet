@@ -1,5 +1,6 @@
 {
   "name": "duet-ios-android",
+  "version": "1.0.0",
   "displayName": "Duet by Modaal: verifiable iOS and Android twins",
   "description": "Build native iOS and Android apps as verifiable twins on Duet: pure reducers, SwiftUI and Jetpack Compose shells, record/replay fixtures checked byte-for-byte in CI, and the duet CLI.",
   "author": {
@@ -9,5 +10,7 @@
   "homepage": "https://github.com/modaal-agent/duet",
   "repository": "https://github.com/modaal-agent/duet",
   "license": "MIT",
-  "keywords": ["ios", "android", "swift", "kotlin", "kotlin-multiplatform", "kmp", "swiftui", "jetpack-compose", "cross-platform", "testing", "record-replay", "composable", "duet"]
+  "keywords": ["ios", "android", "swift", "kotlin", "kotlin-multiplatform", "kmp", "swiftui", "jetpack-compose", "cross-platform", "testing", "record-replay", "composable", "duet"],
+  "skills": "./duet",
+  "icon": "./.claude-plugin/icon.png"
 }

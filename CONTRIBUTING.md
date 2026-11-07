@@ -38,6 +38,8 @@ Duet's correctness story is a recorded conformance corpus — fixtures that both
 
 10. **A rename edits the agent skill in the same PR.** `skills/duet/` names this repository's Swift products, Kotlin artifacts and framework symbols. A change that renames or removes one edits `skills/duet/` in the same PR; `scripts/check-skill.sh` fails otherwise (C7, C8). A symbol the skill starts naming goes on the checker's `SYMBOLS` list. Run `scripts/check-skill.sh` and `scripts/check-skill.sh --self-test` before pushing; the `skill` workflow runs both on every PR and every Monday.
 
+11. **A change under `skills/` raises the plugin's version in the same PR.** `skills/` is the root of the Claude Code plugin `duet-ios-android`, and `version` in `skills/.claude-plugin/plugin.json` is the plugin's own semver, independent of this repository's tags. Raise the patch number for a correction, the minor number for new guidance, a new reference or a new script option, and the major number when a reference, a script or a script option is removed or renamed. A PR that leaves `skills/` unchanged leaves the version. Claude Code installs a plugin update only when the version string changes, so an edit without a raise reaches no user; `scripts/check-skill.sh` fails (C14) when a file under `skills/` changed since the commit that set the current version.
+
 ## Licensing of contributions
 
 Duet is MIT-licensed. Contributions are accepted under the same terms (inbound = outbound); submitting a PR means you agree your contribution is licensed under the [MIT License](LICENSE). There is no CLA.

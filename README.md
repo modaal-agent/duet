@@ -136,6 +136,8 @@ The [Duet tutorials](https://docs.modaal.dev/tutorials/duet) build one app, Foye
 | an agent that reads a skills directory | copy `skills/duet/` into it, e.g. `~/.claude/skills/duet/` |
 | claude.ai, the Claude API | upload a zip of `skills/duet/` in the Skills settings, or create it with `POST /v1/skills` |
 
+The Claude Code plugin's root is `skills/`. Its version, in `skills/.claude-plugin/plugin.json`, is its own semver and changes only when a file under `skills/` changes (CONTRIBUTING, rule 11); `/plugin update duet-ios-android@modaal-duet` installs a new version.
+
 The test-double skills install the same way: `npx skills add modaal-agent/kotlin-ksp-mocks` and `npx skills add modaal-agent/swift-sourcery-templates`. `scripts/check-skill.sh` checks the skill against this repository and against the newest duet-tools and duet-services tags; the `skill` workflow runs it on every push to `main`, every pull request and weekly.
 
 ## Repository layout
@@ -154,8 +156,9 @@ parity/      the flavor twin map (flavor-parity.yaml) + the generated per-releas
              flavor-parity ledger — LOC and open deltas per flavor
 scripts/     flavor-lockstep-lint.py, the twin-map gate (CONTRIBUTING, rule 1);
              check-skill.sh and test-skill-scripts.sh, the agent skill's gate
-skills/      the agent skill, skills/duet/ (SKILL.md, references/, scripts/)
-.claude-plugin/  marketplace.json and plugin.json: the Claude Code plugin over skills/duet/
+skills/      the Claude Code plugin's root: the agent skill, skills/duet/ (SKILL.md,
+             references/, scripts/), and the plugin's manifest and icon (.claude-plugin/)
+.claude-plugin/  marketplace.json: the marketplace, whose one plugin is skills/
 ci/          CI templates: the adopter parity workflow + notes; the family's own
              workflows live in .github/workflows/ (ci.yml, publish.yml, skill.yml)
 ```
