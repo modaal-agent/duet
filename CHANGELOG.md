@@ -1,5 +1,77 @@
 # Changelog
 
+## [Unreleased]
+
+No API, behavior or byte-format change on either flavor: the repository gains
+an agent skill for apps built on Duet, its plugin manifests, its gate and its
+eval cases. Nothing here needs a tag to reach a user. The plugin carries no
+`version`, so an install follows the commit on `main`, and `npx skills` reads
+the default branch. Trees pinned to `0.7.0` stay there.
+
+### Added — the `duet` agent skill
+
+`skills/duet/SKILL.md` teaches a coding agent the three project shapes (the
+Kotlin Multiplatform flavor, the Swift flavor, twins), the rules every tree
+holds, the feature loop and its commands, the family pins, duet-services, the
+Kotlin core on the iPhone, and the action for each diagnostic the `duet` CLI
+prints. Eight references under `skills/duet/references/` hold the detail:
+`model.md`, `scenarios-and-fixtures.md`, `composition-and-shells.md`,
+`kotlin-on-apple.md`, `cli.md`, `services.md`, `troubleshooting.md` and
+`worked-examples.md`. The skill names no version; it reads the tree's pins.
+
+Two scripts ship beside it:
+
+- `skills/duet/scripts/duet-cli.sh` runs the `duet` CLI at the tree's
+  `parity/duet-tools.ref`. It tries, in order, the tree's `tools/duet`,
+  `$DUET_BIN`, a `duet` on `PATH` that prints the pin, a binary cached for
+  the pin, and the release asset, whose `.sha256` it checks before running
+  it. Without any of those it runs a `duet` on `PATH` at another version,
+  with a warning naming both versions, and otherwise prints the from-source
+  command and exits 2.
+- `skills/duet/scripts/family-pins.sh` prints the newest tag of each family
+  repository (`latest`) and checks a tree's pins (`check`, exit 1 on a
+  disagreement); `check --latest` also compares the tree's `duet` pin with
+  the one its duet-services release pins.
+
+Install it in Claude Code with `/plugin marketplace add modaal-agent/duet`
+and `/plugin install duet-ios-android@modaal-duet`, in other agents with
+`npx skills add modaal-agent/duet`, or by copying `skills/duet/` into an
+agent's skills directory. The README's "Agent skill" section lists every
+channel.
+
+### Added — the plugin manifests
+
+`.claude-plugin/marketplace.json` declares the marketplace `modaal-duet`, and
+`.claude-plugin/plugin.json` the plugin `duet-ios-android` with the one skill.
+
+### Added — the skill's gate
+
+`scripts/check-skill.sh` runs fourteen checks over `skills/duet/`, the
+manifests and the eval cases:
+
+- the frontmatter and each file's length, and every link;
+- every product, artifact and symbol the skill names, against this
+  repository and duet-services' newest tag;
+- every `duet` verb and MCP tool the skill names, against duet-tools' newest
+  tag;
+- every diagnostic it quotes, against duet-tools' tags: one only an older
+  tag prints is reported as a note;
+- every command in a fenced block.
+
+`--self-test` turns each check red on a seeded violation, and
+`scripts/test-skill-scripts.sh` tests the two scripts offline.
+`.github/workflows/skill.yml` runs all three on a push to `main`, on pull
+requests and every Monday. A duet-tools or duet-services release that renames
+a verb, an MCP tool or a product fails the weekly run. CONTRIBUTING rule 10:
+a change that renames or removes a product, an artifact or a symbol the skill
+names edits `skills/duet/` in the same pull request.
+
+### Added — eval cases
+
+`evals/` holds nine prompts for `claude plugin eval`, each run with and
+without the plugin. `evals/README.md` lists them and records the first
+round's results.
+
 ## [0.7.0] — 2026-08-30
 
 Swift-only in effect: the kernel's `Store` is now a `HostedObservation`, so
