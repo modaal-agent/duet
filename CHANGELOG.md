@@ -5,7 +5,7 @@
 No API, behavior or byte-format change on either flavor: the repository gains
 an agent skill for apps built on Duet, its Claude Code plugin, its gate and
 its eval cases. Nothing here needs a tag to reach a user: Claude Code reads
-the plugin's own version, 1.0.3, from `main`, and `npx skills` reads the
+the plugin's own version, 1.0.4, from `main`, and `npx skills` reads the
 default branch. Trees pinned to `0.7.0` stay there.
 
 ### Added — the `duet` agent skill
@@ -46,7 +46,7 @@ whose one plugin, `duet-ios-android`, has its root at `skills/`, so an install
 copies the skill and nothing else. `skills/.claude-plugin/plugin.json` names
 the one skill, the listing icon and the listing's documentation, privacy
 policy, terms of service and support links, and sets the plugin's version,
-1.0.3. The version changes only with a change under `skills/` (CONTRIBUTING
+1.0.4. The version changes only with a change under `skills/` (CONTRIBUTING
 rule 11): a duet release that leaves the skill unchanged leaves the plugin's
 version, and an installed plugin updates when the version changes.
 
