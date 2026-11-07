@@ -42,8 +42,10 @@ from the prompt and, in the with-arm, from the skill.
 
 Claude Code 2.1.285, `claude plugin eval` with `--model sonnet --runs 1`, the default judge (`haiku`,
 three votes). Three runs: all nine cases ($1.0993), then `adopt-analytics` ($0.1542) and
-`add-a-feature-kmp` ($0.1146) again after the changes below; $1.3681 in total. `skill-fired` reports
-whether the skill was invoked and is not part of the score.
+`add-a-feature-kmp` ($0.1146) again after the changes below; $1.3681 in total. Those are the
+runner's reported costs, which leave the judge out: the judge cost $0.1050 more (each arm's
+`judgeCostUsd` in the results file). `skill-fired` reports whether the skill was invoked and is not
+part of the score.
 
 | case | without | with | with, rerun |
 | --- | --- | --- | --- |
