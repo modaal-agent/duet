@@ -33,8 +33,10 @@ in full.
 
 ## Rules every tree holds you to
 
-- The reducer is pure and takes no Environment: side effects leave it as `Effect` values, and the
-  Runtime performs them.
+- The reducer is pure and takes no Environment: a side effect leaves it as an `Effect` value, and
+  the feature's effect handler (its Runtime) performs it through the feature's environment. Saving a
+  value, a network call and a timer are effects; a worker is for lifecycle-bound work no single
+  effect requests.
 - Fixtures are build products of `tools/duet record`. Never edit one by hand. A behavior change
   re-records in the same change, and the fixture diff is the review artifact.
 - Every generated file is regenerated, never hand-edited: fixtures, mocks (`tools/duet mocks`),
@@ -52,7 +54,8 @@ in full.
 
 1. Add the feature's row to `parity/manifest.yaml` and its spec to `parity/feature-specs/<f>.md`;
    the spec names every fixture in backticks.
-2. Write State, Action, EffectPayload and the reducer where the table above says.
+2. Write State, Action, EffectPayload, the reducer and the effect handler that performs each payload
+   through the feature's environment, where the table above says.
 3. Write the scenario: actions in, the expected state and effects out, one branch per path.
 4. Record: `tools/duet record --feature <f>` (`--chain <c>` for a chain). The side the manifest's
    `scenario:` names writes the fixtures.
