@@ -26,3 +26,6 @@ local.properties
 
 # Test-runner machine artifacts (verify explain reads them; never committed)
 **/parity/.runs/
+
+# Eval runs (claude plugin eval results; never committed)
+evals/results/

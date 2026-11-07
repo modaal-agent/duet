@@ -1,0 +1,26 @@
+# The agent skill's gate: skills/duet/, the plugin manifests and the eval cases
+# (scripts/check-skill.sh, checks C1–C14), the checker's own self-test, and the
+# offline tests of the skill's two scripts. check-skill.sh clones duet-tools and
+# duet-services and reads their newest tags; the weekly run fails within a week
+# of a release that renames a verb, an MCP tool, a diagnostic or a product the
+# skill names.
+name: skill
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  skill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: check-skill
+        run: scripts/check-skill.sh
+      - name: check-skill self-test
+        run: scripts/check-skill.sh --self-test
+      - name: skill scripts
+        run: scripts/test-skill-scripts.sh
