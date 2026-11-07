@@ -1,0 +1,19 @@
+{
+  "name": "modaal-duet",
+  "owner": {
+    "name": "modaal-agent",
+    "url": "https://github.com/modaal-agent"
+  },
+  "metadata": {
+    "description": "Agent skills for Duet, the framework for native iOS and Android apps whose feature logic is verified by recorded fixtures both platforms replay.",
+    "version": "1"
+  },
+  "plugins": [
+    {
+      "name": "duet-ios-android",
+      "source": "./",
+      "description": "Build native iOS and Android apps as verifiable twins on Duet: pure reducers, SwiftUI and Jetpack Compose shells, record/replay fixtures checked byte-for-byte in CI, and the duet CLI.",
+      "category": "development"
+    }
+  ]
+}
