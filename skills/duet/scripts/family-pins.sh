@@ -128,8 +128,8 @@ read_xcodegen_specs() {   # <root>
         pending = name; line = NR; next
       }
       pending != "" && /(exactVersion|version|from|minorVersion|majorVersion|branch|revision):/ {
-        key = $1; sub(/:$/, "", key); value = $2; gsub(/["'\'']/, "", value)
-        kind = (key == "exactVersion" || key == "version") ? "exact" : key
+        field = $1; sub(/:$/, "", field); value = $2; gsub(/["'\'']/, "", value)
+        kind = (field == "exactVersion" || field == "version") ? "exact" : field
         print pending "|" value "|" kind "|" rel ":" line
         pending = ""
       }
@@ -139,13 +139,13 @@ read_xcodegen_specs() {   # <root>
 }
 
 read_catalogs() {   # <root>
-  local file rel key value name
+  local file rel field value name
   while IFS= read -r file; do
     rel="${file#"$1"/}"
-    for key in duet duetServices mocksProcessor; do
-      value="$(grep -E "^$key[[:space:]]*=" "$file" | head -1 | sed -E 's/^[^=]*=[[:space:]]*"?([^"]*)"?.*$/\1/')"
+    for field in duet duetServices mocksProcessor; do
+      value="$(grep -E "^$field[[:space:]]*=" "$file" | head -1 | sed -E 's/^[^=]*=[[:space:]]*"?([^"]*)"?.*$/\1/')"
       [ -n "$value" ] || continue
-      case "$key" in
+      case "$field" in
         duet) name=duet ;; duetServices) name=duet-services ;; mocksProcessor) name=mocks-processor ;;
       esac
       row "$name" "$value" exact "$rel"

@@ -99,7 +99,7 @@ fun makeSplashStore(environment: SplashEnvironment, scope: CoroutineScope) =
 | | Swift | Kotlin |
 | --- | --- | --- |
 | type | `@MainActor final class Store<State, Action, Payload>: ObservableObject` | `class Store<S, A, P>(initialState, reducer, handler, scope: CoroutineScope)` |
-| state | `@Published private(set) var state: State` | `val state: StateFlow<S>` |
+| state | `@Published var state: State`, its setter private to the store | `val state: StateFlow<S>` |
 | send | `send(_:)`, main actor only | `send(action)`, on `scope`'s dispatcher only |
 | teardown | `teardown()`, plus a best-effort cancel in `deinit` | `teardown()`, or cancel the host-owned `scope` |
 

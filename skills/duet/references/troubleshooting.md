@@ -50,7 +50,7 @@ run `tools/duet record --chain <chain>`.
 | ``✗ <f>.md: manifest fixture '<fixture>' never mentioned (backticked id, or family glob + `.slug` tokens)`` | write the id in backticks in `parity/feature-specs/<f>.md` (checked when that directory exists) |
 | `✗ <f>: no one-pager (<f>.md missing in parity/feature-specs)` | add `parity/feature-specs/<f>.md` |
 | `✗ [<f>] scenario file missing on disk: <path>`, `✗ [<f>] missing source file: <path>` | correct the moved path in `parity/manifest.yaml`; `tools/duet scope <path>` names a file's row |
-| ``duet verify: FAIL — --kotlin-only: … `kotlin:` path — there is no Kotlin lane to run`` | the flag names a lane the run has no path for (`…` is `the manifest declares no`, or with `--feature <f>`, `feature '<f>' declares no`; `--swift-only` prints the Swift form); drop it, or pass the other lane's flag |
+| ``duet verify: FAIL — --kotlin-only: … `kotlin:` path — there is no Kotlin lane to run`` | the flag names a lane the run has no path for (`…` is `the manifest declares no`, or with `--feature <f>`, `feature '<f>' declares no`; `--swift-only` prints the Swift form); drop it, or give the other lane's flag |
 | `✗ [<f>] <Kind> lockstep violation: swift-only=[…] kotlin-only=[…]` | a row with both `swift:` and `kotlin:` has a State field or a case on one side only; cases compare by wire name (the Swift case against the Kotlin `@SerialName`, else the class name in camelCase): add the member, or rename the Swift case |
 
 ### ``✗ [mocks] bundle: <tag> is below the <floor> floor — `--check` passes each row's template: and args: to the bundle's mock-templates validate, whose flags for them arrive in <floor>``
@@ -152,7 +152,7 @@ file(s):` needs `tools/duet record` or `tools/duet canonical-sum`.
 | text | action |
 | --- | --- |
 | `duet record: REFUSED — dual-writer feature(s) in the manifest: <f> — …` | record that tree per feature (`--feature <f>`) and per chain (`--chain <c>`), or point the row's `scenario:` at the Swift twin's scenario |
-| `duet record: REFUSED — --platform <p> --feature <f>: the feature's scenario is <language> (<path>), and the scenario is the writer of its fixtures. …` | drop `--platform`, or pass the scenario's language; `tools/duet verify --feature <f> --kotlin-only` (or `--swift-only`) replays the recordings on the other platform |
+| `duet record: REFUSED — --platform <p> --feature <f>: the feature's scenario is <language> (<path>), and the scenario is the writer of its fixtures. …` | drop `--platform`, or give the scenario's language; `tools/duet verify --feature <f> --kotlin-only` (or `--swift-only`) replays the recordings on the other platform |
 
 ## Generated code
 
@@ -188,9 +188,9 @@ so `doctor` is its only check. The rule is in
 
 | text | action |
 | --- | --- |
-| `duet protocol-run: --platform takes swift, kotlin or both, got '<v>'` | exit 2; pass one of the three |
-| `protocol-run [swift]: FAIL — no manifest package root contains Sources/replay-runner` | add `replayRunner: <package dir>` to the manifest, or pass `--runner <path>` |
-| ``protocol-run [kotlin]: FAIL — no `replay-runner` Gradle module at <path>`` | add the module, or pass `--runner <path>` |
+| `duet protocol-run: --platform takes swift, kotlin or both, got '<v>'` | exit 2; give one of the three |
+| `protocol-run [swift]: FAIL — no manifest package root contains Sources/replay-runner` | add `replayRunner: <package dir>` to the manifest, or add `--runner <path>` |
+| ``protocol-run [kotlin]: FAIL — no `replay-runner` Gradle module at <path>`` | add the module, or add `--runner <path>` |
 | `protocol-run [<p>]: FAIL — replay-runner did not build` or `— :replay-runner:installDist did not build` | the log tail above names the error |
 | `protocol-run [<p>]: FAIL — no valid handshake from the replay runner` | the runner's first stdout line must be the `duet-replay` handshake and its diagnostics go to stderr ([the protocol](https://github.com/modaal-agent/duet/blob/main/contracts/replay-protocol-v1.md)); move other output to stderr |
 | `✗ [<p>] <f>: not advertised by the <p> runner` | register the feature in that runner |
@@ -206,7 +206,7 @@ so `doctor` is its only check. The rule is in
 - ``!! <name>: `old` matches <n> time(s) — stale row``: `old` must match its file exactly once.
   Update `old` and `new` to the current source. `!! <name>: <file> not readable — stale row`:
   correct `file`.
-- `duet mutate: ABORT — the suite is red before any mutation`: make `tools/duet verify` pass first.
+- `duet mutate: ABORT — the suite is red before any mutation`: make `tools/duet verify` succeed first.
 - An interrupted drill leaves the seeded file mutated: run the `git checkout -- <file>` line it
   printed before that row.
 
