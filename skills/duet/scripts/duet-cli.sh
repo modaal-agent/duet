@@ -115,7 +115,7 @@ done
 from_source() {
   say "build it from source instead (needs a Swift toolchain, takes minutes):"
   say "  git clone --branch $TAG --depth 1 $REPO && (cd duet-tools && swift build -c release)"
-  say "then run it with DUET_BIN=\$PWD/duet-tools/.build/release/duet"
+  say "then run it with DUET_BIN=$(pwd)/duet-tools/.build/release/duet"
 }
 
 # 5. The release asset.

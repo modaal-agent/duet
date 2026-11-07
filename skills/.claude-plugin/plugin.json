@@ -1,6 +1,6 @@
 {
   "name": "duet-ios-android",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "Duet by Modaal: verifiable iOS and Android twins",
   "description": "Build native iOS and Android apps as verifiable twins on Duet: pure reducers, SwiftUI and Jetpack Compose shells, record/replay fixtures checked byte-for-byte in CI, and the duet CLI.",
   "author": {
