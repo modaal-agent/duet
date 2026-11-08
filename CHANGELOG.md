@@ -5,7 +5,7 @@
 No API, behavior or byte-format change on either flavor: the repository gains
 an agent skill for apps built on Duet, its Claude Code plugin, its gate and
 its eval cases. Nothing here needs a tag to reach a user: Claude Code reads
-the plugin's own version, 1.0.4, from `main`, and `npx skills` reads the
+the plugin's own version, 1.1.0, from `main`, and `npx skills` reads the
 default branch. Trees pinned to `0.7.0` stay there.
 
 ### Added — the `duet` agent skill
@@ -19,19 +19,14 @@ prints. Eight references under `skills/duet/references/` hold the detail:
 `kotlin-on-apple.md`, `cli.md`, `services.md`, `troubleshooting.md` and
 `worked-examples.md`. The skill names no version; it reads the tree's pins.
 
-Two scripts ship beside it:
-
-- `skills/duet/scripts/duet-cli.sh` runs the `duet` CLI at the tree's
-  `parity/duet-tools.ref`. It tries, in order, the tree's `tools/duet`,
-  `$DUET_BIN`, a `duet` on `PATH` that prints the pin, a binary cached for
-  the pin, and the release asset, whose `.sha256` it checks before running
-  it. Without any of those it runs a `duet` on `PATH` at another version,
-  with a warning naming both versions, and otherwise prints the from-source
-  command and exits 2.
-- `skills/duet/scripts/family-pins.sh` prints the newest tag of each family
-  repository (`latest`) and checks a tree's pins (`check`, exit 1 on a
-  disagreement); `check --latest` also compares the tree's `duet` pin with
-  the one its duet-services release pins.
+The skill runs the `duet` CLI through the tree's `tools/duet`, at the tree's
+`parity/duet-tools.ref`; in a tree without the wrapper, `references/cli.md`
+gives the commands that download the release binary of the pin and check it
+against its `.sha256`. It checks a tree's pins with `tools/duet pins` and
+`tools/duet pins --latest`, verbs of duet-tools 0.37.0 and newer; in a tree
+pinned below 0.37.0 it runs them once at a newer tag through
+`DUET_TOOLS_REF`. The skill ships no script: the plugin holds Markdown, JSON
+and its icon.
 
 Install it in Claude Code with `/plugin marketplace add modaal-agent/duet`
 and `/plugin install duet-ios-android@modaal-duet`, in other agents with
@@ -46,13 +41,13 @@ whose one plugin, `duet-ios-android`, has its root at `skills/`, so an install
 copies the skill and nothing else. `skills/.claude-plugin/plugin.json` names
 the one skill, the listing icon and the listing's documentation, privacy
 policy, terms of service and support links, and sets the plugin's version,
-1.0.4. The version changes only with a change under `skills/` (CONTRIBUTING
+1.1.0. The version changes only with a change under `skills/` (CONTRIBUTING
 rule 11): a duet release that leaves the skill unchanged leaves the plugin's
 version, and an installed plugin updates when the version changes.
 
 ### Added — the skill's gate
 
-`scripts/check-skill.sh` runs fourteen checks over `skills/duet/`, the
+`scripts/check-skill.sh` runs fifteen checks over `skills/duet/`, the
 manifests and the eval cases:
 
 - the frontmatter and each file's length, and every link;
@@ -63,11 +58,13 @@ manifests and the eval cases:
 - every diagnostic it quotes, against duet-tools' tags: one only an older
   tag prints is reported as a note;
 - every command in a fenced block;
-- that a change under `skills/` raised the plugin's version.
+- that a change under `skills/` raised the plugin's version;
+- that every file under `skills/` is Markdown, text, JSON, YAML or a PNG,
+  JPEG, GIF, WebP or ICO image, starts with no `#!`, and is not a package
+  manager configuration file (CONTRIBUTING rule 12).
 
-`--self-test` turns each check red on a seeded violation, and
-`scripts/test-skill-scripts.sh` tests the two scripts offline.
-`.github/workflows/skill.yml` runs all three on a push to `main`, on pull
+`--self-test` turns each check red on a seeded violation.
+`.github/workflows/skill.yml` runs both on a push to `main`, on pull
 requests and every Monday. A duet-tools or duet-services release that renames
 a verb, an MCP tool or a product fails the weekly run. CONTRIBUTING rule 10:
 a change that renames or removes a product, an artifact or a symbol the skill
