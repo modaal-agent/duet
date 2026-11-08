@@ -36,7 +36,12 @@
 #       the name; the plugin loads skills/duet/; `icon` is a file in the plugin; `version` is
 #       MAJOR.MINOR.PATCH, and nothing under the plugin's root changed since the commit that set it
 #       (needs the full git history; a note without it); every evals/<case>/ holds prompt.md and a
-#       grader of a known type; the skill's scripts pass `bash -n`
+#       grader of a known type
+#   C15 every file under the plugin's root (tracked or untracked and not ignored, in a git checkout)
+#       is Markdown, text, JSON, YAML, or a PNG, JPEG, GIF, WebP or ICO image whose bytes match its
+#       extension; no file starts with #!; every text file is UTF-8 with no NUL byte; no file is a
+#       package manager configuration file. The plugin directory refuses each of these from an
+#       organization it has not verified
 #
 # Exit status: 0 when every check passes, 1 when one fails, 2 on a usage or setup error.
 # Needs bash, git and python3.
@@ -79,10 +84,26 @@ ALLOWED_COMMANDS = [
     "tools/duet", "duet", "./gradlew", "cd", "swift", "xcodebuild", "xcodegen", "xcrun", "adb",
     "git", "curl", "shasum", "unzip", "python3", "gh", "for",
 ]
-ALLOWED_PREFIXES = ['"${CLAUDE_SKILL_DIR}/scripts/', "scripts/", "./scripts/", "parity/scripts/"]
+ALLOWED_PREFIXES = ["scripts/", "./scripts/", "parity/scripts/"]
 SHELL_LANGS = {"bash", "sh", "shell", "zsh", "console"}
 
 GRADER_TYPES = {"llm", "regex", "tool_used"}
+
+# C15: the file types the plugin directory accepts, and the leading bytes of each image type.
+TEXT_EXTENSIONS = {".md", ".markdown", ".txt", ".json", ".yaml", ".yml"}
+TEXT_NAMES = {"LICENSE", "README", ".gitignore"}
+IMAGE_MAGIC = {
+    ".png": [b"\x89PNG\r\n\x1a\n"], ".jpg": [b"\xff\xd8\xff"], ".jpeg": [b"\xff\xd8\xff"],
+    ".gif": [b"GIF87a", b"GIF89a"], ".webp": [b"RIFF"], ".ico": [b"\x00\x00\x01\x00"],
+}
+PACKAGE_MANAGER_FILES = {
+    "package.json", "package-lock.json", "npm-shrinkwrap.json", "pnpm-workspace.yaml", "pnpm-lock.yaml",
+    "yarn.lock", ".npmrc", ".yarnrc", ".yarnrc.yml", "bun.lockb", "Package.swift", "Package.resolved",
+    "Podfile", "Podfile.lock", "Cartfile", "Gemfile", "Gemfile.lock", "requirements.txt", "pyproject.toml",
+    "Pipfile", "Pipfile.lock", "poetry.lock", "uv.lock", "setup.py", "setup.cfg", "build.gradle",
+    "build.gradle.kts", "settings.gradle", "settings.gradle.kts", "libs.versions.toml", "pom.xml",
+    "Cargo.toml", "Cargo.lock", "go.mod", "go.sum", "composer.json", "composer.lock",
+}
 
 # C11: a table whose first header cell is one of these quotes CLI output in its first column.
 DIAGNOSTIC_HEADERS = {"output", "diagnostic", "finding", "text"}
@@ -348,7 +369,7 @@ def diagnostic_fragments(span):
 # ── the checks ──────────────────────────────────────────────────────
 
 class Report:
-    ORDER = [f"C{i}" for i in range(1, 15)]
+    ORDER = [f"C{i}" for i in range(1, 16)]
     TITLES = {
         "C1": "frontmatter parses", "C2": "name matches the directory",
         "C3": "standard frontmatter keys", "C4": "description length",
@@ -356,7 +377,8 @@ class Report:
         "C7": "Duet products, artifacts and types exist", "C8": "framework symbols are declared",
         "C9": "no version literals", "C10": "duet verbs and MCP tools exist",
         "C11": "quoted diagnostics exist", "C12": "duet-services names exist",
-        "C13": "fenced commands are allowed", "C14": "manifests, eval cases and scripts",
+        "C13": "fenced commands are allowed", "C14": "manifests and eval cases",
+        "C15": "plugin file types",
     }
 
     def __init__(self):
@@ -529,8 +551,6 @@ def check_tree(root, duet_dir, tools, services, report):
         for rel, number, text in code:
             for verb in re.findall(r"(?:^|[\s\"'(=;&|`]|\./)(?:tools/)?duet[ \t]+([a-z][a-z-]*)", text):
                 mentioned.append((rel, number, verb))
-            for verb in re.findall(r"duet-cli\.sh\"?[ \t]+(?:--ref[ \t=]\S+[ \t]+)?([a-z][a-z-]*)", text):
-                mentioned.append((rel, number, verb))
         for doc in docs:
             for header, rows in doc.tables():
                 if header and header[0] == "Verb":
@@ -612,7 +632,7 @@ def check_tree(root, duet_dir, tools, services, report):
                     report.fail("C13", f"{doc.rel}:{number}: `{segment}` starts with a command outside the allowlist")
 
     # C14
-    check_manifests(root, skill, report)
+    plugin_root = check_manifests(root, skill, report)
     evals = os.path.join(root, "evals")
     if os.path.isdir(evals):
         for case in sorted(os.listdir(evals)):
@@ -632,26 +652,69 @@ def check_tree(root, duet_dir, tools, services, report):
                     report.fail("C14", f"evals/{case}/graders/{grader}: no type among {', '.join(sorted(GRADER_TYPES))}")
             if not known:
                 report.fail("C14", f"evals/{case}: no grader")
-    scripts = os.path.join(skill, "scripts")
-    for name_ in sorted(os.listdir(scripts)) if os.path.isdir(scripts) else []:
-        if name_.endswith(".sh"):
-            result = subprocess.run(["bash", "-n", os.path.join(scripts, name_)], capture_output=True, text=True)
-            if result.returncode:
-                report.fail("C14", f"skills/duet/scripts/{name_}: bash -n: {result.stderr.strip()}")
+
+    # C15
+    check_plugin_files(root, plugin_root or os.path.join(root, "skills"), report)
+
+
+def plugin_files(root, plugin_root):
+    """The files under the plugin's root that a push publishes: in a git checkout, the tracked files
+    and the untracked ones not ignored; otherwise every file."""
+    rel = os.path.relpath(plugin_root, root)
+    top = subprocess.run(["git", "-C", root, "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    if top.returncode == 0 and os.path.realpath(top.stdout.strip()) == os.path.realpath(root):
+        listed = subprocess.run(["git", "-C", root, "ls-files", "-z", "--cached", "--others", "--exclude-standard",
+                                 "--", rel], capture_output=True, text=True).stdout.split("\0")
+        return sorted({path for path in listed if path and os.path.isfile(os.path.join(root, path))})
+    found = []
+    for directory, _, names in os.walk(plugin_root):
+        found += [os.path.relpath(os.path.join(directory, name_), root) for name_ in names]
+    return sorted(found)
+
+
+def check_plugin_files(root, plugin_root, report):
+    """C15: the plugin directory accepts Markdown, text, JSON, YAML and five image types from an
+    organization it has not verified, and refuses a file starting with #!, a text file that is not
+    UTF-8 or holds a NUL byte, and a package manager configuration file, whatever the name."""
+    for rel in plugin_files(root, plugin_root):
+        name_ = os.path.basename(rel)
+        stem, extension = os.path.splitext(name_)
+        with open(os.path.join(root, rel), "rb") as handle:
+            data = handle.read()
+        if name_ in PACKAGE_MANAGER_FILES:
+            report.fail("C15", f"{rel}: a package manager configuration file; remove it from the plugin")
+        elif extension.lower() in IMAGE_MAGIC:
+            webp = extension.lower() != ".webp" or data[8:12] == b"WEBP"
+            if not (any(data.startswith(magic) for magic in IMAGE_MAGIC[extension.lower()]) and webp):
+                report.fail("C15", f"{rel}: its bytes are not a {extension.lower()[1:].upper()} image")
+        elif extension.lower() in TEXT_EXTENSIONS or stem in TEXT_NAMES or name_ in TEXT_NAMES:
+            if data.startswith(b"#!"):
+                report.fail("C15", f"{rel}: starts with #!; the directory refuses an executable script")
+            elif b"\0" in data:
+                report.fail("C15", f"{rel}: holds a NUL byte")
+            else:
+                try:
+                    data.decode("utf-8")
+                except UnicodeDecodeError:
+                    report.fail("C15", f"{rel}: is not UTF-8")
+        else:
+            report.fail("C15", f"{rel}: not Markdown, text, JSON, YAML or a PNG, JPEG, GIF, WebP or ICO image; "
+                               "move it out of the plugin")
 
 
 def check_manifests(root, skill, report):
-    """C14's manifest half: the marketplace's one entry, its plugin's manifest, and the version."""
+    """C14's manifest half: the marketplace's one entry, its plugin's manifest, and the version.
+    Returns the plugin's root, or None when the marketplace names none."""
     try:
         marketplace = json.loads(read(os.path.join(root, ".claude-plugin", "marketplace.json")))
     except (OSError, ValueError) as error:
         report.fail("C14", f".claude-plugin/marketplace.json: {error}")
-        return
+        return None
     entries = marketplace.get("plugins", [])
     source = entries[0].get("source") if len(entries) == 1 else None
     if not (isinstance(source, str) and source.startswith("./")):
         report.fail("C14", "marketplace.json: expected one plugin entry whose source is a ./ path")
-        return
+        return None
     plugin_rel = os.path.normpath(source)
     plugin_root = os.path.join(root, plugin_rel)
     manifest_rel = os.path.join(plugin_rel, ".claude-plugin", "plugin.json")
@@ -659,7 +722,7 @@ def check_manifests(root, skill, report):
         plugin = json.loads(read(os.path.join(root, manifest_rel)))
     except (OSError, ValueError) as error:
         report.fail("C14", f"{manifest_rel}: {error}")
-        return
+        return plugin_root
     if plugin.get("name") != entries[0].get("name"):
         report.fail("C14", f"{manifest_rel}: name {plugin.get('name')!r} is not the marketplace entry's {entries[0].get('name')!r}")
     declared = plugin.get("skills", [])
@@ -674,8 +737,9 @@ def check_manifests(root, skill, report):
     version = plugin.get("version")
     if not (isinstance(version, str) and re.fullmatch(r"\d+\.\d+\.\d+", version)):
         report.fail("C14", f"{manifest_rel}: version {version!r} is not MAJOR.MINOR.PATCH")
-        return
+        return plugin_root
     check_version_raised(root, plugin_rel, manifest_rel, version, report)
+    return plugin_root
 
 
 def check_version_raised(root, plugin_rel, manifest_rel, version, report):
@@ -782,13 +846,13 @@ See [the reference](references/model.md). `Store` lives in `DuetShells`; Kotlin 
 
 ```bash
 tools/duet verify
-"${CLAUDE_SKILL_DIR}/scripts/duet-cli.sh" lint && git status
+tools/duet lint && git status
 ```
 """
 
 FIXTURE_FILES = {
     "skills/duet/references/model.md": "# Model\n\nBack to [the skill](../SKILL.md).\n",
-    "skills/duet/scripts/duet-cli.sh": "#!/bin/bash\necho ok\n",
+    "skills/.claude-plugin/icon.png": b"\x89PNG\r\n\x1a\n",
     ".claude-plugin/marketplace.json": json.dumps({"name": "m", "plugins": [{"name": "p", "source": "./skills"}]}),
     "skills/.claude-plugin/plugin.json": json.dumps({"name": "p", "version": "1.0.0", "skills": "./duet"}),
     "evals/case/prompt.md": "---\ndescription: d\n---\nprompt\n",
@@ -817,6 +881,10 @@ def write_tree(base, files):
     for rel, content in files.items():
         path = os.path.join(base, rel)
         os.makedirs(os.path.dirname(path), exist_ok=True)
+        if isinstance(content, bytes):
+            with open(path, "wb") as handle:
+                handle.write(content)
+            continue
         with open(path, "w", encoding="utf-8") as handle:
             handle.write(content)
 
@@ -872,6 +940,10 @@ SEEDS = {
     "C13": lambda r: append(f"{r}/skills/duet/SKILL.md", "\n```bash\nnpm install something\n```\n"),
     "C14": lambda r: write_tree(r, {"skills/.claude-plugin/plugin.json": json.dumps({"name": "renamed", "version": "1.0.0", "skills": "./duet"})}),
     "C14 version": lambda r: commit_without_raise(r),
+    "C15": lambda r: write_tree(r, {"skills/duet/scripts/run.md": "#!/bin/bash\necho ok\n"}),
+    "C15 type": lambda r: write_tree(r, {"skills/duet/scripts/print.init.gradle.kts": "println()\n"}),
+    "C15 package": lambda r: write_tree(r, {"skills/package.json": "{}\n"}),
+    "C15 image": lambda r: write_tree(r, {"skills/duet/diagram.png": "not an image\n"}),
 }
 
 

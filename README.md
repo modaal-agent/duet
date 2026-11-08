@@ -127,7 +127,7 @@ The [Duet tutorials](https://docs.modaal.dev/tutorials/duet) build one app, Foye
 
 ## Agent skill
 
-[`skills/duet/`](skills/duet/SKILL.md) is an agent skill for working in a Duet tree: the three shapes (KMP flavor, Swift flavor, twins), the feature loop and its commands, composition, the Kotlin core on the iPhone, duet-services, the `duet` CLI, and the action for each diagnostic. It runs the CLI at the tree's pin, through the tree's `tools/duet` or its own `scripts/duet-cli.sh`, and names no version: it reads the tree's pins.
+[`skills/duet/`](skills/duet/SKILL.md) is an agent skill for working in a Duet tree: the three shapes (KMP flavor, Swift flavor, twins), the feature loop and its commands, composition, the Kotlin core on the iPhone, duet-services, the `duet` CLI, and the action for each diagnostic. It runs the CLI at the tree's pin, through the tree's `tools/duet` or the release binary of that pin, checks the tree's pins with `tools/duet pins`, and names no version: it reads the tree's pins. The plugin holds Markdown, JSON and its icon only.
 
 | Agent | Install |
 | --- | --- |
@@ -155,9 +155,9 @@ docs/        pattern pages that ship with the framework (workers.md · compositi
 parity/      the flavor twin map (flavor-parity.yaml) + the generated per-release
              flavor-parity ledger — LOC and open deltas per flavor
 scripts/     flavor-lockstep-lint.py, the twin-map gate (CONTRIBUTING, rule 1);
-             check-skill.sh and test-skill-scripts.sh, the agent skill's gate
+             check-skill.sh, the agent skill's gate
 skills/      the Claude Code plugin's root: the agent skill, skills/duet/ (SKILL.md,
-             references/, scripts/), and the plugin's manifest and icon (.claude-plugin/)
+             references/), and the plugin's manifest and icon (.claude-plugin/)
 .claude-plugin/  marketplace.json: the marketplace, whose one plugin is skills/
 ci/          CI templates: the adopter parity workflow + notes; the family's own
              workflows live in .github/workflows/ (ci.yml, publish.yml, skill.yml)

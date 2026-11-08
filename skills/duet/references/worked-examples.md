@@ -16,10 +16,11 @@ before writing the same shape in an adopter's tree.
 To start a new app by hand, copy `tutorial1-start` (Kotlin) or `tutorial1-swift-start` (Swift). Each holds
 an empty manifest (`features:`, `chains:`, `presentation:`), `parity/duet-tools.ref` and the `tools/duet`
 wrapper; the Kotlin tree adds a Gradle root under `src-kmp/` that declares the family's Maven host. Before
-the first feature, move the tree's pins to the tags this command prints:
+the first feature, move the tree's pins to the newest releases, which the second command prints:
 
 ```bash
-"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" latest
+git ls-remote --tags --refs https://github.com/modaal-agent/duet-tools.git   # the newest duet-tools tag
+DUET_TOOLS_REF=<tag> tools/duet pins --latest
 ```
 
 [model.md](model.md) describes the three shapes and [cli.md](cli.md) the wrapper.
@@ -151,7 +152,7 @@ git diff --no-index --stat duet-tutorials/tutorial6-complete duet-tutorials/tuto
 - Every tree resolves the family at the versions in the repository's `pins.env`, and the Swift-first
   track's trees pin a later duet-tools release than the Kotlin series. A tree's pins are the versions it
   was verified against, which can be older than the newest releases; take versions for an adopter's tree
-  from `"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" latest`, and read the CHANGELOG entries in between
+  from `tools/duet pins --latest`, and read the CHANGELOG entries in between
   ([services.md](services.md) has the pin rule).
 - A fenced block on a page is a verbatim excerpt of that page's `-complete` tree; the repository's
   `scripts/check-snippets.py` holds them equal.

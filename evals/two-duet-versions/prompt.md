@@ -6,7 +6,7 @@ max_turns: 8
 expected_outcome: |
   duet-services pins duet exact:, so the tree's duet pin must equal the duet version the chosen
   duet-services release pins. Move duet to that version in the same change, exactly, in every Swift
-  manifest and in the Gradle catalog's duet entry; check with family-pins.sh check --latest.
+  manifest and in the Gradle catalog's duet entry; check with tools/duet pins --latest.
 ---
 
 I moved `duet-services` to a newer release in `src-ios/App/Package.swift` and now package

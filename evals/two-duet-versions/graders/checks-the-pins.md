@@ -2,4 +2,4 @@
 type: regex
 match: contains
 ---
-family-pins
+duet pins

@@ -67,9 +67,8 @@ minors are breaking by family convention.
   [CHANGELOG.md](https://github.com/modaal-agent/duet-services/blob/main/CHANGELOG.md) states each release's tag.
 
 ```bash
-"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" check            # the tree's pins; exit 1 on a disagreement
-"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" check --latest   # plus the duet tag the tree's duet-services pins
-"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" latest           # the newest tag of each family repository
+tools/duet pins            # the tree's pins; exit 1 on a disagreement
+tools/duet pins --latest   # plus the duet tag the tree's duet-services pins, and each repository's newest release
 ```
 
 ## Diagnostics and app services at the composition root

@@ -13,7 +13,7 @@ that case again in a fresh session.
 | `record-check-fails-in-ci` | `duet record --check: FAIL — behavioral drift` after a reducer change | `tools/duet record --feature settings`, review and commit the fixtures with the change; never hand-edit one |
 | `verify-stops-at-meta-checks` | `verify` ran no lane after `fixture on disk but not in manifest` | the meta-checks stop the lanes; list the fixture in the row or delete the file; `tools/duet lint`, then `verify` |
 | `kotlin-exception-crashes-ios` | the iOS app terminates when a Kotlin boundary call throws | `@Throws` on the Kotlin function, the framework assembled again, Swift `try` in `do`/`catch` |
-| `two-duet-versions` | SwiftPM cannot resolve after duet-services was moved alone | move `duet` to the version duet-services pins, `exact:`, with the Gradle catalog; `family-pins.sh check` |
+| `two-duet-versions` | SwiftPM cannot resolve after duet-services was moved alone | move `duet` to the version duet-services pins, `exact:`, with the Gradle catalog; `tools/duet pins` |
 | `worker-unchecked-sendable` | `duet doctor`'s `[workers]` finding on a locked class | remove `@unchecked Sendable`; an `actor`, a `@MainActor` class or `Sendable` state |
 | `adopt-analytics` | analytics through a vendor SDK, with an opt-out | `Track` effects asserted in scenarios; the SDK in one `AnalyticsTrackingWorking` sink behind `AnalyticsTrackingWorker`, adopted at the composition root; consent through `setEnabled` |
 | `swift-flavor-feature` | a feature in an Apple-only tree on the Swift flavor | a Swift package on `Duet`; a `DuetTesting` scenario; `tools/duet record --feature onboarding`; no Kotlin |

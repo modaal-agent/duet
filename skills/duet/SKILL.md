@@ -71,15 +71,11 @@ flavors, chains, the manifest grammar and the replay runner.
 ## Running the CLI
 
 Run `tools/duet <verb>` when the tree has the wrapper: it resolves the CLI at the tree's pin,
-`parity/duet-tools.ref`. Without one, run this skill's script, which follows the same pin:
-
-```bash
-"${CLAUDE_SKILL_DIR}/scripts/duet-cli.sh" verify
-```
-
-`scripts/` is beside this file. The CLI is a macOS Apple-silicon binary; inside an agent sandbox
-its first download needs network access to `github.com` and `release-assets.githubusercontent.com`.
-`tools/duet help` lists the verbs the tree's pin has. The ones a feature loop uses:
+`parity/duet-tools.ref`. Without one, install the release binary of that pin, checked against its
+`.sha256` ([cli.md](references/cli.md#in-a-tree-without-toolsduet)), and run it by its path. The
+CLI is a macOS Apple-silicon binary; inside an agent sandbox its download needs network access to
+`github.com` and `release-assets.githubusercontent.com`. `tools/duet help` lists the verbs the
+tree's pin has. The ones a feature loop uses:
 
 | Verb | What it does |
 | --- | --- |
@@ -101,10 +97,12 @@ template.
 ## Pins
 
 ```bash
-"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" check            # the tree's pins, exit 1 on a disagreement
-"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" check --latest   # plus the duet version duet-services pins
-"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" latest           # the newest tag of each family repository
+tools/duet pins            # the tree's pins, exit 1 on a disagreement
+tools/duet pins --latest   # plus the duet tag duet-services pins, and each repository's newest release
 ```
+
+When `tools/duet help` lists no `pins`, the tree's pin predates the verb: run it at the newest
+duet-tools tag for one run, `DUET_TOOLS_REF=<tag> tools/duet pins --latest`.
 
 - duet-services pins duet `exact:`, so SwiftPM fails to resolve a tree that moves one and not the
   other. Move the Swift `exact:` pins and the Gradle catalog's `duet` and `duetServices` together.
@@ -160,7 +158,7 @@ those skills for their detail: `npx skills add modaal-agent/kotlin-ksp-mocks` an
 | `[workers] … '@unchecked Sendable'` | isolate the worker (`@MainActor`) or prove it `Sendable` |
 | `duet: not inside a parity repo` | run from inside the tree; its root holds `parity/fixtures` |
 | the iOS app terminates on a Kotlin call | add `@Throws` to the boundary function and call it with `try` |
-| SwiftPM cannot resolve two duet versions | move duet and duet-services together; `family-pins.sh check --latest` |
+| SwiftPM cannot resolve two duet versions | move duet and duet-services together; `tools/duet pins --latest` |
 
 [troubleshooting.md](references/troubleshooting.md) has every diagnostic with its cause.
 

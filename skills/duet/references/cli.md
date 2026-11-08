@@ -5,9 +5,9 @@
 what it does from the tree's `parity/manifest.yaml`, whose grammar is
 [contracts/manifest.md](https://github.com/modaal-agent/duet-tools/blob/main/contracts/manifest.md).
 It finds the tree's root by walking up from the working directory to the first directory holding
-`parity/fixtures`; `design-tokens` also accepts `parity/design-tokens.yaml`. `version`, `help` and
-`assert-replayed` run anywhere. Every verb except `mcp`, `version` and `help` takes `--json`, and
-every JSON report carries a `toolchain` field naming the version that wrote it.
+`parity/fixtures`; `design-tokens` also accepts `parity/design-tokens.yaml`. `version`, `help`,
+`assert-replayed` and `pins` run anywhere. Every verb except `mcp`, `version` and `help` takes
+`--json`, and every JSON report carries a `toolchain` field naming the version that wrote it.
 
 This page describes the newest release. A tree runs the release its pin names, and
 `tools/duet help` prints the verbs and flags that release has.
@@ -40,52 +40,34 @@ Rungs 1–3 are not checked against the pin. When `tools/duet version` prints a 
 the pin, one of them is answering: unset `DUET_BIN` and `DUET_TOOLS_HOME`, or take `duet` off
 `PATH`. One-off overrides: `DUET_TOOLS_REF=<tag>` replaces the pin for one run,
 `DUET_NO_DOWNLOAD=1` skips rung 4, `DUET_NO_CLONE=1` disables rung 6. In a tree without the
-wrapper, run the CLI through the skill's script.
+wrapper, install the release binary.
 
-### Through the skill's script
+### In a tree without `tools/duet`
 
-The skill's script takes the same verbs and flags as `tools/duet`, in any tree:
-
-```sh
-"${CLAUDE_SKILL_DIR}/scripts/duet-cli.sh" verify
-"${CLAUDE_SKILL_DIR}/scripts/duet-cli.sh" --print-path
-```
-
-Claude Code replaces `${CLAUDE_SKILL_DIR}` with the directory holding `SKILL.md`; in another agent,
-write that directory's path in its place. The script runs the first of:
-
-1. the tree's `tools/duet`, when the tree has one;
-2. `$DUET_BIN`;
-3. `duet` on `PATH`, when its `duet version` prints the pin;
-4. a binary cached for the pin: the tree's `.duet-family/duet-bin/<pin>/duet`, or `<pin>/duet` under
-   `$DUET_CACHE`, `$HOME/.cache/duet` or `$TMPDIR/duet-cli`;
-5. the release asset `duet-macos-arm64.zip` for the pin, checked against its `.sha256` and cached in
-   `$DUET_CACHE`, else `$HOME/.cache/duet` when writable, else `$TMPDIR/duet-cli` (macOS arm64 only);
-6. `duet` on `PATH` at another version, with a warning naming both versions.
-
-The pin is `--ref <tag>`, else the tree's `parity/duet-tools.ref`, else the newest duet-tools tag.
-`--print-path` prints the binary rungs 2–6 resolve and does not run it. `DUET_CLI_RELEASE_BASE` points
-the download at a mirror holding `<pin>/duet-macos-arm64.zip` and its `.sha256`. When no rung
-resolves, the script prints the source build and exits 2:
+Install the binary of the tree's pin, or of the newest release when the tree has no
+`parity/duet-tools.ref`:
 
 ```sh
-git clone --branch <tag> --depth 1 https://github.com/modaal-agent/duet-tools
-cd duet-tools && swift build -c release
-```
-
-The built binary is `.build/release/duet`; point `DUET_BIN` at it.
-
-### Installing by hand
-
-```sh
+git ls-remote --tags --refs https://github.com/modaal-agent/duet-tools.git   # the newest tag
 curl -fsSLO https://github.com/modaal-agent/duet-tools/releases/download/<tag>/duet-macos-arm64.zip
 curl -fsSLO https://github.com/modaal-agent/duet-tools/releases/download/<tag>/duet-macos-arm64.zip.sha256
 shasum -a 256 -c duet-macos-arm64.zip.sha256
 unzip duet-macos-arm64.zip
 ```
 
-The archive holds one `duet` executable; `./duet version` prints `duet <tag>`. The release ships no
-Linux binary. On Linux, `tools/duet` falls through to rungs 5 and 6, which need a Swift toolchain.
+The archive holds one `duet` executable; `./duet version` prints `duet <tag>`. Unzip it outside the
+tree, in a cache directory such as `$HOME/.cache/duet/<tag>/`, and run it by its path, put that
+directory on `PATH`, or point `DUET_BIN` at it. When `shasum -a 256 -c` does not print `OK`, delete
+both files and run nothing. The release ships a macOS Apple-silicon binary only; on another
+platform, build from source at the tag (needs a Swift toolchain, takes minutes):
+
+```sh
+git clone --branch <tag> --depth 1 https://github.com/modaal-agent/duet-tools
+cd duet-tools && swift build -c release
+```
+
+The built binary is `.build/release/duet`. On Linux, `tools/duet` falls through to rungs 5 and 6,
+which build the same way.
 
 ### Inside an agent sandbox
 
@@ -132,6 +114,7 @@ the changes it requires and nothing else:
 | `design-tokens` | generates the Swift, Kotlin and web token sources from `parity/design-tokens.yaml` | `--check`; `migrate` rewrites a version-1 config as version 2 |
 | `scope <path>` | names the gates that govern a file and the commands that change it | — |
 | `doctor` | checks `.modaal/project.json` against the tree, and lints `Working` conformers stamped `@unchecked Sendable`; read-only | — |
+| `pins [<path>]` | lists the tree's Duet family pins, from its Swift manifests, XcodeGen specs, Gradle catalogs, `parity/duet-tools.ref` and `mocks: bundle:`; exits 1 when a pin is not one exact version or two pins of one package disagree | `--latest` also checks the duet tag the tree's duet-services release pins and prints each family repository's newest release (network) |
 | `mutate [<name>]` | seeds each row of `parity/mutations.json`, runs the suite, requires red; minutes per run | `<name>` runs one row |
 | `mcp` | serves nine verbs as a stdio MCP server | — |
 | `version` | prints `duet <tag>` | — |

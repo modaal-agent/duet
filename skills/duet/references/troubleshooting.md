@@ -3,7 +3,7 @@
 One section per diagnostic. The quoted text is what the CLI, the tree's wrapper or a fixture runner
 prints: `<f>` is a feature, `<fixture>` a fixture id, `<p>` a platform (`swift` or `kotlin`),
 `<path>` a path, `<n>` a number, and `…` elides text that varies. In a failure list each finding
-starts with `✗ `. Run each command through `tools/duet`, or through the skill's script in a tree
+starts with `✗ `. Run each command through `tools/duet`, or through the release binary in a tree
 without the wrapper ([cli.md](cli.md)).
 
 ## Running the CLI
@@ -23,7 +23,6 @@ directory. An MCP server launched outside the tree exits with this line: set its
 | `tools/duet: no downloadable release for pin <pin> (offline, unauthenticated,` | allow network access to `github.com` and `release-assets.githubusercontent.com`, or set `DUET_BIN`; the wrapper otherwise clones and builds from source, which takes minutes |
 | `tools/duet: CHECKSUM MISMATCH for duet-macos-arm64.zip at pin <pin> — refusing to run it.` | re-run to download again; the failed download stays in a temporary directory for inspection |
 | `tools/duet: released binary reports '<v>', the pin wants 'duet <pin>' — refusing.` | the asset at that tag reports another version; build the tag from source and set `DUET_BIN` ([cli.md](cli.md)) |
-| `duet-cli: the download failed. It needs network access to github.com and release-assets.githubusercontent.com;` | the skill's script could not download; allow both hosts, or run the command it prints once outside the sandbox, which caches the binary |
 | `tools/duet version` prints a version other than the pin | `$DUET_BIN`, a `duet` on `PATH` or `$DUET_TOOLS_HOME` answered, and each outranks the pin: unset the variables or take `duet` off `PATH` |
 
 ## Manifest meta-checks
@@ -224,8 +223,7 @@ Swift then sees a `throws` function and receives a Swift `Error`
 Resolution fails before anything compiles. `duet-services` pins `duet` with `exact:`, and SwiftPM
 solves the app and every package it reaches as one graph. Move the app's `duet` and `duet-services`
 pins in one change, to the `duet` tag the chosen duet-services release pins
-(`"${CLAUDE_SKILL_DIR}/scripts/family-pins.sh" check --latest` reads it from that release's
-`Package.swift`), and keep the Kotlin version catalog's `duet` entry on the same tag. A new `duet` release reaches such a tree once
+(`tools/duet pins --latest` reads it from that release's `Package.swift`), and keep the Kotlin version catalog's `duet` entry on the same tag. A new `duet` release reaches such a tree once
 duet-services publishes a release built against it.
 
 ### `swift test` exits 0 and ran no test
