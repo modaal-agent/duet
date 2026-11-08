@@ -6,6 +6,8 @@ Duet is a framework for building iOS and Android apps as verifiable twins: share
 
 One score, two performers.
 
+Duet is open source under the MIT license, and the Duet repository family builds and gates an app with no other dependency ([the open boundary](#what-ships-here-the-open-boundary)). [Modaal.dev](https://modaal.dev) supports these repositories and also makes code and design authoring tools for Duet apps: the tools give an agent the project's context and the commands to build, check and run the app, and let a person design the screens and edit the code beside the agent.
+
 > **Status: pre-release, current line 0.7.0.** Both flavors, the contracts and the toolchain have landed. The Swift packages resolve by URL at a tag; the Kotlin artifacts resolve from the family's static Maven repository (`https://modaal-agent.github.io/maven` — the repository block is in `kotlin/README.md`). Pre-1.0 minors are breaking by family convention, so pin exactly. [CHANGELOG.md](CHANGELOG.md) states what each release carries and which flavor it touches — several releases are Swift-only in effect, and say so.
 
 The CI matrix (each job writes its toolchain and verdict to the run's job summary):
@@ -18,6 +20,23 @@ The CI matrix (each job writes its toolchain and verdict to the run's job summar
 | `flavor-lockstep` | python3 | one contract surface across the two flavors, ledger fresh |
 
 A release tag additionally runs `publish.yml`: the Kotlin artifacts are built with the version derived from the tag and landed on the Maven host as one commit; an existing version is never overwritten.
+
+## Agent skill
+
+[`skills/duet/`](skills/duet/SKILL.md) is an agent skill for working in a Duet tree: the three shapes (KMP flavor, Swift flavor, twins), the feature loop and its commands, composition, the Kotlin core on the iPhone, duet-services, the `duet` CLI, and the action for each diagnostic. It runs the CLI at the tree's pin, through the tree's `tools/duet` or the release binary of that pin, checks the tree's pins with `tools/duet pins`, and names no version: it reads the tree's pins.
+
+| Agent | Install |
+| --- | --- |
+| Claude Code | `/plugin marketplace add modaal-agent/duet`, then `/plugin install duet-ios-android@modaal-duet` |
+| Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode and the other agents the [`skills`](https://skills.sh) CLI supports | `npx skills add modaal-agent/duet` |
+| an agent that reads a skills directory | copy `skills/duet/` into it, e.g. `~/.claude/skills/duet/` |
+| claude.ai, the Claude API | upload a zip of `skills/duet/` in the Skills settings, or create it with `POST /v1/skills` |
+
+In Claude Code, `/plugin update duet-ios-android@modaal-duet` installs a new version of the plugin. The test-double skills install the same way: `npx skills add modaal-agent/kotlin-ksp-mocks` and `npx skills add modaal-agent/swift-sourcery-templates`.
+
+A prompt to try in a Duet tree:
+
+> Add a Favorites feature: a star on the item screen adds or removes the item, and a Favorites tab lists the starred items. Write the reducer and its scenario, record the fixtures, mount the store in the SwiftUI and Compose shells, and run `duet verify` on both platforms.
 
 ## Why
 
@@ -125,20 +144,9 @@ The pattern pages under `docs/`: [`workers.md`](docs/workers.md) — lifecycle-b
 
 The [Duet tutorials](https://docs.modaal.dev/tutorials/duet) build one app, Foyer, from its first Kotlin feature to the CI checks, theming, localization and analytics in nine steps, on both platforms. Every step's starting tree and finished tree is in [`duet-tutorials`](https://github.com/modaal-agent/duet-tutorials), pinned to one family release and gated in that repository's CI.
 
-## Agent skill
+## Skill versions and checks
 
-[`skills/duet/`](skills/duet/SKILL.md) is an agent skill for working in a Duet tree: the three shapes (KMP flavor, Swift flavor, twins), the feature loop and its commands, composition, the Kotlin core on the iPhone, duet-services, the `duet` CLI, and the action for each diagnostic. It runs the CLI at the tree's pin, through the tree's `tools/duet` or the release binary of that pin, checks the tree's pins with `tools/duet pins`, and names no version: it reads the tree's pins. The plugin holds Markdown, JSON and its icon only.
-
-| Agent | Install |
-| --- | --- |
-| Claude Code | `/plugin marketplace add modaal-agent/duet`, then `/plugin install duet-ios-android@modaal-duet` |
-| Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode and the other agents the [`skills`](https://skills.sh) CLI supports | `npx skills add modaal-agent/duet` |
-| an agent that reads a skills directory | copy `skills/duet/` into it, e.g. `~/.claude/skills/duet/` |
-| claude.ai, the Claude API | upload a zip of `skills/duet/` in the Skills settings, or create it with `POST /v1/skills` |
-
-The Claude Code plugin's root is `skills/`. Its version, in `skills/.claude-plugin/plugin.json`, is its own semver and changes only when a file under `skills/` changes (CONTRIBUTING, rule 11); `/plugin update duet-ios-android@modaal-duet` installs a new version.
-
-The test-double skills install the same way: `npx skills add modaal-agent/kotlin-ksp-mocks` and `npx skills add modaal-agent/swift-sourcery-templates`. `scripts/check-skill.sh` checks the skill against this repository and against the newest duet-tools and duet-services tags; the `skill` workflow runs it on every push to `main`, every pull request and weekly.
+The [agent skill](#agent-skill)'s Claude Code plugin has its root at `skills/` and holds Markdown, JSON and its icon only. Its version, in `skills/.claude-plugin/plugin.json`, is its own semver and changes only when a file under `skills/` changes (CONTRIBUTING, rule 11). `scripts/check-skill.sh` checks the skill against this repository and against the newest duet-tools and duet-services tags; the `skill` workflow runs it on every push to `main`, every pull request and weekly.
 
 ## Repository layout
 
